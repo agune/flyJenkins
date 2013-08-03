@@ -18,7 +18,6 @@ public class flyAgentTest {
 		try {
 			agent.start();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			assertFalse(e.getMessage(), true);
 		}
