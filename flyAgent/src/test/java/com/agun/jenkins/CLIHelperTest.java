@@ -18,10 +18,13 @@ public class CLIHelperTest {
 
 
 	@Test
-	public void createTest() {
+	public void callActionTest() {
 		
 		URL url  = this.getClass().getResource("/id_rsa");
 		CLIHelper cliHelper = new CLIHelper("http://127.0.0.1:8080/jenkins", url.getPath());
+		
+		cliHelper.callActionFunction("flyJenkins", "saveProcessList", ProcessTreeHelper.getInfoProcess());
+		
 		cliHelper.destory();
 		assertTrue("CLI class 생성 실패", true);
 	}
