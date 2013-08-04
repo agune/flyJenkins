@@ -34,7 +34,7 @@ public class CLIHelper {
 			callable.setArgList(argList);
 			callable.setDisplayName(displayName);
 			callable.setMethodName(methodName);
-			channel.call(callable);
+			return channel.call(callable);
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -48,7 +48,7 @@ public class CLIHelper {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return 0;
+		return null;
 	}
 
 	/**
