@@ -48,10 +48,11 @@ public class ProcessTreeHelper {
 				processInfoMap.put(osProcess.getPid(), osProcess.toString());
 			}else{
 				List<String> argList = osProcess.getArguments();
-				processInfoMap.put(osProcess.getPid(), argList.get(0));
+				if(argList.size() > 0){
+					processInfoMap.put(osProcess.getPid(), argList.get(0));
+				}
 			}
 			
-			processInfoMap.put(osProcess.getPid(), "");
 		}
 		return processInfoMap;
 	}
