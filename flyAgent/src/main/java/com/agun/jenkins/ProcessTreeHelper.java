@@ -57,4 +57,18 @@ public class ProcessTreeHelper {
 		return processInfoMap;
 	}
 	
+	public static int getPid(String compareProcessName){
+		List<OSProcess> processList = ProcessTreeHelper.getProcessList();
+		for(OSProcess osProcess : processList){
+			List<String> argList = osProcess.getArguments();
+			if(argList.size() > 0){
+				String processName = argList.get(0);
+				if(processName.equals(compareProcessName)){
+					return osProcess.getPid();
+				}
+			}
+		}
+		return 0;
+	}
+	
 }
