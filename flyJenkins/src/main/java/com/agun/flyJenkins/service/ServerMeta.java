@@ -5,11 +5,21 @@
 
 package com.agun.flyJenkins.service;
 
+import hudson.BulkChange;
+import hudson.XmlFile;
+import hudson.model.Saveable;
+import hudson.model.listeners.SaveableListener;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.logging.Level;
+
+import jenkins.model.Jenkins;
 
 
-public class ServerMeta {
+public class ServerMeta implements Saveable{
 	/**
 	 *  Service Server host
 	 */
@@ -52,6 +62,10 @@ public class ServerMeta {
 	 */
 	private String name;
 	
+	
+	public ServerMeta(){
+		load();
+	}
 	public String getHost() {
 		return host;
 	}
@@ -118,4 +132,30 @@ public class ServerMeta {
 		dataMap.put("weight", this.getWeight());
 		return dataMap;
 	}
+	
+	public synchronized void save() {
+        if(BulkChange.contains(this))   return;
+        try {
+            getConfigFile().write(this);
+            SaveableListener.fireOnChange(this, getConfigFile());
+        } catch (IOException e) {
+           	e.printStackTrace();
+        }
+    }
+	
+	protected XmlFile getConfigFile() {
+        return new XmlFile(new File(Jenkins.getInstance().getRootDir(), this.getClass().getSimpleName()+".xml"));
+    }
+	
+	 public synchronized void load() {
+	        XmlFile file = getConfigFile();
+	        if(!file.exists())
+	            return;
+
+	        try {
+	            file.unmarshal(this);
+	        } catch (IOException e) {
+	        	e.printStackTrace();
+	        }
+	    }
 }

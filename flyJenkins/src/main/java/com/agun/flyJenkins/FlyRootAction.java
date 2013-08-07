@@ -4,10 +4,13 @@
 package com.agun.flyJenkins;
 
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+
 import com.agun.flyJenkins.service.ServerMeta;
+import com.agun.flyJenkins.ui.FlyUI;
 
 import hudson.Extension;
 import hudson.model.RootAction;
@@ -26,6 +29,17 @@ public class FlyRootAction implements RootAction {
 	public String getUrlName() {
 		return "flyJenkins";
 	}
+	
+	 public List<FlyUI> getAll() {
+	        return FlyUI.all();
+	  }
+	
+	 public FlyUI getDynamic(String name) {
+	        for (FlyUI ui : getAll())
+	            if (ui.getUrlName().equals(name))
+	                return ui;
+	        return null;
+	    }
 	
 	/**
 	 * issue #8 구현을 위한 read 메소
