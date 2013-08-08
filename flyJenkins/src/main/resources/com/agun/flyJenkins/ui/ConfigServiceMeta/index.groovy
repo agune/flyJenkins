@@ -13,8 +13,8 @@ namespace("/lib/samples").sample(title:_("Setting Service Meta Info")) {
  		for(serverMeta in instance.getServerMetaList()){
  			p(){
  				span(style: "padding:2em" ,  serverMeta.host)
- 				button(onclick:"location.href='../process'", "process")
- 				button(onclick:"location.href='../network'", "network group")
+ 				button(onclick:"location.href='../ProcessInfo'", "process")
+ 				button(onclick:"location.href='../NetworkInfo'", "network group")
  			}
  		}
 	}

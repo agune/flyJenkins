@@ -1,0 +1,16 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:s="/lib/samples">
+
+<j:forEach items="${it.agentList}" var="agent">
+	<div><li>${agent.agentId}  ,
+		<j:set var="serviceGroup" value="${agent.serviceGroup}"/>
+		${serviceGroup.groupId} <br />
+		<j:forEach items="${serviceGroup.serverMetaList}" var="serverMeta">
+			  <span style="padding:2em" > ${serverMeta.host} </span>
+		</j:forEach>
+	</li>
+	
+	</div> 
+</j:forEach>
+
+</j:jelly>
