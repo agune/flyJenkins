@@ -7,16 +7,20 @@ def f=namespace(FormTagLib.class)
 
 t=namespace(JenkinsTagLib.class)
 
-namespace("/lib/samples").sample(title:_("Context-sensitive form validation")) {
+namespace("/lib/samples").sample(title:_("Setting Service Meta Info")) {
       
 	div (style:"border:1px solid blue") {
  		for(serverMeta in instance.getServerMetaList()){
- 			p(serverMeta.host)
+ 			p(){
+ 				span(style: "padding:2em" ,  serverMeta.host)
+ 				button(onclick:"location.href='../process'", "process")
+ 				button(onclick:"location.href='../network'", "network group")
+ 			}
  		}
 	}
       
  	f.form(method : "post", action : "save") {
-		f.entry(title:"Service Meta") {
+		f.entry() {
 			f.entry(title:"host", field:"host") {
     			f.textbox()
 			}
@@ -25,7 +29,7 @@ namespace("/lib/samples").sample(title:_("Context-sensitive form validation")) {
 		    	f.textbox()
 			}
 		
-			f.entry(title:"testCmd", field:"testCmd") {
+			f.entry(title:"command", field:"testCmd") {
 		    	f.textbox()
 			}
 		
@@ -46,7 +50,7 @@ namespace("/lib/samples").sample(title:_("Context-sensitive form validation")) {
 			}
 			
 			f.entry(title:"type", field:"type") {
-			    f.textbox()
+			    f.select()
 			}
 		
 			f.bottomButtonBar(){

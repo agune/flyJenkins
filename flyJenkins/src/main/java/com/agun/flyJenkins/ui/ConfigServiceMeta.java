@@ -14,6 +14,7 @@ import hudson.RelativePath;
 import hudson.model.AbstractDescribableImpl;
 import hudson.model.Descriptor;
 import hudson.util.FormValidation;
+import hudson.util.ListBoxModel;
 
 @Extension
 public class ConfigServiceMeta extends FlyUI {
@@ -58,7 +59,7 @@ public class ConfigServiceMeta extends FlyUI {
     
     @Override
     public String getDescription() {
-        return "How to access values of the nearby input fields when you do form field validation";
+        return "You can setting meta info of deploy service";
     }
 
     public List<ServerMetaDescribable> getServerMetaList() {
@@ -109,13 +110,15 @@ public class ConfigServiceMeta extends FlyUI {
             public String getDisplayName() {
                 return "";
             }
-
+           
             public FormValidation doCheckHost(@QueryParameter String value,
                                                    @RelativePath("host") @QueryParameter String name) {
 
                 return FormValidation.ok("Are you sure " + name + " is a capital of " + value + "?");
             }
         }
+        
+      
         
         @Override
         public DescriptorImpl getDescriptor() {
@@ -134,10 +137,20 @@ public class ConfigServiceMeta extends FlyUI {
     	private ServerMeta serverMeta;
     	
     	
+    	  /**
+         * This method determines the values of the album drop-down list box.
+         */
+        public ListBoxModel doFillTypeItems() {
+            ListBoxModel m = new ListBoxModel();
+            m.add("general process","1");
+            m.add("tomcat","2");
+            m.add("etc","3");
+            return m;
+        }
+    	
     	public ServerMeta getServerMeta() {
 			return serverMeta;
 		}
-
 
 		public void setServerMeta(ServerMeta serverMeta) {
 			this.serverMeta = serverMeta;
