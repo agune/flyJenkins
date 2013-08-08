@@ -12,9 +12,10 @@ import hudson.model.listeners.SaveableListener;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 
 import jenkins.model.Jenkins;
 
@@ -32,17 +33,17 @@ public class ServerMeta implements Saveable{
 	/**
 	 * deploy type
 	 */
-	private int type;
+	private Integer type;
 	
 	/**
 	 * Service Server Group Id 
 	 */
-	private int groupId;
+	private Integer groupId;
 	
 	/**
 	 * Service Server Id (auto increase) 
 	 */
-	private int serverId;
+	private Integer serverId;
 	/**
 	 * test cmd after deploy 
 	 */
@@ -51,11 +52,11 @@ public class ServerMeta implements Saveable{
 	/**
 	 * priority of deployment  
 	 */
-	private int weight;
+	private Integer weight;
 	/**
 	 * process id of service app
 	 */
-	private int pid;
+	private Integer pid;
 	
 	/**
 	 * process id of service name
@@ -63,11 +64,22 @@ public class ServerMeta implements Saveable{
 	private String name;
 	
 	
-	public ServerMeta(){
-		load();
+	private String testUrl;
+
+	private List<ServerMeta> serverMetaList;
+	
+	public String getTestUrl() {
+		return testUrl;
 	}
+	public void setTestUrl(String testUrl) {
+		this.testUrl = testUrl;
+	}
+	
 	public String getHost() {
 		return host;
+	}
+	public void setServerMetaList(List<ServerMeta> serverMetaList) {
+		serverMetaList = serverMetaList;
 	}
 	public void setHost(String host) {
 		this.host = host;
@@ -81,19 +93,19 @@ public class ServerMeta implements Saveable{
 	public int getType() {
 		return type;
 	}
-	public void setType(int type) {
+	public void setType(Integer type) {
 		this.type = type;
 	}
-	public int getGroupId() {
+	public Integer getGroupId() {
 		return groupId;
 	}
-	public void setGroupId(int groupId) {
+	public void setGroupId(Integer groupId) {
 		this.groupId = groupId;
 	}
-	public int getServerId() {
+	public Integer getServerId() {
 		return serverId;
 	}
-	public void setServerId(int serverId) {
+	public void setServerId(Integer serverId) {
 		this.serverId = serverId;
 	}
 	public String getTestCmd() {
@@ -102,17 +114,17 @@ public class ServerMeta implements Saveable{
 	public void setTestCmd(String testCmd) {
 		this.testCmd = testCmd;
 	}
-	public int getWeight() {
+	public Integer getWeight() {
 		return weight;
 	}
-	public void setWeight(int weight) {
+	public void setWeight(Integer weight) {
 		this.weight = weight;
 	}
 	
-	public int getPid() {
+	public Integer getPid() {
 		return pid;
 	}
-	public void setPid(int pid) {
+	public void setPid(Integer pid) {
 		this.pid = pid;
 	}
 	public String getName() {
@@ -121,6 +133,11 @@ public class ServerMeta implements Saveable{
 	public void setName(String name) {
 		this.name = name;
 	}
+	
+	public List<ServerMeta> getServerMetaList(){
+		return this.serverMetaList;
+	}
+	
 	public Map<String, Object> convertMap(){
 		Map<String, Object> dataMap = new Hashtable<String, Object>();
 		dataMap.put("host", this.getHost());
@@ -133,18 +150,47 @@ public class ServerMeta implements Saveable{
 		return dataMap;
 	}
 	
+	
+	public ServerMeta getCopy(){
+		ServerMeta serverMeta =  new ServerMeta();
+		serverMeta.setHost(this.host);
+		serverMeta.setDestination(this.destination);
+		serverMeta.setGroupId(this.groupId);
+		serverMeta.setName(this.name);
+		serverMeta.setServerId(this.serverId);
+		serverMeta.setTestCmd(this.testCmd);
+		serverMeta.setTestUrl(this.testUrl);
+		serverMeta.setType(this.type);
+		serverMeta.setWeight(this.weight);
+		serverMeta.setPid(this.pid);
+		return serverMeta;
+	}
+	
 	public synchronized void save() {
-        if(BulkChange.contains(this))   return;
+		
+		ServerMeta serverMeta =  this.getCopy();
+		
+		load();
+		
+		if(this.serverMetaList != null){
+			serverMetaList.add(serverMeta);
+		}else{
+			serverMetaList = new ArrayList<ServerMeta>();
+			serverMetaList.add(serverMeta);
+		}
+			
+		
+		if(BulkChange.contains(this))   return;
         try {
             getConfigFile().write(this);
-            SaveableListener.fireOnChange(this, getConfigFile());
+            SaveableListener.fireOnChange(serverMeta, getConfigFile());
         } catch (IOException e) {
            	e.printStackTrace();
         }
     }
 	
 	protected XmlFile getConfigFile() {
-        return new XmlFile(new File(Jenkins.getInstance().getRootDir(), this.getClass().getSimpleName()+".xml"));
+	    return new XmlFile(new File(Jenkins.getInstance().getRootDir(), this.getClass().getSimpleName()+".xml"));
     }
 	
 	 public synchronized void load() {

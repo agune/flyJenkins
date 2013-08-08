@@ -1,65 +1,58 @@
 package com.agun.flyJenkins.ui;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
-import java.util.Arrays;
-import java.util.logging.Level;
 
-import jenkins.model.Jenkins;
-
-import net.sf.json.JSONObject;
-
-import org.codehaus.groovy.runtime.metaclass.NewInstanceMetaMethod;
-import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
-import com.agun.flyJenkins.HelloWorldBuilder.DescriptorImpl;
 import com.agun.flyJenkins.service.ServerMeta;
 
-import hudson.BulkChange;
 import hudson.Extension;
 import hudson.RelativePath;
-import hudson.XmlFile;
 import hudson.model.AbstractDescribableImpl;
 import hudson.model.Descriptor;
-import hudson.model.Descriptor.FormException;
-import hudson.model.listeners.SaveableListener;
 import hudson.util.FormValidation;
 
 @Extension
 public class ConfigServiceMeta extends FlyUI {
 
-	private List<ServerMetaDescribable> serverMetaList = new ArrayList<ServerMetaDescribable>();
-	private ServerMeta serverMeta;
-    public ConfigServiceMeta() {
-    	serverMeta = new ServerMeta();
-    	System.out.println("ConfigServiceMeta =====> : " +  serverMeta.getHost());
-    }
+	ServerMeta serverMetaContain = new ServerMeta();
+	public ConfigServiceMeta() {
+		serverMetaContain = new ServerMeta();
+		serverMetaContain.load();
+	
+	}
+    
     public void doSave(final StaplerRequest request, final 
     		StaplerResponse response) { 
 
     	String host  = request.getParameter("_.host");
     	String testCmd  = request.getParameter("_.testCmd");
-    	String weight  = request.getParameter("_.weight");
         String destination =  request.getParameter("_.destination");
-    
-        
+     	String testUrl  = request.getParameter("_.testUrl");
+    	int serverId  = Integer.parseInt(request.getParameter("_.serverId"));
+    	int groupId  = Integer.parseInt(request.getParameter("_.groupId"));
+    	int type  = Integer.parseInt(request.getParameter("_.type"));
+    	int weight = Integer.parseInt(request.getParameter("_.weight"));
+    	
+    	ServerMeta serverMeta = new ServerMeta();
         serverMeta.setHost(host);
+        serverMeta.setTestUrl(testUrl);
         serverMeta.setTestCmd(testCmd);
-        serverMeta.setWeight(Integer.parseInt(weight));
+        serverMeta.setWeight(weight);
         serverMeta.setDestination(destination);
-        
+        serverMeta.setServerId(serverId);
+        serverMeta.setGroupId(groupId);
+        serverMeta.setType(type);
         serverMeta.save();
-        
-        
+        serverMetaContain.load();
     }
     
-    
+    public ServerMetaDescribable getServerMetaDescribable(){
+    	return new ServerMetaDescribable();
+    }
 
    
     
@@ -69,7 +62,23 @@ public class ConfigServiceMeta extends FlyUI {
     }
 
     public List<ServerMetaDescribable> getServerMetaList() {
-        return serverMetaList;
+    	List<ServerMeta> serverMetaList = serverMetaContain.getServerMetaList();
+    	List<ServerMetaDescribable> serverMetaDescribableList = new ArrayList<ConfigServiceMeta.ServerMetaDescribable>();
+    	if(serverMetaList != null){
+    		for(ServerMeta serverMeta : serverMetaList){
+    			ServerMetaDescribable serverMetaDescribable = new ServerMetaDescribable();
+    			serverMetaDescribable.destination = serverMeta.getDestination();
+    			serverMetaDescribable.host = serverMeta.getHost();
+    			serverMetaDescribable.serverId = serverMeta.getServerId();
+    			serverMetaDescribable.groupId = serverMeta.getGroupId();
+    			serverMetaDescribable.testCmd = serverMeta.getTestCmd();
+    			serverMetaDescribable.testUrl = serverMeta.getTestUrl();
+    			serverMetaDescribable.weight = serverMeta.getWeight();
+    			serverMetaDescribable.type = serverMeta.getType();
+    			serverMetaDescribableList.add(serverMetaDescribable);
+    		}
+    	}
+    	return serverMetaDescribableList;
     }
 
     @Override
@@ -87,7 +96,12 @@ public class ConfigServiceMeta extends FlyUI {
         public String destination;
         public String host;
         public String testCmd;
+        public String testUrl;
         public int weight;
+        public int type;
+        public int groupId;
+        public int serverId;
+        
         
         @Extension
         public static class DescriptorImpl extends Descriptor<ServerMetaDescribable> {
@@ -99,7 +113,6 @@ public class ConfigServiceMeta extends FlyUI {
             public FormValidation doCheckHost(@QueryParameter String value,
                                                    @RelativePath("host") @QueryParameter String name) {
 
-            	System.out.println("=====================> check host : " + name + " , value : " +  value );
                 return FormValidation.ok("Are you sure " + name + " is a capital of " + value + "?");
             }
         }
