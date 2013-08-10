@@ -1,5 +1,6 @@
 /**
  * Agent 와 Service context 의 네트워크 map 을 관리하는 class
+ * NetworkSpace 는 Singleton Instance 로 제공 된다.
  */
 package com.agun.flyJenkins.service;
 
@@ -11,10 +12,48 @@ import java.util.Map;
 import com.agun.flyJenkins.FlyStore;
 import java.util.Collections;
 
+
 public class NetworkSpace {
+	/**
+	 * singleton Instance
+	 */
+	private static NetworkSpace networkSpace = new NetworkSpace();
+	
 	private Map<String, List<AgentService>> networkMap = new Hashtable<String, List<AgentService>>();
 	
-	public static List<AgentService> getSaveAgentList(){
+	
+	private NetworkSpace(){
+		
+	}
+	
+	public static NetworkSpace getInstance(){
+		return networkSpace;
+	}
+	
+	/**
+	 *  네트워크 스페이스를 최기화 구성 한다. 
+	 *  
+	 */
+	public void initNetworkSpace(){
+		List<AgentService> agentList =  this.getSaveAgentList();
+		
+		for(AgentService agentService : agentList){
+			if(networkMap.containsKey(agentService.getHost())){
+				List<AgentService> agentListFromMap = networkMap.get(agentService.getHost());
+				agentListFromMap.add(agentService);
+			}else{
+				List<AgentService> agentListFromMap = new ArrayList<AgentService>();
+				agentListFromMap.add(agentService);
+				networkMap.put(agentService.getHost(), agentListFromMap);
+			}
+		}
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public List<AgentService> getSaveAgentList(){
 		ServerMeta serviceMeta = FlyStore.getServerMeta();
 		
 		if(serviceMeta == null)

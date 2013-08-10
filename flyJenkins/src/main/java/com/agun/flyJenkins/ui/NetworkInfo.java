@@ -17,7 +17,7 @@ public class NetworkInfo extends FlyUI {
 	}
 
 	public List<AgentService> getAgentList(){
-		return NetworkSpace.getSaveAgentList();
+		return NetworkSpace.getInstance().getSaveAgentList();
 	}
 	
 	 @Extension

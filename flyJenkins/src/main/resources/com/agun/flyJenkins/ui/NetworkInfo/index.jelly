@@ -6,7 +6,7 @@
 		<j:set var="serviceGroup" value="${agent.serviceGroup}"/>
 		${serviceGroup.groupId} <br />
 		<j:forEach items="${serviceGroup.serverMetaList}" var="serverMeta">
-			  <span style="padding:2em" > ${serverMeta.host} </span>
+			  <span style="padding:2em" > <img src="/jenkins/plugin/translation/flags.png" /> ${serverMeta.host} </span>
 		</j:forEach>
 	</li>
 	
