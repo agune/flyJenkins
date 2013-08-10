@@ -24,7 +24,7 @@ public class GeneralService implements ServiceType {
 	}
 
 	@Override
-	public boolean getProduction() {
+	public boolean getProduction(AgentMeta agentMeta, String production) {
 		// TODO Auto-generated method stub
 		return false;
 	}

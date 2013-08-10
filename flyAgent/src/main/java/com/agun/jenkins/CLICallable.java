@@ -50,7 +50,6 @@ public class CLICallable implements Callable<Object, Throwable> {
 	
 		
 		List<Action> actionList = Jenkins.getInstance().getActions();
-		
 		Class<?>[] classList =  null;
 		
 		if(argList.length > 0)
@@ -63,6 +62,9 @@ public class CLICallable implements Callable<Object, Throwable> {
 		}
 		
 		for(Action action : actionList){
+			
+			System.out.println("============> " + action.getDisplayName());
+			
 			if(action.getDisplayName() != null && action.getDisplayName().equals(displayName)){
 				try {
 					Method method = action.getClass().getMethod(methodName, classList);
