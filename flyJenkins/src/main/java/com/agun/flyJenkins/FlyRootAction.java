@@ -41,6 +41,12 @@ public class FlyRootAction implements RootAction {
 	        return null;
 	    }
 	
+	 
+	 public Map<String, Object> getProduction(Integer agnetId){
+		FlyDeploy flyDeploy =  FlyFactory.getFlyDeploy();
+		return flyDeploy.getDeployInfo(agnetId);
+	 }
+	 
 	/**
 	 * issue #8 구현을 위한 read 메소
 	 * @return
