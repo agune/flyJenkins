@@ -11,5 +11,10 @@ public interface ServiceType {
 
 	public int getPid(AgentMeta agentMeta);
 	
+	public boolean getProduction();
+	
 	public boolean deploy(AgentMeta agentMeta);
+	
+	
+	
 }
