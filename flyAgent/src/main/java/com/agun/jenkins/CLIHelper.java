@@ -50,6 +50,10 @@ public class CLIHelper {
 		}
 		return null;
 	}
+	
+	public Channel getChannel(){
+		return this.channel;
+	}
 
 	/**
 	 * 실제로 cli 를 인증하고 인스턴스를 구한다.
@@ -62,9 +66,8 @@ public class CLIHelper {
 			KeyPair key = cli.loadKey(rsaFile);
 			cli.authenticate(Collections.singleton(key));
 			cli.upgrade();
+		
 			channel = cli.getChannel();
-			
-			System.out.println("test==========>");
 			
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
