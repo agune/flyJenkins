@@ -13,5 +13,3 @@ flyJenkins 프로젝트란?
 
 flyJenkins 는 open-source continuous integration server 인 jenkins의 소스를 사용 했으며 동일한 라이센스인 
 mit 라이센스를 준수 하고 해당 소스를 사용하는 사람들도 mit 라이센스를 준수해야 합니다.  
-Agent 내부에서는 netty framework 를 사용하고 netty 구조자체는 수정하지 않았으며 지원하는 framework 기능만 사용하고 
-있습니다.
