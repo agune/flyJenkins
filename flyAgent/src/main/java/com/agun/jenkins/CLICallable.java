@@ -4,72 +4,62 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Map;
+
+import com.agun.flyJenkins.process.FlyProcess;
 
 import jenkins.model.Jenkins;
 
 import hudson.model.Action;
 import hudson.remoting.Callable;
 
-public class CLICallable implements Callable<Object, Throwable> {
+public class CLICallable implements Callable<Map<String, Object>, Throwable> {
 
-	private Object[] argList;
-	private String methodName;
-	private String displayName;
+	private String operationName;
+	private String processName;
+	private Integer agentId;
 	
-	public String getDisplayName() {
-		return displayName;
+	public Integer getAgentId() {
+		return agentId;
 	}
 
 
-	public void setDisplayName(String displayName) {
-		this.displayName = displayName;
+	public void setAgentId(Integer agentId) {
+		this.agentId = agentId;
 	}
 
 
-	public String getMethodName() {
-		return methodName;
+	public void setProcessName(String processName) {
+		this.processName = processName;
 	}
 
 
-	public void setMethodName(String methodName) {
-		this.methodName = methodName;
+	public String getProcessName() {
+		return processName;
 	}
 
-	public Object[] getArgList() {
-		return argList;
+	public String getOperationName() {
+		return operationName;
 	}
 
 
-	public void setArgList(Object[] argList) {
-		this.argList = argList;
+	public void setOperationName(String operationName) {
+		this.operationName = operationName;
 	}
 
 
 	@Override
-	public Object call() throws Throwable {
-	
+	public  Map<String, Object> call() throws Throwable {
 		
 		List<Action> actionList = Jenkins.getInstance().getActions();
-		Class<?>[] classList =  null;
-		
-		if(argList.length > 0)
-			classList = new Class<?>[argList.length];
-		
-		int i =0;
-		for(Object arg : argList){
-			classList[i] = arg.getClass();
-			i++;
-		}
 		
 		for(Action action : actionList){
 			
-			System.out.println("============> " + action.getDisplayName());
-			
-			if(action.getDisplayName() != null && action.getDisplayName().equals(displayName)){
+			if(action.getDisplayName() != null && action.getDisplayName().equals("flyJenkins")){
 				try {
-					Method method = action.getClass().getMethod(methodName, classList);
-					return method.invoke(action, argList);
-					
+					Method method = action.getClass().getMethod("getFlyProcess", String.class);
+					FlyProcess flyProcess =  (FlyProcess) method.invoke(action, processName);
+					return flyProcess.run(agentId, operationName);
 				} catch (NoSuchMethodException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -90,6 +80,4 @@ public class CLICallable implements Callable<Object, Throwable> {
 		}
 		return null;
 	}
-
-
 }

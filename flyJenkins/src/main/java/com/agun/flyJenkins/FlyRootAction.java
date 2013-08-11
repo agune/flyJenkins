@@ -9,6 +9,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 
+import com.agun.flyJenkins.process.FlyDeploy;
+import com.agun.flyJenkins.process.FlyFactory;
+import com.agun.flyJenkins.process.FlyProcess;
 import com.agun.flyJenkins.service.ServerMeta;
 import com.agun.flyJenkins.ui.FlyUI;
 
@@ -41,10 +44,13 @@ public class FlyRootAction implements RootAction {
 	        return null;
 	    }
 	
-	 
-	 public Map<String, Object> getProduction(Integer agnetId){
-		FlyDeploy flyDeploy =  FlyFactory.getFlyDeploy();
-		return flyDeploy.getDeployInfo(agnetId);
+	 /**
+	  * flyjenkins 의 process 를  구현
+	  * @param processName
+	  * @return
+	  */
+	 public FlyProcess getFlyProcess(String processName){
+		 return FlyFactory.getProcess(processName);
 	 }
 	 
 	/**

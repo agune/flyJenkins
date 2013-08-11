@@ -20,45 +20,14 @@ import org.junit.Test;
 
 public class CLIHelperTest {
 
-
 	@Test
 	public void callActionProcessTest() {
-		
-		URL url  = this.getClass().getResource("/id_rsa");
-		CLIHelper cliHelper = new CLIHelper("http://192.168.0.127:8080/jenkins", url.getPath());
-		
-		cliHelper.callActionFunction("flyJenkins", "saveProcessList", ProcessTreeHelper.getInfoProcess());
-		
-		cliHelper.destory();
-		assertTrue("CLI class 생성 실패", true);
-	}
-	
-	
-	@Ignore
-	@Test
-	public void callActionServerMetaRead(){
-		
 		URL url  = this.getClass().getResource("/id_rsa");
 		CLIHelper cliHelper = new CLIHelper("http://127.0.0.1:8080/jenkins", url.getPath());
-		
-		Map<String, Map<String, Object>> data = (Map) cliHelper.callActionFunction("flyJenkins", "readServerMetaData");
-		
-		System.out.println("size : " + data.size());
-		Set<Entry<String, Map<String, Object>>> entrySet = data.entrySet();
-		
-		for(Entry entry : entrySet){
-			System.out.println("key : " + entry.getKey());
-			Map<String, Object> value = (Map<String, Object>) entry.getValue();
-		
-			Set<String > valueKey = value.keySet();
-			for(String key : valueKey){
-				System.out.println("====> " +  key);
-			}
-		}
-		
+		Map<String, Object> resultMap = cliHelper.callActionFunction("FlyDeploy", "deployInfo", 1);
+		String result = (String) resultMap.get("production");
+		System.out.println("production ====> " +  result);
 		cliHelper.destory();
 		assertTrue("CLI class 생성 실패", true);
-		
 	}
-
 }

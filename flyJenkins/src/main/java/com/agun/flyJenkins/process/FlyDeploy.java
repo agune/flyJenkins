@@ -1,4 +1,4 @@
-package com.agun.flyJenkins;
+package com.agun.flyJenkins.process;
 
 import java.util.Hashtable;
 import java.util.Map;
@@ -13,7 +13,7 @@ import hudson.model.Action;
  *
  */
 
-public class FlyDeploy {
+public class FlyDeploy implements FlyProcess{
 	private static FlyDeploy flyDeploy = new FlyDeploy();
 	
 	private FlyDeploy() {
@@ -34,5 +34,11 @@ public class FlyDeploy {
 		Map<String, Object> deployInfoMap = new Hashtable<String, Object>();
 		deployInfoMap.put("production", "E:\\data\\com.danawa.app.cas-1.0-SNAPSHOT.war");
 		return deployInfoMap;
+	}
+
+	public Map<String, Object> run(int agentId, String operName) {
+		if("deployInfo".equals(operName))
+			return this.getDeployInfo(agentId);
+		return null;
 	}
 }

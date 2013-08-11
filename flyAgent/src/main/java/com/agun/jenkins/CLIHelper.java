@@ -11,6 +11,7 @@ import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.util.Collections;
+import java.util.Map;
 
 import hudson.cli.CLI;
 import hudson.remoting.Channel;
@@ -28,12 +29,12 @@ public class CLIHelper {
 		this.realCreateCLI(url, file);
 	}
 	
-	public Object callActionFunction(final String displayName, final String methodName,  final Object... argList){
+	public Map<String, Object> callActionFunction(final String processName, final String operationName,  int agentId){
 		try {
 			CLICallable callable = new CLICallable();
-			callable.setArgList(argList);
-			callable.setDisplayName(displayName);
-			callable.setMethodName(methodName);
+			callable.setAgentId(agentId);
+			callable.setOperationName(operationName);
+			callable.setProcessName(processName);
 			return channel.call(callable);
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
