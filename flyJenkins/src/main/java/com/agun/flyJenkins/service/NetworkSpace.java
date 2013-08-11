@@ -35,6 +35,8 @@ public class NetworkSpace {
 	 *  
 	 */
 	public void initNetworkSpace(){
+		System.out.println("=====> network start");
+		
 		List<AgentService> agentList =  this.getSaveAgentList();
 		
 		for(AgentService agentService : agentList){
@@ -59,6 +61,10 @@ public class NetworkSpace {
 		if(serviceMeta == null)
 			return Collections.emptyList();
 		List<ServerMeta> serverMetaList =  serviceMeta.getServerMetaList();
+		
+		if(serverMetaList == null)
+			return Collections.EMPTY_LIST;
+		
 		Map<Integer, ServiceGroup> serviceGroupMap = new Hashtable<Integer, ServiceGroup>();
 		
 		for(ServerMeta serverMetaData  : serverMetaList){

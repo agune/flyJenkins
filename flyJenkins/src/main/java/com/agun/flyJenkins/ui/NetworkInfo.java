@@ -1,6 +1,9 @@
 package com.agun.flyJenkins.ui;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import com.agun.flyJenkins.service.AgentService;
 import com.agun.flyJenkins.service.NetworkSpace;
@@ -18,6 +21,13 @@ public class NetworkInfo extends FlyUI {
 
 	public List<AgentService> getAgentList(){
 		return NetworkSpace.getInstance().getSaveAgentList();
+	}
+	
+	public Collection<List<AgentService>> getAgentListFromNetworkMap(){
+		Map<String, List<AgentService>> networkMap = NetworkSpace.getInstance().getNetworkMap();
+		System.out.println("====> network map" + networkMap.size());
+		
+		return networkMap.values();
 	}
 	
 	 @Extension

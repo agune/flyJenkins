@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 
-import com.agun.flyJenkins.process.FlyDeploy;
 import com.agun.flyJenkins.process.FlyFactory;
 import com.agun.flyJenkins.process.FlyProcess;
 import com.agun.flyJenkins.service.ServerMeta;
@@ -21,6 +20,21 @@ import hudson.model.RootAction;
 @Extension
 public class FlyRootAction implements RootAction {
 
+	private FlyMemStore flyMemStore = new FlyMemStore();
+	
+	public FlyMemStore getFlyMemStore() {
+		return flyMemStore;
+	}
+
+	public void setFlyMemStore(FlyMemStore flyMemStore) {
+		this.flyMemStore = flyMemStore;
+	}
+
+	public FlyRootAction(){
+		FlyBootstrap.start();
+	}
+	
+	
 	public String getIconFileName() {
 		return "gear.png";
 	}

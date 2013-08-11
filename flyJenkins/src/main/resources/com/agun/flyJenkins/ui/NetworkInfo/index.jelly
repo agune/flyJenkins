@@ -8,6 +8,18 @@
 		<j:forEach items="${serviceGroup.serverMetaList}" var="serverMeta">
 			  <span style="padding:2em" > <img src="/jenkins/plugin/translation/flags.png" /> ${serverMeta.host} </span>
 		</j:forEach>
+		
+		<div>Network Map</div>
+		<j:forEach items="${it.agentListFromNetworkMap}" var="agentList">
+			 <j:forEach items="${agentList}" var="agent">
+				<j:set var="serviceGroup" value="${agent.serviceGroup}"/>
+				<j:forEach items="${serviceGroup.serverMetaList}" var="serverMeta">
+			  <span style="padding:2em" > <img src="/jenkins/plugin/translation/flags.png" /> ${serverMeta.host} </span>
+		
+			</j:forEach>
+			</j:forEach>
+
+		</j:forEach>
 	</li>
 	
 	</div> 
