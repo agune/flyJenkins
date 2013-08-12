@@ -6,7 +6,7 @@
 		<j:set var="serviceGroup" value="${agent.serviceGroup}"/>
 		${serviceGroup.groupId} <br />
 		<j:forEach items="${serviceGroup.serverMetaList}" var="serverMeta">
-			  <span style="padding:2em" > <img src="/jenkins/plugin/translation/flags.png" /> ${serverMeta.host} </span>
+			  <span style="padding:2em" > <img src="/jenkins/plugin/translation/flags.png" /> ${serverMeta.host}, ${serverMeta.pid} , ${serverMeta.destination} </span>
 		</j:forEach>
 		
 		<div>Network Map</div>
@@ -14,7 +14,7 @@
 			 <j:forEach items="${agentList}" var="agent">
 				<j:set var="serviceGroup" value="${agent.serviceGroup}"/>
 				<j:forEach items="${serviceGroup.serverMetaList}" var="serverMeta">
-			  <span style="padding:2em" > <img src="/jenkins/plugin/translation/flags.png" /> ${serverMeta.host} </span>
+			  <span style="padding:2em" > <img src="/jenkins/plugin/translation/flags.png" /> ${serverMeta.host}, ${serverMeta.pid}, ${serverMeta.destination} </span>
 		
 			</j:forEach>
 			</j:forEach>

@@ -29,10 +29,10 @@ public class CLIHelper {
 		this.realCreateCLI(url, file);
 	}
 	
-	public Map<String, Object> callActionFunction(final String processName, final String operationName,  int agentId){
+	public Map<String, Object> callActionFunction(final String processName, final String operationName,  Object arg1){
 		try {
 			CLICallable callable = new CLICallable();
-			callable.setAgentId(agentId);
+			callable.setArg1(arg1);
 			callable.setOperationName(operationName);
 			callable.setProcessName(processName);
 			return channel.call(callable);

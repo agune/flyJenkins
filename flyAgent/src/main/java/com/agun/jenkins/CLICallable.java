@@ -17,15 +17,15 @@ public class CLICallable implements Callable<Map<String, Object>, Throwable> {
 
 	private String operationName;
 	private String processName;
-	private Integer agentId;
+	private Object arg1;
 	
-	public Integer getAgentId() {
-		return agentId;
+	public Object getArg1() {
+		return arg1;
 	}
 
 
-	public void setAgentId(Integer agentId) {
-		this.agentId = agentId;
+	public void setArg1(Object arg1) {
+		this.arg1 = arg1;
 	}
 
 
@@ -59,7 +59,7 @@ public class CLICallable implements Callable<Map<String, Object>, Throwable> {
 				try {
 					Method method = action.getClass().getMethod("getFlyProcess", String.class);
 					FlyProcess flyProcess =  (FlyProcess) method.invoke(action, processName);
-					return flyProcess.run(agentId, operationName);
+					return flyProcess.run(arg1, operationName);
 				} catch (NoSuchMethodException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

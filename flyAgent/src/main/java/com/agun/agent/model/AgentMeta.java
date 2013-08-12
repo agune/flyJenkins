@@ -5,10 +5,13 @@ public class AgentMeta {
 	private int id;
 	private int type;
 	private int pid;
+	private int serverId;
+
+	
+	
 	private String name;
 	private String testCmd;
 	private String destination;
-
 	
 	public int getId() {
 		return id;
@@ -46,5 +49,10 @@ public class AgentMeta {
 	public void setTestCmd(String testCmd) {
 		this.testCmd = testCmd;
 	}
-
+	public int getServerId() {
+		return serverId;
+	}
+	public void setServerId(int serverId) {
+		this.serverId = serverId;
+	}
 }

@@ -62,9 +62,10 @@ public class ProcessTreeHelper {
 		for(OSProcess osProcess : processList){
 			List<String> argList = osProcess.getArguments();
 			if(argList.size() > 0){
-				String processName = argList.get(0);
-				if(processName.equals(compareProcessName)){
-					return osProcess.getPid();
+				for(String processName: argList){
+					if(processName.indexOf(compareProcessName) > -1){
+						return osProcess.getPid();
+					}
 				}
 			}
 		}

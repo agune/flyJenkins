@@ -8,5 +8,5 @@ import java.util.Map;
  *
  */
 public interface FlyProcess {
-	public Map<String, Object> run(int agentId, String operName);
+	public Map<String, Object> run(Object arg1, String operName);
 }
