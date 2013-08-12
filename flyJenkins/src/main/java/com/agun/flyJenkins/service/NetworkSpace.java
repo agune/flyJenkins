@@ -121,6 +121,29 @@ public class NetworkSpace {
 		}
 	}
 	
+	public AgentService getAgent(int agentId){
+		for(List<AgentService> agentList : networkMap.values()){
+			for(AgentService agent : agentList){
+				if(agent.getAgentId() == agentId){
+					return agent;
+				}
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * 
+	 * @param host
+	 * @return List<AgentService>
+	 */
+	public List<AgentService> getAgentList(String host){
+		if(networkMap.containsKey(host)){
+			return networkMap.get(host);
+		}
+		return Collections.EMPTY_LIST;
+	}
+	
 	public Map<String, List<AgentService>> getNetworkMap(){
 		return this.networkMap;
 	}

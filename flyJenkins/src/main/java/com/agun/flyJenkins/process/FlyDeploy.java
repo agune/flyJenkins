@@ -36,9 +36,9 @@ public class FlyDeploy implements FlyProcess{
 		return deployInfoMap;
 	}
 
-	public Map<String, Object> run(int agentId, String operName) {
+	public Map<String, Object> run(Object arg1, String operName) {
 		if("deployInfo".equals(operName))
-			return this.getDeployInfo(agentId);
+			return this.getDeployInfo((Integer)arg1);
 		return null;
 	}
 }
