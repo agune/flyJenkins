@@ -1,5 +1,6 @@
 package com.agun.flyJenkins.ui;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,6 +8,7 @@ import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
+import com.agun.flyJenkins.service.NetworkSpace;
 import com.agun.flyJenkins.service.ServerMeta;
 
 import hudson.Extension;
@@ -25,7 +27,12 @@ public class ConfigServiceMeta extends FlyUI {
 		serverMetaContain.load();
 	
 	}
-    
+	
+    /**
+     * 서비스 설정 데이터를 저장한다.
+     * @param request
+     * @param response
+     */
     public void doSave(final StaplerRequest request, final 
     		StaplerResponse response) { 
 
@@ -47,8 +54,22 @@ public class ConfigServiceMeta extends FlyUI {
         serverMeta.setServerId(serverId);
         serverMeta.setGroupId(groupId);
         serverMeta.setType(type);
+        
+        /**
+         * 네트워크 space 에 추가 한다.
+         */
+        NetworkSpace networkSpace = NetworkSpace.getInstance();
+        networkSpace.attachServerMeta(serverMeta.getCopy());
+        
         serverMeta.save();
         serverMetaContain.load();
+        
+        try {
+			response.sendRedirect("/jenkins/flyJenkins/ConfigServiceMeta");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
     
     public ServerMetaDescribable getServerMetaDescribable(){

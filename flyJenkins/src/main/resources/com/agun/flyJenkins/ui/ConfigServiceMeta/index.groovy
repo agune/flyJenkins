@@ -7,14 +7,19 @@ def f=namespace(FormTagLib.class)
 
 t=namespace(JenkinsTagLib.class)
 
+
 namespace("/lib/samples").sample(title:_("Setting Service Meta Info")) {
+
+div(style:"padding-bottom: 1em"){
+	button(onclick:"location.href='../NetworkInfo'", "network group")
+}
       
 	div (style:"border:1px solid blue") {
  		for(serverMeta in instance.getServerMetaList()){
  			p(){
  				span(style: "padding:2em" ,  serverMeta.host)
  				button(onclick:"location.href='../ProcessInfo'", "process")
- 				button(onclick:"location.href='../NetworkInfo'", "network group")
+ 				
  			}
  		}
 	}

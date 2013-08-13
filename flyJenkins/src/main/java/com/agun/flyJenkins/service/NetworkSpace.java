@@ -12,6 +12,8 @@ import java.util.Map;
 import com.agun.flyJenkins.FlyStore;
 import java.util.Collections;
 
+import org.apache.log4j.jmx.Agent;
+
 
 public class NetworkSpace {
 	/**
@@ -52,7 +54,7 @@ public class NetworkSpace {
 	}
 	
 	/**
-	 * 
+	 * 저장되어 있는 서비스 정보를 찾아 온다.
 	 * @return
 	 */
 	public List<AgentService> getSaveAgentList(){
@@ -69,7 +71,15 @@ public class NetworkSpace {
 		
 		for(ServerMeta serverMetaData  : serverMetaList){
 			if(serviceGroupMap.containsKey(serverMetaData.getGroupId())){
-				ServiceGroup serviceGroup = serviceGroupMap.get(serverMetaData.getGroupId());
+				ServiceGroup serviceGroup  = null;
+				if( serviceGroupMap.containsKey(serverMetaData.getGroupId())){
+					serviceGroup = serviceGroupMap.get(serverMetaData.getGroupId());
+				}else{
+					serviceGroup = new ServiceGroup();
+					serviceGroup.setGroupId(serverMetaData.getGroupId());
+					serviceGroup.setServerMetaList(new ArrayList<ServerMeta>());
+				}
+					
 				serviceGroup.getServerMetaList().add(serverMetaData);
 			}else{
 				ServiceGroup serviceGroup = new ServiceGroup();
@@ -95,16 +105,97 @@ public class NetworkSpace {
 		
 	}
 	
+	/**
+	 * 서비스 정보를 네트워크 맵에 추가한다.
+	 * @param serverMeta
+	 */
+
+	public void attachServerMeta(ServerMeta serverMeta){
+		
+		if(serverMeta.getHost() == null 
+				|| serverMeta.getHost().length() == 0)
+			return; 
+		
+		if(networkMap.containsKey(serverMeta.getHost())){
+			List<AgentService> agentServiceList = networkMap.get(serverMeta.getHost());
+			
+			/**
+			 * 같은 서버그룹이 있는지 체크
+			 */
+			for(AgentService agentService : agentServiceList){
+				ServiceGroup serviceGroup = agentService.getServiceGroup();
+				if(serviceGroup.getGroupId() == serverMeta.getGroupId()){
+					serviceGroup.getServerMetaList().add(serverMeta);
+					return;
+				}
+			}
+			
+
+			/**
+			 * 서버 그룹을 추가 한다.
+			 */
+			ServiceGroup serviceGroup = new ServiceGroup();
+			serviceGroup.setGroupId(serverMeta.getGroupId());
+			List<ServerMeta> saveServerMetaList = new ArrayList<ServerMeta>();
+			saveServerMetaList.add(serverMeta);
+			serviceGroup.setServerMetaList(saveServerMetaList);
+			
+	
+			/**
+			 * agent 를 생성한다.
+			 */
+			AgentService agentService =  new AgentService();
+			agentService.setHost(serverMeta.getHost());
+			agentService.setServiceGroup(serviceGroup);
+			agentService.setAgentId(networkMap.size() + 1);
+			
+			/**
+			 * 네트워크 맵에 추가한다.
+			 */
+			agentServiceList.add(agentService);
+		}else{
+			
+			/**
+			 * 서비스 그룹을 생성한다. 
+			 */
+			ServiceGroup serviceGroup = new ServiceGroup();
+			serviceGroup.setGroupId(serverMeta.getGroupId());
+			List<ServerMeta> saveServerMetaList =  new ArrayList<ServerMeta>();
+			saveServerMetaList.add(serverMeta);
+			serviceGroup.setServerMetaList(saveServerMetaList);
+			
+			
+			/**
+			 * agent 를 생성한다.
+			 */
+			AgentService agentService =  new AgentService();
+			agentService.setHost(serverMeta.getHost());
+			agentService.setServiceGroup(serviceGroup);
+			agentService.setAgentId(networkMap.size() + 1);
+			List<AgentService> agentListFromMap = new ArrayList<AgentService>();
+			agentListFromMap.add(agentService);
+		
+			/**
+			 * 네트워크 맵에 추가한다.
+			 */
+			networkMap.put(agentService.getHost(), agentListFromMap);
+			
+		}
+	}
+	
 	
 	/**
 	 * network map 에 지정된 Agent 를 추가 한다.
 	 * @param AgentService
 	 */
 	public void attachAgent(AgentService agentService){
-		if(agentService.getAgentId() < 1 
-				|| agentService.getHost() == null 
+		if(agentService.getHost() == null 
 				|| agentService.getHost().length() == 0)
 			return; 
+		
+		int agentCount = networkMap.size();
+		agentCount++;
+		agentService.setAgentId(agentCount);
 		if(networkMap.containsKey(agentService.getHost())){
 			List<AgentService> agentServiceList = networkMap.get(agentService.getHost());
 			for(AgentService agent : agentServiceList){
