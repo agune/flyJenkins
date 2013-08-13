@@ -12,10 +12,10 @@
 				  <div style="border: 1px #bbb solid;padding:2em;">
 					<j:forEach items="${serviceGroup.serverMetaList}" var="serverMeta">
 						<div>
-						<j:if test="${serverMeta.pid}">
+						<j:if test="${serverMeta.pid > 0}">
 						<img alt="Success" class="icon32x32" src="/jenkins/static/1d061002/images/32x32/blue.png" tooltip="Success" title="Success" /> 
 						 </j:if>
-						 <j:if test="${!serverMeta.pid}">
+						 <j:if test="${serverMeta.pid== 0}">
 						 	<img alt="Failed" class="icon32x32" src="/jenkins/static/1d061002/images/32x32/red.png" tooltip="Failed" title="Failed" /> 
 						 </j:if>
 						 ${serverMeta.destination}  (serverId: ${serverMeta.serverId}, host : ${serverMeta.host} . pid : ${serverMeta.pid}) 

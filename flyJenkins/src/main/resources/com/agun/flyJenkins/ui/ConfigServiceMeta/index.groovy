@@ -18,7 +18,12 @@ div(style:"padding-bottom: 1em"){
  		for(serverMeta in instance.getServerMetaList()){
  			p(){
  				span(style: "padding:2em" ,  serverMeta.host)
- 				button(onclick:"location.href='../ProcessInfo'", "process")
+ 				button(onclick:"location.href='../ProcessInfo?host=" + serverMeta.host+"&servicePid=" + serverMeta.pid  + "'", "process")
+ 				if(serverMeta.pid > 0){
+ 					image(src:"/jenkins/static/1d061002/images/32x32/blue.png")
+ 				}else{
+ 					image(src:"/jenkins/static/1d061002/images/32x32/red.png")
+ 				}
  			}
  		}
 	}

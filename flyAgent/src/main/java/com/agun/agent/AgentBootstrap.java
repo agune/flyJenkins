@@ -105,6 +105,8 @@ public class AgentBootstrap {
 	
 	private void instanceModel(CLIHelper cliHelper){
 		Map<Integer, String> processMap  = ProcessTreeHelper.refresh();
+		
+		processMap.put(0, "127.0.0.1");
 		cliHelper.callActionFunction("FlyIdentify", "instanceModel",  processMap);
 	}
 	

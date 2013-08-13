@@ -122,6 +122,8 @@ public class ServerMeta implements Saveable{
 	}
 	
 	public Integer getPid() {
+		if(pid == null)
+			return 0;
 		return pid;
 	}
 	public void setPid(Integer pid) {

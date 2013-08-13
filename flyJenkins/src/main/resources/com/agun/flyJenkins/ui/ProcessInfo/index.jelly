@@ -1,3 +1,37 @@
-<div>
-test
-</div>
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:s="/lib/samples">
+ <l:layout title="Network Map">
+<l:main-panel>
+
+<script type="text/javascript">
+	function requestKill(){
+		if(confirm('정말로 서비스를 중지 하겠습니까?')){
+		}
+	}
+</script>
+
+
+<j:set var="paramHost" value="host" />
+<j:set var="paramPid" value="servicePid" />
+
+<j:set var="host" value="${request.getParameter(paramHost)}" />
+<j:set var="servicePid" value="${request.getParameter(paramPid)}" />
+ 
+<j:set var="instanceList" value="${it.getInstanceModel(host)}" /> 
+<j:forEach items="${instanceList}" var="instanceModel">
+  <j:if test="${!empty instanceModel.arg }">
+	<j:set var="selectColor" value="" />
+	<j:if test="${servicePid == instanceModel.pid}">
+		<j:set var="selectColor" value="color:blue" />
+	</j:if>
+	<div style="border: 1px #bbb solid;padding:2em;${selectColor}">
+		${instanceModel.pid}  ${instanceModel.arg} 
+		<j:if test="${servicePid == instanceModel.pid}">
+			<input type="button" value="kill" onclick="requestKill();" />
+		</j:if>
+	</div>
+	</j:if>
+</j:forEach>
+</l:main-panel>
+</l:layout>
+</j:jelly>

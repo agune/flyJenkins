@@ -57,6 +57,7 @@ public class FlyIdentify implements FlyProcess {
 		Map<String, List<InstanceModel>> instanceMap =  networkSpace.getInstanceModelMap();
 		
 		String host  = argMap.get(0);
+		System.out.println("instance model host : " + host);
 		instanceMap.remove(host);
 		List<InstanceModel> instanceModelList = new ArrayList<InstanceModel>();
 		for(Entry<Integer, String> entry : argMap.entrySet()){
@@ -68,6 +69,7 @@ public class FlyIdentify implements FlyProcess {
 				instanceModelList.add(newInstanceModel);
 			}
 		}
+		System.out.println("instance model end =====>" + instanceModelList.size());
 		instanceMap.put(host, instanceModelList);
 	}
 	

@@ -3,13 +3,16 @@ package com.agun.flyJenkins.ui;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
+import com.agun.flyJenkins.service.AgentService;
 import com.agun.flyJenkins.service.NetworkSpace;
 import com.agun.flyJenkins.service.ServerMeta;
+import com.agun.flyJenkins.service.ServiceGroup;
 
 import hudson.Extension;
 import hudson.RelativePath;
@@ -21,10 +24,7 @@ import hudson.util.ListBoxModel;
 @Extension
 public class ConfigServiceMeta extends FlyUI {
 
-	ServerMeta serverMetaContain = new ServerMeta();
 	public ConfigServiceMeta() {
-		serverMetaContain = new ServerMeta();
-		serverMetaContain.load();
 	
 	}
 	
@@ -62,7 +62,6 @@ public class ConfigServiceMeta extends FlyUI {
         networkSpace.attachServerMeta(serverMeta.getCopy());
         
         serverMeta.save();
-        serverMetaContain.load();
         
         try {
 			response.sendRedirect("/jenkins/flyJenkins/ConfigServiceMeta");
@@ -84,22 +83,33 @@ public class ConfigServiceMeta extends FlyUI {
     }
 
     public List<ServerMetaDescribable> getServerMetaList() {
-    	List<ServerMeta> serverMetaList = serverMetaContain.getServerMetaList();
     	List<ServerMetaDescribable> serverMetaDescribableList = new ArrayList<ConfigServiceMeta.ServerMetaDescribable>();
-    	if(serverMetaList != null){
-    		for(ServerMeta serverMeta : serverMetaList){
-    			ServerMetaDescribable serverMetaDescribable = new ServerMetaDescribable();
-    			serverMetaDescribable.destination = serverMeta.getDestination();
-    			serverMetaDescribable.host = serverMeta.getHost();
-    			serverMetaDescribable.serverId = serverMeta.getServerId();
-    			serverMetaDescribable.groupId = serverMeta.getGroupId();
-    			serverMetaDescribable.testCmd = serverMeta.getTestCmd();
-    			serverMetaDescribable.testUrl = serverMeta.getTestUrl();
-    			serverMetaDescribable.weight = serverMeta.getWeight();
-    			serverMetaDescribable.type = serverMeta.getType();
-    			serverMetaDescribableList.add(serverMetaDescribable);
+    	NetworkSpace networkSpace = NetworkSpace.getInstance();
+    	Map<String, List<AgentService>> networkMap = networkSpace.getNetworkMap();
+    	
+    	for(List<AgentService> agentServiceList : networkMap.values()){
+    		for(AgentService agentService : agentServiceList){
+    			ServiceGroup serviceGroup = agentService.getServiceGroup();
+    		
+    	    	List<ServerMeta> serverMetaList = serviceGroup.getServerMetaList();
+    	    	if(serverMetaList != null){
+    	    		for(ServerMeta serverMeta : serverMetaList){
+    	    			ServerMetaDescribable serverMetaDescribable = new ServerMetaDescribable();
+    	    			serverMetaDescribable.destination = serverMeta.getDestination();
+    	    			serverMetaDescribable.host = serverMeta.getHost();
+    	    			serverMetaDescribable.serverId = serverMeta.getServerId();
+    	    			serverMetaDescribable.groupId = serverMeta.getGroupId();
+    	    			serverMetaDescribable.testCmd = serverMeta.getTestCmd();
+    	    			serverMetaDescribable.testUrl = serverMeta.getTestUrl();
+    	    			serverMetaDescribable.weight = serverMeta.getWeight();
+    	    			serverMetaDescribable.type = serverMeta.getType();
+    	    			serverMetaDescribable.pid = serverMeta.getPid();
+    	    			serverMetaDescribableList.add(serverMetaDescribable);
+    	    		}
+    	    	}
     		}
     	}
+
     	return serverMetaDescribableList;
     }
 
@@ -123,7 +133,7 @@ public class ConfigServiceMeta extends FlyUI {
         public int type;
         public int groupId;
         public int serverId;
-        
+        public int pid;
         
         @Extension
         public static class DescriptorImpl extends Descriptor<ServerMetaDescribable> {
