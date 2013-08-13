@@ -22,7 +22,8 @@ public class NetworkSpace {
 	private static NetworkSpace networkSpace = new NetworkSpace();
 	
 	private Map<String, List<AgentService>> networkMap = new Hashtable<String, List<AgentService>>();
-	
+
+	private Map<String, List<InstanceModel>> instanceModelMap = new Hashtable<String, List<InstanceModel>>();
 	
 	private NetworkSpace(){
 		
@@ -237,5 +238,14 @@ public class NetworkSpace {
 	
 	public Map<String, List<AgentService>> getNetworkMap(){
 		return this.networkMap;
+	}
+
+	public Map<String, List<InstanceModel>> getInstanceModelMap() {
+		return instanceModelMap;
+	}
+
+	public void setInstanceModelMap(
+			Map<String, List<InstanceModel>> instanceModelMap) {
+		this.instanceModelMap = instanceModelMap;
 	}
 }

@@ -71,5 +71,19 @@ public class ProcessTreeHelper {
 		}
 		return 0;
 	}
+
+	public static Map<Integer, String> refresh(){
+		 Map<Integer, String> resultMap = new Hashtable<Integer, String>();
+		List<OSProcess> processList = ProcessTreeHelper.getProcessList();
+		for(OSProcess osProcess : processList){
+			List<String> argList = osProcess.getArguments();
+			String argSum = "";
+			for(String arg : argList){
+				argSum = argSum + arg;
+			}
+			resultMap.put(osProcess.getPid(), argSum);
+		}
+		return resultMap;
+	}
 	
 }

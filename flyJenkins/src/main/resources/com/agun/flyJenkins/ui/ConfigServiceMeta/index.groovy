@@ -19,7 +19,6 @@ div(style:"padding-bottom: 1em"){
  			p(){
  				span(style: "padding:2em" ,  serverMeta.host)
  				button(onclick:"location.href='../ProcessInfo'", "process")
- 				
  			}
  		}
 	}

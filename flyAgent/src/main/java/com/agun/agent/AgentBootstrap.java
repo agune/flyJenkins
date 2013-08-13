@@ -99,6 +99,13 @@ public class AgentBootstrap {
 		if(onServerPidMap.size() > 0)
 			cliHelper.callActionFunction("FlyIdentify", "identify",  onServerPidMap);
 		
+		instanceModel(cliHelper);
+		
+	}
+	
+	private void instanceModel(CLIHelper cliHelper){
+		Map<Integer, String> processMap  = ProcessTreeHelper.refresh();
+		cliHelper.callActionFunction("FlyIdentify", "instanceModel",  processMap);
 	}
 	
 	/**

@@ -5,6 +5,7 @@
 package com.agun.flyJenkins.service;
 
 import java.util.List;
+import java.util.Map;
 
 public class ServiceGroup {
 	/**
@@ -33,4 +34,6 @@ public class ServiceGroup {
 	public void setServerMetaList(List<ServerMeta> serverMetaList) {
 		this.serverMetaList = serverMetaList;
 	}
+
+
 }

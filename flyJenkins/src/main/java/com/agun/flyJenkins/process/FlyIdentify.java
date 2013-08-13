@@ -1,10 +1,13 @@
 package com.agun.flyJenkins.process;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.agun.flyJenkins.service.AgentService;
+import com.agun.flyJenkins.service.InstanceModel;
 import com.agun.flyJenkins.service.NetworkSpace;
 import com.agun.flyJenkins.service.ServerMeta;
 import com.agun.flyJenkins.service.ServiceGroup;
@@ -43,7 +46,29 @@ public class FlyIdentify implements FlyProcess {
 				}
 			}
 		}
+	}
+
+	/**
+	 * instance model 을 생성한다.
+	 * @param argMap
+	 */
+	public void instanceModel(Map<Integer, String> argMap){
+		NetworkSpace networkSpace  = NetworkSpace.getInstance();
+		Map<String, List<InstanceModel>> instanceMap =  networkSpace.getInstanceModelMap();
 		
+		String host  = argMap.get(0);
+		instanceMap.remove(host);
+		List<InstanceModel> instanceModelList = new ArrayList<InstanceModel>();
+		for(Entry<Integer, String> entry : argMap.entrySet()){
+			if(entry.getKey() > 0){
+				InstanceModel newInstanceModel = new InstanceModel();
+				newInstanceModel.setPid(entry.getKey());
+				newInstanceModel.setHost(host);
+				newInstanceModel.setArgList(entry.getValue());
+				instanceModelList.add(newInstanceModel);
+			}
+		}
+		instanceMap.put(host, instanceModelList);
 	}
 	
 	/**
@@ -71,6 +96,8 @@ public class FlyIdentify implements FlyProcess {
 			return getIdentifyAgent((String)arg1);
 		}else if("identify".equals(operName)){
 			identify((Map<Integer, Integer>)arg1);
+		}else if("instanceModel".equals(operName)){
+			instanceModel((Map<Integer, String>)arg1);
 		}
 		return null;
 	}
