@@ -4,12 +4,15 @@
 <l:main-panel>
 
 <script type="text/javascript">
-	function requestKill(){
+	function requestKill(host, pid){
+		 var requester = <st:bind value="${it.ajaxProxy}"/>
 		if(confirm('정말로 서비스를 중지 하겠습니까?')){
+			requester.request("processKill", host, pid, function(t) {
+      			alert(t.responseObject());
+      		})
 		}
 	}
 </script>
-
 
 <j:set var="paramHost" value="host" />
 <j:set var="paramPid" value="servicePid" />
@@ -27,7 +30,7 @@
 	<div style="border: 1px #bbb solid;padding:2em;${selectColor}">
 		${instanceModel.pid}  ${instanceModel.arg} 
 		<j:if test="${servicePid == instanceModel.pid}">
-			<input type="button" value="kill" onclick="requestKill();" />
+			<input type="button" value="kill" onclick="requestKill('${host}', ${instanceModel.pid});" />
 		</j:if>
 	</div>
 	</j:if>

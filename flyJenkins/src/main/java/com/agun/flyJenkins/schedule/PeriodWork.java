@@ -1,6 +1,8 @@
-package com.agun.flyJenkins.deploy;
+package com.agun.flyJenkins.schedule;
 
 import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement;
+
+import com.agun.flyJenkins.request.RequestQueue;
 
 import hudson.Extension;
 import hudson.model.PeriodicWork;
@@ -13,8 +15,14 @@ import hudson.model.PeriodicWork;
  */
 
 @Extension
-public class PeriodDeploy extends PeriodicWork {
-
+public class PeriodWork extends PeriodicWork {
+	
+	private RequestQueue requestQueue = new RequestQueue();
+	
+	public RequestQueue getRequestQueue(){
+		return requestQueue;
+	}
+	
 	@Override
 	public long getRecurrencePeriod() {
 		return MIN;

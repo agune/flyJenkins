@@ -9,6 +9,7 @@ import hudson.Extension;
 import com.agun.flyJenkins.service.InstanceModel;
 import com.agun.flyJenkins.service.NetworkSpace;
 import com.agun.flyJenkins.ui.ConfigServiceMeta.DescriptorImpl;
+import com.agun.flyJenkins.util.AjaxProxy;
 @Extension
 public class ProcessInfo extends FlyUI {
 
@@ -30,10 +31,14 @@ public class ProcessInfo extends FlyUI {
 		return instanceMap.get(host);
 	}
 	
- @Override
+	@Override
     public DescriptorImpl getDescriptor() {
         return (DescriptorImpl)super.getDescriptor();
     }
+ 
+ 	public AjaxProxy getAjaxProxy(){
+ 		return AjaxProxy.getInstance();
+ 	}
 
     @Extension
     public static class DescriptorImpl extends FlyUIDescriptor {
