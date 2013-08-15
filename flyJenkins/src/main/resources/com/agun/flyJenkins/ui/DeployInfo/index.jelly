@@ -1,0 +1,32 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:s="/lib/samples">
+ <l:layout title="Network Map">
+<l:main-panel>
+<div><p> </p></div>
+
+	<table style="margin-top:0px; border-top: none;" class="sortable pane bigtable">
+	<tbody>
+	<tr style="border-top: 0px;">
+	<th>jobName</th> <th>production</th> <th>requester</th><th>licenser</th><th>date</th><th>step</th>
+	<j:forEach items="${it.deployRequestList}" var="deployRequest">
+		<tr>
+			<td style="width:120px;text-align:center">${deployRequest.jobName}</td> 
+			<td style="text-align:center">${deployRequest.production}</td>
+			 <td style="text-align:center">${deployRequest.requester}</td>
+			 <td style="text-align:center">${deployRequest.licenser}</td>
+			 <td style="text-align:center">${deployRequest.date}</td>
+			  <j:if test="${deployRequest.run}">
+			 	<td style="text-align:center"><img alt="success" title="success"  src="${imagesURL}/${subIconSize}/32x32/blue.png"   /></td>
+			 </j:if>
+			 
+			   <j:if test="${deployRequest.run == false}">
+			 	<td style="text-align:center"><img alt="fail" title="fail"  src="${imagesURL}/${subIconSize}/32x32/grey.png"   /></td>
+			 </j:if>
+		</tr>
+	</j:forEach>
+	</tr>
+	</tbody>
+	</table>
+</l:main-panel>
+</l:layout>
+</j:jelly>

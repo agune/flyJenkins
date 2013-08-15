@@ -1,0 +1,27 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
+   
+    
+     <td>
+     	 <a href="/jenkins/flyJenkins/DeployInfo?jobId=${job.name}">
+     		<img alt="request deploy" title="request deploy"  src="${imagesURL}/${subIconSize}/notepad.png"   onclick="return flyRequest(this)" />
+    	</a>
+    
+    <form method="post" action="/jenkins/flyJenkins/DeployInfo" >
+    	<input type="hidden" name="jobId" value="1" />
+    	<input type="submit" />
+    </form> 
+    
+    </td>
+    
+     <script>
+                function flyRequest(img) {
+                alert(img.parentNode.href);
+                  new Ajax.Request(img.parentNode.href, {method : 'post'});
+                  hoverNotification('finished request', img, -100);
+                  return false;
+                }
+       </script>
+    
+</j:jelly>
+  

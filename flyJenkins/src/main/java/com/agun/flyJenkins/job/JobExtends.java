@@ -24,8 +24,6 @@ public class JobExtends extends JobProperty<AbstractProject<?,?>>  {
 	
 	@Override
 	public Action getJobAction(AbstractProject<?, ?> job) {
-		System.out.println("======> get action test");
-		
 		return new JobAction();
 	}
 
@@ -40,7 +38,7 @@ public class JobExtends extends JobProperty<AbstractProject<?,?>>  {
 		
 		@Override
 		public String getDisplayName() {
-			return "DeployRequest";
+			return "Deploy Request";
 		}
 		
 		@Override
@@ -50,13 +48,11 @@ public class JobExtends extends JobProperty<AbstractProject<?,?>>  {
 			if (formData.isEmpty()) {
 				return null;
 			}
-
 			JobExtends bpp = req.bindJSON(
 					JobExtends.class,
 					formData.getJSONObject("flyRequest"));
 			return bpp;
 		}
-		
 	}
 
 }

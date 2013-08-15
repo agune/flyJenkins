@@ -19,7 +19,6 @@ public class NetworkInfo extends FlyUI {
 
 	@Override
 	public String getDescription() {
-		// TODO Auto-generated method stub
 		return "You can see network group of service";
 	}
 
