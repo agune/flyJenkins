@@ -20,11 +20,12 @@ public class JobExtends extends JobProperty<AbstractProject<?,?>>  {
 	public JobExtends(String production, String deployer){
 		this.production = production;
 		this.deployer = deployer;
+		
 	}
 	
 	@Override
 	public Action getJobAction(AbstractProject<?, ?> job) {
-		return new JobAction();
+		return new JobAction(this.owner.getName());
 	}
 
 	

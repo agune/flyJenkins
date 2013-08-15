@@ -7,10 +7,10 @@ import java.util.Date;
 import java.util.List;
 
 import jenkins.model.Jenkins;
-
 import hudson.BulkChange;
 import hudson.XmlFile;
 import hudson.model.Saveable;
+import hudson.model.User;
 import hudson.model.listeners.SaveableListener;
 
 
@@ -47,6 +47,8 @@ public class DeployRequest implements Saveable{
 	private Date date;
 	
 	private boolean run = false;
+	
+	private boolean confirm = false;
 	
 	List<DeployRequest> deployRequestList;
 	
@@ -106,6 +108,14 @@ public class DeployRequest implements Saveable{
 		this.run = run;
 	}
 
+	public boolean isConfirm() {
+		return confirm;
+	}
+
+	public void setConfirm(boolean confirm) {
+		this.confirm = confirm;
+	}
+
 	public void save() throws IOException {
 		DeployRequest deployRequest =  this.getCopy();
 		load();
@@ -125,6 +135,13 @@ public class DeployRequest implements Saveable{
         } catch (IOException e) {
            	e.printStackTrace();
         }
+	}
+	
+	public boolean isCheckConfirmUser(){
+		User user = User.current();
+		if(user.getId().equals(this.licenser))
+			return true;
+		return false;
 	}
 
 	public DeployRequest getCopy(){

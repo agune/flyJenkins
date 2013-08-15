@@ -3,7 +3,12 @@ package com.agun.flyJenkins.job;
 import hudson.model.Action;
 
 public class JobAction implements Action {
-
+	private String jobName;
+	
+	public JobAction(String jobName){
+		this.jobName = jobName;
+	}
+	
 	public String getDisplayName() {
 		return "deployRequest";
 	}
@@ -13,7 +18,7 @@ public class JobAction implements Action {
 	}
 
 	public String getUrlName() {
-		return "flyRequest";
+		return "/flyJenkins/DeployInfo?jobName=" + jobName;
 	}
 
 }

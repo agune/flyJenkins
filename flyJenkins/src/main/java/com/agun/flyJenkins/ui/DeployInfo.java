@@ -1,17 +1,24 @@
 package com.agun.flyJenkins.ui;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
+import com.agun.flyJenkins.FlyFactory;
 import com.agun.flyJenkins.deploy.DeployRequest;
+import com.agun.flyJenkins.job.JobExtends;
 import com.agun.flyJenkins.ui.ConfigServiceMeta.DescriptorImpl;
 
 import hudson.Extension;
+import hudson.model.User;
 
 @Extension
 public class DeployInfo extends FlyUI {
@@ -19,7 +26,7 @@ public class DeployInfo extends FlyUI {
 	private List<DeployRequest> deployRequestList;
 	
 	public DeployInfo(){
-		System.out.println("====> jobName");
+	
 	}
 	
 	@Override
@@ -37,24 +44,54 @@ public class DeployInfo extends FlyUI {
     		StaplerResponse response) { 
     
     	String jobName  = request.getParameter("jobName");
-    	
-    	System.out.println("=====> save");
-    }
+    	Map<String, Object> resultMap = FlyFactory.getPropertiesOfJob(jobName);
     
-    public List<DeployRequest> getDeployRequestList(){
-    	List<DeployRequest> deployRequestList = new ArrayList<DeployRequest>();
+    	if(resultMap.size() == 0)
+    		return;
+    	String production = "";
+    	String licenser = "";
+    	
+    	for(Entry entry : resultMap.entrySet()){
+    		if(entry.getValue() instanceof JobExtends){
+    			JobExtends jobExtend = (JobExtends) entry.getValue();
+    			production =  jobExtend.production;
+    			licenser  = jobExtend.deployer;
+    			break;
+    		}
+    	}
+    	User user = User.current();
+     	if(user == null)
+    		return;
+   
+    	String usedId = user.getId();
     	DeployRequest deployRequest = new DeployRequest();
     	deployRequest.setDate(new Date());
-    	deployRequest.setJobName("testJob");
-    	deployRequest.setLicenser("song");
-    	deployRequest.setProduction("start.jar");
-    	deployRequest.setRequester("agun");
-    	deployRequestList.add(deployRequest);
-    	return deployRequestList;
-    	/*
+    	deployRequest.setJobName(jobName);
+    	deployRequest.setLicenser(licenser);
+    	deployRequest.setProduction(production);
+    	deployRequest.setRequester(usedId);
+    	
+    	try {
+			deployRequest.save();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
+    
+    public List<DeployRequest> getDeployRequestList(String jobName){
     	DeployRequest deployRequest = new DeployRequest();
     	deployRequest.load();
-    	return deployRequest.getDeployRequestList();*/
+    	List<DeployRequest> saveDeployRequestList =deployRequest.getDeployRequestList();
+    	if(saveDeployRequestList == null)
+    		return Collections.EMPTY_LIST;
+    	List<DeployRequest> deployRequestList = new ArrayList<DeployRequest>();
+    	for(DeployRequest request : saveDeployRequestList){
+    		System.out.println(request.getJobName() + "," + jobName);
+    		if(request.getJobName().equals(jobName))
+    			deployRequestList.add(request);
+    	}
+    	return deployRequestList;
     }
     
 	

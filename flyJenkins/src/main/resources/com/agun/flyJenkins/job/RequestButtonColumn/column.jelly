@@ -3,20 +3,13 @@
    
     
      <td>
-     	 <a href="/jenkins/flyJenkins/DeployInfo?jobId=${job.name}">
+     	 <a href="/jenkins/flyJenkins/DeployInfo/save?jobName=${job.name}">
      		<img alt="request deploy" title="request deploy"  src="${imagesURL}/${subIconSize}/notepad.png"   onclick="return flyRequest(this)" />
     	</a>
-    
-    <form method="post" action="/jenkins/flyJenkins/DeployInfo" >
-    	<input type="hidden" name="jobId" value="1" />
-    	<input type="submit" />
-    </form> 
-    
     </td>
     
-     <script>
+     	<script>
                 function flyRequest(img) {
-                alert(img.parentNode.href);
                   new Ajax.Request(img.parentNode.href, {method : 'post'});
                   hoverNotification('finished request', img, -100);
                   return false;
