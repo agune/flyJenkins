@@ -1,16 +1,17 @@
 package com.agun.flyJenkins.util;
 
-import hudson.ExtensionList;
 
+import java.io.IOException;
 import java.util.Hashtable;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
-import jenkins.model.Jenkins;
 
 import org.kohsuke.stapler.bind.JavaScriptMethod;
 
 import com.agun.flyJenkins.FlyFactory;
+import com.agun.flyJenkins.deploy.DeployRequest;
 import com.agun.flyJenkins.request.ProcessKill;
 import com.agun.flyJenkins.request.RequestMap;
 import com.agun.flyJenkins.request.RequestQueue;
@@ -36,6 +37,39 @@ public class AjaxProxy {
 		return ajaxProxy;
 	}
 	
+	@JavaScriptMethod
+	public String deployRequest(String type, String jobName, long timeValue ){
+
+		DeployRequest deployRequest = new DeployRequest();
+		deployRequest.load();
+		List<DeployRequest> deployRequestList = deployRequest.getDeployRequestList();
+		
+		if(deployRequestList ==  null)
+			return "Not exist request";
+		
+		DeployRequest deployRequestSel = null;
+		for(DeployRequest saveDeployRequest : deployRequestList){
+			if(saveDeployRequest.getDate().getTime() == timeValue 
+					&& saveDeployRequest.getJobName().equals(jobName)){
+				deployRequestSel = saveDeployRequest;
+				deployRequestSel.setConfirm(true);
+				break;
+			}
+		}
+		
+		if(deployRequestSel !=null ){
+			try {
+				
+				deployRequestSel.setDeployRequestList(deployRequestList);
+				deployRequestSel.edit();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return "ok";
+		}
+		return "Not exist request";
+	}
 	
 	@JavaScriptMethod
 	public String request(String type, String host, Integer arg){

@@ -12,7 +12,7 @@
 	<table style="margin-top:0px; border-top: none;" class="sortable pane bigtable">
 	<tbody>
 	<tr style="border-top: 0px;">
-	<th>jobName</th> <th>production</th> <th>requester</th><th>licenser</th><th>date</th><th>confirm</th><th>step</th>
+	<th>jobName</th> <th>production</th> <th>requester</th><th>licenser</th><th>date</th><th>serverGroup</th> <th>confirm</th><th>step</th> 
 	<j:forEach items="${it.getDeployRequestList(jobName)}" var="deployRequest">
 		<tr>
 			<td style="width:120px;text-align:center">${deployRequest.jobName}</td> 
@@ -20,12 +20,13 @@
 			 <td style="text-align:center">${deployRequest.requester}</td>
 			 <td style="text-align:center">${deployRequest.licenser}</td>
 			 <td style="text-align:center">${deployRequest.date}</td>
+			 <td style="text-align:center">${deployRequest.serverGroup}</td>
 			  <j:if test="${deployRequest.confirm}">
 			 	<td style="text-align:center">ok</td>
 			 </j:if>
 			  <j:if test="${deployRequest.confirm == false}">
 			 	 <j:if test="${deployRequest.checkConfirmUser}">
-			 		<td style="text-align:center"><input type="button" value="confirm" /></td>
+			 		<td style="text-align:center"><input type="button" value="confirm"  onclick="requestConfirm('${jobName}', '${deployRequest.date.time}')" /></td>
 			 	 </j:if>
 				<j:if test="${deployRequest.checkConfirmUser == false}">
 			 		<td style="text-align:center">standby</td>
@@ -39,6 +40,18 @@
 	</tr>
 	</tbody>
 	</table>
+	
+	<script type="text/javascript">
+		function requestConfirm(jobName, dateValue){
+			var requester = <st:bind value="${it.ajaxProxy}"/>
+			if(confirm('해당 배포 요청을 동의 하시겠습니까?')){
+				requester.deployRequest("requestDeploy", jobName, dateValue, function(t) {
+      				alert(t.responseObject());
+      				location.reload();	
+      			})
+			}
+		}		
+	</script>
 </l:main-panel>
 </l:layout>
 </j:jelly>

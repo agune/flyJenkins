@@ -16,6 +16,7 @@ import com.agun.flyJenkins.FlyFactory;
 import com.agun.flyJenkins.deploy.DeployRequest;
 import com.agun.flyJenkins.job.JobExtends;
 import com.agun.flyJenkins.ui.ConfigServiceMeta.DescriptorImpl;
+import com.agun.flyJenkins.util.AjaxProxy;
 
 import hudson.Extension;
 import hudson.model.User;
@@ -50,12 +51,13 @@ public class DeployInfo extends FlyUI {
     		return;
     	String production = "";
     	String licenser = "";
-    	
+    	int serverGroup = 0;
     	for(Entry entry : resultMap.entrySet()){
     		if(entry.getValue() instanceof JobExtends){
     			JobExtends jobExtend = (JobExtends) entry.getValue();
     			production =  jobExtend.production;
-    			licenser  = jobExtend.deployer;
+    			licenser  = jobExtend.licenser;
+    			serverGroup =  jobExtend.serverGroup;
     			break;
     		}
     	}
@@ -70,6 +72,7 @@ public class DeployInfo extends FlyUI {
     	deployRequest.setLicenser(licenser);
     	deployRequest.setProduction(production);
     	deployRequest.setRequester(usedId);
+    	deployRequest.setServerGroup(serverGroup);
     	
     	try {
 			deployRequest.save();
@@ -80,6 +83,9 @@ public class DeployInfo extends FlyUI {
     }
     
     public List<DeployRequest> getDeployRequestList(String jobName){
+    	if(jobName == null)
+    		return Collections.EMPTY_LIST;
+    	
     	DeployRequest deployRequest = new DeployRequest();
     	deployRequest.load();
     	List<DeployRequest> saveDeployRequestList =deployRequest.getDeployRequestList();
@@ -87,14 +93,16 @@ public class DeployInfo extends FlyUI {
     		return Collections.EMPTY_LIST;
     	List<DeployRequest> deployRequestList = new ArrayList<DeployRequest>();
     	for(DeployRequest request : saveDeployRequestList){
-    		System.out.println(request.getJobName() + "," + jobName);
     		if(request.getJobName().equals(jobName))
     			deployRequestList.add(request);
     	}
     	return deployRequestList;
     }
     
-	
+    public AjaxProxy getAjaxProxy(){
+ 		return AjaxProxy.getInstance();
+ 	}
+   
     @Override
     public DescriptorImpl getDescriptor() {
         return (DescriptorImpl)super.getDescriptor();

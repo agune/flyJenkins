@@ -46,9 +46,20 @@ public class DeployRequest implements Saveable{
 	 */
 	private Date date;
 	
+	/**
+	 * 배포 완료 여부
+	 */
 	private boolean run = false;
 	
+	/**
+	 *  배포 승인 여부
+	 */
 	private boolean confirm = false;
+	
+	/**
+	 * 배포 되어야 할 서비스 그룹
+	 */
+	private int serverGroup = 0;
 	
 	List<DeployRequest> deployRequestList;
 	
@@ -116,6 +127,24 @@ public class DeployRequest implements Saveable{
 		this.confirm = confirm;
 	}
 
+	public int getServerGroup() {
+		return serverGroup;
+	}
+
+	public void setServerGroup(int serverGroup) {
+		this.serverGroup = serverGroup;
+	}
+	
+	public void edit() throws IOException {
+		if(BulkChange.contains(this))   return;
+        try {
+            getConfigFile().write(this);
+            SaveableListener.fireOnChange(this, getConfigFile());
+        } catch (IOException e) {
+           	e.printStackTrace();
+        }
+	}
+	
 	public void save() throws IOException {
 		DeployRequest deployRequest =  this.getCopy();
 		load();
@@ -139,6 +168,9 @@ public class DeployRequest implements Saveable{
 	
 	public boolean isCheckConfirmUser(){
 		User user = User.current();
+		if(user == null)
+			return false;
+		
 		if(user.getId().equals(this.licenser))
 			return true;
 		return false;
@@ -151,6 +183,9 @@ public class DeployRequest implements Saveable{
 		deployRequest.setLicenser(this.licenser);
 		deployRequest.setProduction(this.production);
 		deployRequest.setRequester(this.requester);
+		deployRequest.setConfirm(this.confirm);
+		deployRequest.setRun(this.run);
+		deployRequest.setServerGroup(this.serverGroup);
 		return deployRequest;
 	}
 	

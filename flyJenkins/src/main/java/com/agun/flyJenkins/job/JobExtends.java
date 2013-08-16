@@ -14,13 +14,14 @@ import hudson.model.AbstractProject;
 
 public class JobExtends extends JobProperty<AbstractProject<?,?>>  {
 	public final String production;
-	public final String deployer;
+	public final String licenser;
+	public final int serverGroup;
 	
 	@DataBoundConstructor
-	public JobExtends(String production, String deployer){
+	public JobExtends(String production, String licenser, int serverGroup){
 		this.production = production;
-		this.deployer = deployer;
-		
+		this.licenser = licenser;
+		this.serverGroup = serverGroup;
 	}
 	
 	@Override
