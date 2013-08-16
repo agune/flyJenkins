@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.net.URL;
 import java.util.Map;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.agun.agent.model.AgentMeta;
@@ -18,6 +19,7 @@ import com.agun.jenkins.FilePathHelper;
  */
 public class ServiceTypeTest {
 
+	@Ignore
 	@Test
 	public void tomcatServiceTest() {
 	
@@ -43,5 +45,26 @@ public class ServiceTypeTest {
 		
 		cliHelper.destory();
 	}
-
+	
+	@Ignore
+	@Test
+	public void tomcatStopTest(){
+		AgentMeta agentMeta = new AgentMeta();
+		agentMeta.setDestination("E:\\apache-tomcat-6.0.32");
+		
+		TomcatService tomcatService = new TomcatService();
+		tomcatService.stop(agentMeta);
+		
+	}
+	
+	
+	@Test
+	public void tomcatStartTest(){
+		AgentMeta agentMeta = new AgentMeta();
+		agentMeta.setDestination("E:\\apache-tomcat-6.0.32");
+		
+		TomcatService tomcatService = new TomcatService();
+		tomcatService.start(agentMeta);
+		System.out.println("==============> end");
+	}	
 }

@@ -28,4 +28,16 @@ public class GeneralService implements ServiceType {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
+	@Override
+	public boolean stop(AgentMeta agentMeta) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean start(AgentMeta agentMeta) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

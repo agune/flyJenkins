@@ -29,5 +29,16 @@ public interface ServiceType {
 	public boolean deploy(AgentMeta agentMeta);
 	
 	
+	/**
+	 * 서비스를 중지 시킨다. 
+	 * @param agentMeta
+	 * @return
+	 */
+	public boolean stop(AgentMeta agentMeta);
 	
+	/**
+	 * 서비스를 시작 한다. 
+	 * @return
+	 */
+	public boolean start(AgentMeta agentMeta);
 }
