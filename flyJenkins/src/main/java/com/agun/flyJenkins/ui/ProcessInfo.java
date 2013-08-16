@@ -9,6 +9,7 @@ import hudson.Extension;
 import com.agun.flyJenkins.service.InstanceModel;
 import com.agun.flyJenkins.service.NetworkSpace;
 import com.agun.flyJenkins.ui.ConfigServiceMeta.DescriptorImpl;
+import com.agun.flyJenkins.user.FlyUser;
 import com.agun.flyJenkins.util.AjaxProxy;
 @Extension
 public class ProcessInfo extends FlyUI {
@@ -29,6 +30,10 @@ public class ProcessInfo extends FlyUI {
 			return Collections.EMPTY_LIST;
 		}
 		return instanceMap.get(host);
+	}
+	
+	public boolean isFlyRoot(){
+		  return  FlyUser.isFlyRoot();
 	}
 	
 	@Override

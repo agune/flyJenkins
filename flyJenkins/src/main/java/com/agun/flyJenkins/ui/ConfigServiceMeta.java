@@ -13,6 +13,7 @@ import com.agun.flyJenkins.service.AgentService;
 import com.agun.flyJenkins.service.NetworkSpace;
 import com.agun.flyJenkins.service.ServerMeta;
 import com.agun.flyJenkins.service.ServiceGroup;
+import com.agun.flyJenkins.user.FlyUser;
 
 import hudson.Extension;
 import hudson.RelativePath;
@@ -36,6 +37,12 @@ public class ConfigServiceMeta extends FlyUI {
     public void doSave(final StaplerRequest request, final 
     		StaplerResponse response) { 
 
+    	/**
+    	 * 권한 체크
+    	 */
+    	if(FlyUser.isFlyRoot() == false)
+    		return;
+    	
     	String host  = request.getParameter("_.host");
     	String testCmd  = request.getParameter("_.testCmd");
         String destination =  request.getParameter("_.destination");
@@ -75,7 +82,9 @@ public class ConfigServiceMeta extends FlyUI {
     	return new ServerMetaDescribable();
     }
 
-   
+   public boolean isFlyRoot(){
+	  return  FlyUser.isFlyRoot();
+   }
     
     @Override
     public String getDescription() {
