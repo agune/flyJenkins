@@ -30,39 +30,48 @@ public class TomcatService implements ServiceType {
 	@Override
 	public int getPid(AgentMeta agentMeta) {
 		int pid = ProcessTreeHelper.getPid(agentMeta.getDestination());
-		
-		if(pid > 0){
-			agentMeta.setPid(pid);
-			return pid;
-		}
-		return 0;
+		agentMeta.setPid(pid);
+		return pid;
 	}
 
 	@Override
 	public boolean deploy(AgentMeta agentMeta) {
-		return false;
+		stop(agentMeta);
+		return start(agentMeta);
 	}
-
+	
 	@Override
 	public boolean getProduction(AgentMeta agentMeta, String production) {
-		String productionPath = AgentInfoManager.getProductionPath(agentMeta.getId());
-		filePathHelper.copyTo(production, productionPath);
+		String filename = extractFilename(production);
+		AgentInfoManager.checkProductionDir(agentMeta.getServerId());
 		
+		String productionPath = AgentInfoManager.getProductionPath(agentMeta.getServerId(), filename);
+	
 		FilePath filePath = new FilePath(new File(productionPath));
+		
 		try {
-			if(filePath.exists())
+			filePathHelper.copyTo(production, productionPath);
+			if(filePath.exists()){
+				System.out.println("======>" + agentMeta.getDestination() + "/webapps/" + filename + "," + productionPath);
+				FilePath sourceFilePath = new FilePath(new File(agentMeta.getDestination() + "/webapps/" + filename));
+				filePath.renameTo(sourceFilePath);
 				return true;
+			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 		return false;
 	}
-
+	private String extractFilename(String filepath){
+		String filePathNormal = filepath.replaceAll("\\\\", "/");
+		String[] fileExtractList = filePathNormal.split("/");
+		if(fileExtractList != null && fileExtractList.length > 0){
+			return fileExtractList[fileExtractList.length -1];
+		}
+		return filepath;
+	}
 	@Override
 	public boolean stop(AgentMeta agentMeta)  {
 		int pid = getPid(agentMeta);
@@ -156,5 +165,10 @@ public class TomcatService implements ServiceType {
 		if(SystemUtil.isWindows())
 			return agentMeta.getDestination() + "/bin/startup.bat";
 		return agentMeta.getDestination() + "/bin/startup.sh";
+	}
+
+	@Override
+	public void complete(AgentMeta agentMeta) {
+		
 	}
 }

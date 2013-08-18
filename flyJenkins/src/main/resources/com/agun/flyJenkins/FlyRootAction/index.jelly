@@ -32,6 +32,13 @@ THE SOFTWARE.
             <div style="color:gray; text-decoration:none;">
             </div>
           </t:summary>
+          <t:summary icon="document.gif"
+                     href="/jenkins/flyJenkins/DeployHistory" iconOnly="true">
+            <div class="link"><a href="${href}">deploy 내역</a></div>
+            <div style="color:gray; text-decoration:none;">
+            </div>
+          </t:summary>
+          
       </table>
     </l:main-panel>
   </l:layout>

@@ -35,18 +35,30 @@ public class AgentBootstrap {
 		try {
 			
 			System.out.println(InetAddress.getLocalHost().getHostName());
-	//		Map<String, Object> resultMap = cliHelper.callActionFunction("FlyIdentify", "identifyAgent", InetAddress.getLocalHost());
-			Map<String, Object> resultMap = cliHelper.callActionFunction("FlyIdentify", "identifyAgent", "127.0.0.1");
+			Map<String, Object> resultMap = cliHelper.callActionFunction("FlyIdentify", "identifyAgent", InetAddress.getLocalHost().getHostName());
 		
 			if(resultMap == null)
 				return;
-		
+			/*
+			System.out.println("==================>");
+			for(Entry entry : resultMap.entrySet()){
+				System.out.println("key : " +  entry.getKey());
+				System.out.println("value : " +  entry.getValue());
+			}
+			System.out.println("==================>xxxxx");
+			*/
+			if(resultMap.containsKey("agentId") == false){
+				return;
+			}
+			
+			int agentId = (Integer)resultMap.get("agentId");
 			/**
 			 * agent의 기본 식별 정보를 구한다.
 			 */
 			AgentMemoryStore agentMemory = AgentMemoryStore.getInstance();
 			for(Entry<String, Object> resultEntry : resultMap.entrySet()){
 				AgentMeta agentMeta = new AgentMeta();
+				agentMeta.setId(agentId);
 				if(resultEntry.getKey().equals("agentId") == false){
 					Map<String, Object> valueMap =  (Map<String, Object>)resultEntry.getValue();
 					for(Entry<String, Object> entry : valueMap.entrySet()){
@@ -60,11 +72,8 @@ public class AgentBootstrap {
 							agentMeta.setServerId((Integer)entry.getValue());
 						}
 					}
-				}else{
-					agentMeta.setId((Integer)resultEntry.getValue());
+					agentMemory.addAgentMeta(agentMeta);
 				}
-				agentMemory.addAgentMeta(agentMeta);
-				
 			}
 		
 		} catch (UnknownHostException e) {
@@ -105,7 +114,12 @@ public class AgentBootstrap {
 	private void instanceModel(CLIHelper cliHelper){
 		Map<Integer, String> processMap  = ProcessTreeHelper.refresh();
 		
-		processMap.put(0, "127.0.0.1");
+		try {
+			processMap.put(0, InetAddress.getLocalHost().getHostName());
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		cliHelper.callActionFunction("FlyIdentify", "instanceModel",  processMap);
 	}
 	

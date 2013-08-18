@@ -16,6 +16,7 @@ public class FlyFactory {
 	static{
 		processMap.put("FlyDeploy", FlyFactory.getFlyDeploy());
 		processMap.put("FlyIdentify", FlyFactory.getFlyIdentify());
+		processMap.put("FlyRequester", FlyFactory.getFlyRequester());
 	}
 	/**
 	 * FlyFactory 는 직접 생성하면 안된다.
@@ -37,5 +38,9 @@ public class FlyFactory {
 	
 	public static FlyDeploy getFlyDeploy(){
 		return FlyDeploy.getInstance();
+	}
+	
+	public static FlyRequester getFlyRequester(){
+		return FlyRequester.getInstance();
 	}
 }

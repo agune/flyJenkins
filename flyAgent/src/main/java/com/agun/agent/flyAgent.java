@@ -4,9 +4,17 @@
  */
 package com.agun.agent;
 
+import java.util.List;
+
 import org.apache.commons.daemon.Daemon;
 import org.apache.commons.daemon.DaemonContext;
 import org.apache.commons.daemon.DaemonInitException;
+
+import com.agun.agent.model.AgentMemoryStore;
+import com.agun.agent.model.AgentMeta;
+import com.agun.agent.process.CheckRequest;
+import com.agun.jenkins.CLIHelper;
+import com.agun.jenkins.FilePathHelper;
 
 public class flyAgent implements Daemon{
 
@@ -23,27 +31,41 @@ public class flyAgent implements Daemon{
 	@Override
 	public void init(DaemonContext daemonContext) throws DaemonInitException, Exception {
 		String[] args =  daemonContext.getArguments();
+		
 		doStart(args);
 	}
 
 	public void doStart(String[] args){
+
+		final String host = args[0];
+		final String rasDir = args[1];
+		
 		thread = new Thread(){
 			private long lastTick =  0;
-			
 			@Override
 			public synchronized void start(){
+				
+				AgentBootstrap agentBootstrap = new AgentBootstrap();
+				CLIHelper cliHelper = agentBootstrap.start(rasDir, "http://"+ host);
+				FilePathHelper filePathHelper = new FilePathHelper(cliHelper);
+				AgentMemoryStore agentMemory = AgentMemoryStore.getInstance();
+				CheckRequest checkRequest = new CheckRequest(cliHelper, filePathHelper);
 				
 				while(!stoped){
 					long now = System.currentTimeMillis();
 					if(now - lastTick >= 1000){
-						System.out.println(!lastOneWasTick ? "tick" : "tock");
+						if(lastOneWasTick){
+							List<AgentMeta> agentMetaList = agentMemory.getAgentMetaList();
+							checkRequest.process(agentMetaList);
+							checkRequest.checkDeploy();
+						}
 						lastOneWasTick = !lastOneWasTick;
 						lastTick = now;
 					}
 				}
+				cliHelper.destory();
 			}
 		};
-		
 	}
 	@Override
 	public void start() throws Exception {

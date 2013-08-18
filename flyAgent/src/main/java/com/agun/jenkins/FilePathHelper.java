@@ -21,7 +21,6 @@ public class FilePathHelper{
 	
 	public void copyTo(String src, String target){
 		FilePath filePath = new FilePath(new File(target));
-		
 		Channel channel = cliHelper.getChannel();
 		FilePath fileRemotePath = new FilePath(channel, src);
 		

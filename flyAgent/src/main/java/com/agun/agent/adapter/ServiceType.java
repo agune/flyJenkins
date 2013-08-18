@@ -41,4 +41,9 @@ public interface ServiceType {
 	 * @return
 	 */
 	public boolean start(AgentMeta agentMeta);
+	
+	/**
+	 * deploy 완료후 호출한다. 
+	 */
+	public void complete(AgentMeta agentMeta);
 }

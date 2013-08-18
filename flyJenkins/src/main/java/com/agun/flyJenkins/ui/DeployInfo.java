@@ -24,8 +24,6 @@ import hudson.model.User;
 @Extension
 public class DeployInfo extends FlyUI {
 
-	private List<DeployRequest> deployRequestList;
-	
 	public DeployInfo(){
 	
 	}
@@ -46,7 +44,7 @@ public class DeployInfo extends FlyUI {
     
     	String jobName  = request.getParameter("jobName");
     	Map<String, Object> resultMap = FlyFactory.getPropertiesOfJob(jobName);
-    
+    	//String buildPath = FlyFactory.getRootPathOfJob(jobName);
     	if(resultMap.size() == 0)
     		return;
     	String production = "";
@@ -97,6 +95,36 @@ public class DeployInfo extends FlyUI {
     			deployRequestList.add(request);
     	}
     	return deployRequestList;
+    }
+    
+    public void setComplete(String jobName, Date date){
+    	DeployRequest deployRequest = new DeployRequest();
+    	deployRequest.load();
+    	
+    	List<DeployRequest> requestList = deployRequest.getDeployRequestList();
+    	
+    	DeployRequest saveDeployRequest = null;
+    	for(DeployRequest iDeployRequest : requestList){
+    		if(iDeployRequest.getDate().getTime() == date.getTime() 
+    				&& iDeployRequest.getJobName().equals(jobName)){ 
+    			saveDeployRequest = iDeployRequest;
+    			saveDeployRequest.setRun(true);
+    			break;
+    		}
+    	}
+    
+    	if(saveDeployRequest == null)
+    		return;
+    	
+    	System.out.println("====> " + saveDeployRequest.getDate());
+    	try {
+    		saveDeployRequest.setDeployRequestList(requestList);
+			saveDeployRequest.edit();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
     }
     
     public AjaxProxy getAjaxProxy(){

@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.net.URL;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.agun.agent.model.AgentMemoryStore;
@@ -12,7 +13,7 @@ import com.agun.agent.model.AgentMeta;
 import com.agun.jenkins.CLIHelper;
 
 public class AgentBootstrapTest {
-
+	@Ignore
 	@Test
 	public void startTest() {
 		URL url  = this.getClass().getResource("/id_rsa");

@@ -1,7 +1,11 @@
 package com.agun.flyJenkins.schedule;
 
+import java.util.List;
+
 import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement;
 
+import com.agun.flyJenkins.deploy.DeployLog;
+import com.agun.flyJenkins.deploy.DeploySurveillant;
 import com.agun.flyJenkins.request.RequestQueue;
 
 import hudson.Extension;
@@ -18,18 +22,29 @@ import hudson.model.PeriodicWork;
 public class PeriodWork extends PeriodicWork {
 	
 	private RequestQueue requestQueue = new RequestQueue();
+	private DeploySurveillant deploySurveillant = new DeploySurveillant();
 	
 	public RequestQueue getRequestQueue(){
 		return requestQueue;
 	}
+
+	public DeploySurveillant getDeploySurveillant(){
+		return deploySurveillant;
+	}
+	
+	public List<DeployLog> getDeployLogList(){
+		return deploySurveillant.getDeployLogList();
+	}
 	
 	@Override
 	public long getRecurrencePeriod() {
-		return MIN;
+		//return MIN;
+		return 30000;
 	}
 
 	@IgnoreJRERequirement
 	@Override
 	protected void doRun() throws Exception {
+		deploySurveillant.process();
 	}
 }

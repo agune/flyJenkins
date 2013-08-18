@@ -9,6 +9,11 @@ public class GeneralService implements ServiceType {
 
 	@Override
 	public int getPid(AgentMeta agentMeta) {
+		if(agentMeta.getDestination() == null){
+			return 0;
+		}
+		
+		System.out.println("des :" + agentMeta.getDestination());
 		int pid = ProcessTreeHelper.getPid(agentMeta.getDestination());
 		if(pid > 0){
 			agentMeta.setPid(pid);
@@ -39,5 +44,11 @@ public class GeneralService implements ServiceType {
 	public boolean start(AgentMeta agentMeta) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public void complete(AgentMeta agentMeta) {
+		// TODO Auto-generated method stub
+		
 	}
 }

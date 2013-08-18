@@ -32,7 +32,11 @@
 			 		<td style="text-align:center">standby</td>
 				 </j:if>
 			 </j:if>
-			  <j:if test="${deployRequest.run == false}">
+			  <j:if test="${deployRequest.run}">
+			 	<td style="text-align:center"><img alt="standby" title="standby"  src="${imagesURL}/${subIconSize}/32x32/blue.png"   /></td>
+			 </j:if>
+			 
+			  <j:if test="${!deployRequest.run}">
 			 	<td style="text-align:center"><img alt="standby" title="standby"  src="${imagesURL}/${subIconSize}/32x32/grey.png"   /></td>
 			 </j:if>
 		</tr>

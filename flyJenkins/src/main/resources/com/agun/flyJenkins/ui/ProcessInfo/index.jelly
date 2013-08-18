@@ -28,7 +28,7 @@
 		<j:set var="selectColor" value="color:blue" />
 	</j:if>
 	<div style="border: 1px #bbb solid;padding:2em;${selectColor}">
-		${instanceModel.pid}  ${instanceModel.arg} 
+		${instanceModel.pid}  ${instanceModel.arg} ${it.isFlyRoot()}
 		<j:if test="${servicePid == instanceModel.pid and it.isFlyRoot() }">
 			<input type="button" value="kill" onclick="requestKill('${host}', ${instanceModel.pid});" />
 		</j:if>

@@ -10,10 +10,12 @@ import java.io.InputStreamReader;
 import java.util.Iterator;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class FunctionTest {
 
+	@Ignore
 	@Test
 	public void test() {
 		ProcessTree pstree =  ProcessTree.get();
