@@ -102,7 +102,7 @@ public class DeployInfo extends FlyUI {
     	deployRequest.load();
     	
     	List<DeployRequest> requestList = deployRequest.getDeployRequestList();
-    	
+    	System.out.println("====> " + jobName + "," + date);
     	DeployRequest saveDeployRequest = null;
     	for(DeployRequest iDeployRequest : requestList){
     		if(iDeployRequest.getDate().getTime() == date.getTime() 

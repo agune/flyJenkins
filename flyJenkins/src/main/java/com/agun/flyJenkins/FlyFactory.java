@@ -12,6 +12,7 @@ import hudson.model.Job;
 import hudson.model.Project;
 import jenkins.model.Jenkins;
 
+import com.agun.flyJenkins.model.util.IncreaseIndexer;
 import com.agun.flyJenkins.schedule.PeriodWork;
 import com.agun.flyJenkins.ui.DeployInfo;
 
@@ -31,6 +32,10 @@ public class FlyFactory {
 		return deployInfo;
 	}
 	
+	public static IncreaseIndexer getIncreaseIndexer(){
+		return IncreaseIndexer.getInstance();
+	}
+	
 	public static Map<String, Object> getPropertiesOfJob(String name){
 		Jenkins jenkins = Jenkins.getInstance();
 	
@@ -45,6 +50,8 @@ public class FlyFactory {
 		}
 		return null;
 	}
+	
+	
 	
 	public static String getRootPathOfJob(String name){
 		Jenkins jenkins = Jenkins.getInstance();
