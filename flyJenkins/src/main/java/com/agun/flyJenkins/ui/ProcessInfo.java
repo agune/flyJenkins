@@ -6,11 +6,12 @@ import java.util.Map;
 
 import hudson.Extension;
 
-import com.agun.flyJenkins.service.InstanceModel;
-import com.agun.flyJenkins.service.NetworkSpace;
-import com.agun.flyJenkins.ui.ConfigServiceMeta.DescriptorImpl;
+import com.agun.flyJenkins.FlyFactory;
 import com.agun.flyJenkins.user.FlyUser;
 import com.agun.flyJenkins.util.AjaxProxy;
+import com.agun.flyJenkins.network.NetworkSpace;
+import com.agun.flyJenkins.model.InstanceModel;
+
 @Extension
 public class ProcessInfo extends FlyUI {
 
@@ -23,8 +24,10 @@ public class ProcessInfo extends FlyUI {
 	public List<InstanceModel> getInstanceModel(String host){
 		
 		System.out.println("get instance model ====> " + host);
-		NetworkSpace networkSpace =NetworkSpace.getInstance();
+		NetworkSpace networkSpace = FlyFactory.getNetworkSpace();
 		Map<String, List<InstanceModel>> instanceMap = networkSpace.getInstanceModelMap();
+		System.out.println("====>  value = " + instanceMap);
+		
 		if(instanceMap == null || instanceMap.containsKey(host) == false){
 			return Collections.EMPTY_LIST;
 		}
@@ -52,5 +55,4 @@ public class ProcessInfo extends FlyUI {
             return "";
         }
     }
-
 }

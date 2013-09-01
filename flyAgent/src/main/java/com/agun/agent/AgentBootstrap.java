@@ -4,6 +4,7 @@ import com.agun.agent.adapter.ServiceType;
 import com.agun.agent.adapter.TomcatService;
 import com.agun.agent.model.AgentMemoryStore;
 import com.agun.agent.model.AgentMeta;
+import com.agun.agent.model.util.ModelAssignUtil;
 import com.agun.jenkins.CLIHelper;
 import com.agun.jenkins.ProcessTreeHelper;
 
@@ -34,46 +35,23 @@ public class AgentBootstrap {
 	public void init(CLIHelper cliHelper){
 		try {
 			
-			System.out.println(InetAddress.getLocalHost().getHostName());
 			Map<String, Object> resultMap = cliHelper.callActionFunction("FlyIdentify", "identifyAgent", InetAddress.getLocalHost().getHostName());
 		
 			if(resultMap == null)
 				return;
-			/*
-			System.out.println("==================>");
-			for(Entry entry : resultMap.entrySet()){
-				System.out.println("key : " +  entry.getKey());
-				System.out.println("value : " +  entry.getValue());
-			}
-			System.out.println("==================>xxxxx");
-			*/
-			if(resultMap.containsKey("agentId") == false){
-				return;
-			}
 			
-			int agentId = (Integer)resultMap.get("agentId");
 			/**
 			 * agent의 기본 식별 정보를 구한다.
 			 */
+			int index = 1;
 			AgentMemoryStore agentMemory = AgentMemoryStore.getInstance();
 			for(Entry<String, Object> resultEntry : resultMap.entrySet()){
+				Map<String, Object> valueMap =  (Map<String, Object>)resultEntry.getValue();
+				valueMap.put("id", index);
 				AgentMeta agentMeta = new AgentMeta();
-				agentMeta.setId(agentId);
-				if(resultEntry.getKey().equals("agentId") == false){
-					Map<String, Object> valueMap =  (Map<String, Object>)resultEntry.getValue();
-					for(Entry<String, Object> entry : valueMap.entrySet()){
-						if("destination".equals(entry.getKey())){
-							agentMeta.setDestination((String)entry.getValue());
-						}else if("type".equals(entry.getKey())){
-							agentMeta.setType((Integer)entry.getValue());
-						}else if("testCmd".equals(entry.getKey())){
-							agentMeta.setTestCmd((String)entry.getValue());
-						}else if("serverId".equals(entry.getKey())){
-							agentMeta.setServerId((Integer)entry.getValue());
-						}
-					}
-					agentMemory.addAgentMeta(agentMeta);
-				}
+				ModelAssignUtil.assignAgentMeta(agentMeta, valueMap);
+				agentMemory.addAgentMeta(agentMeta);
+				index++;
 			}
 		
 		} catch (UnknownHostException e) {
@@ -99,7 +77,7 @@ public class AgentBootstrap {
 				int pid = serviceType.getPid(agentMeta);
 				if(pid > 0){
 					agentMeta.setPid(pid);
-					onServerPidMap.put(agentMeta.getServerId(), pid);
+					onServerPidMap.put(agentMeta.getServiceId(), pid);
 				}
 			}
 		}

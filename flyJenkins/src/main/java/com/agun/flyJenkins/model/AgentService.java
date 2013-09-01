@@ -19,6 +19,12 @@ public class AgentService {
 	 */
 	private String host;
 	
+	/**
+	 * state of agent 
+	 */
+	private boolean isRun = false;
+	
+	
 	/***
 	 * service meta info List
 	 */
@@ -38,6 +44,14 @@ public class AgentService {
 
 	public void setHost(String host) {
 		this.host = host;
+	}
+
+	public boolean isRun() {
+		return isRun;
+	}
+
+	public void setRun(boolean isRun) {
+		this.isRun = isRun;
 	}
 
 	public List<ServiceMeta> getServiceMetaList() {

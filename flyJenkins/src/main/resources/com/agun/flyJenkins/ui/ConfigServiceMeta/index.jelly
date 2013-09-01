@@ -1,0 +1,70 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:s="/lib/samples">
+ <l:layout title="Network Map">
+<l:main-panel>
+<form method="post" action="save">
+<div>host: <input type="text" name="host" /> </div>
+<div>destination: <input type="text" name="destination" /> </div>
+<div>command: <input type="text" name="command" /> </div>
+<div>testUrl: <input type="text" name="testUrl" /> </div>
+<div>weight: <input type="text" name="weight" /> </div>
+<div>service group: 
+<select name="groupId">
+	<j:forEach items="${it.serviceGroupList}" var="serviceGroup">
+		<option value="${serviceGroup.groupId}">${serviceGroup.groupName}</option>
+	</j:forEach>
+</select>
+</div>
+<div>
+service type: 
+<select name="type">
+	<option value="1">general process</option>
+	<option value="2">tomcat</option>
+	<option value="3">etc</option>
+</select>
+</div>
+<div><input type="submit" value="save" /></div>
+</form>
+
+<div><p> </p> </div>
+<div><p> </p> </div>
+
+<div>Service Meta List</div>
+<j:forEach items="${it.serviceGroupList}" var="serviceGroup">
+	<j:set var="serviceMetaList" value="${serviceGroup.serviceMetaList}" />
+	<j:forEach items="${serviceMetaList}" var="serviceMeta">
+		<div>${serviceMeta.serviceId}, ${serviceMeta.host} </div>
+	</j:forEach>
+</j:forEach>
+<div><p> </p> </div>
+<div><p> </p> </div>
+
+<div>Service Agent List <input type="button" value="Service Group" onclick="javascript:location.href='../NetworkInfo'" /></div>
+<j:set var="networkMap" value="${it.agentServiceMap}" />
+<j:forEach items="${networkMap.entrySet()}" var="networkEntry">
+	<j:forEach items="${networkEntry.value}" var="agentService">
+		<div>${agentService.host} </div>
+		<j:set var="serviceMetaList" value="${agentService.serviceMetaList}" />
+
+		<j:forEach items="${serviceMetaList}" var="serviceMeta">
+			
+			<div style="padding-left:2em" >
+			
+			${serviceMeta.serviceId}, ${serviceMeta.host}, ${serviceMeta.destination}
+			<j:if test="${serviceMeta.pid > 0 }">
+				<img src="/jenkins/static/1d061002/images/32x32/blue.png" />
+			</j:if>
+			
+			
+			<j:if test="${serviceMeta.pid == 0 }">
+				<img src="/jenkins/static/1d061002/images/32x32/red.png" />
+			</j:if>
+			<input type="button" value="process" onclick="javascript:location.href='../ProcessInfo?host=${serviceMeta.host}&amp;servicePid=${serviceMeta.pid}'" />	
+			</div>
+		</j:forEach>
+	</j:forEach>
+</j:forEach>
+
+</l:main-panel>
+</l:layout>
+</j:jelly>

@@ -43,9 +43,9 @@ public class TomcatService implements ServiceType {
 	@Override
 	public boolean getProduction(AgentMeta agentMeta, String production) {
 		String filename = extractFilename(production);
-		AgentInfoManager.checkProductionDir(agentMeta.getServerId());
+		AgentInfoManager.checkProductionDir(agentMeta.getServiceId());
 		
-		String productionPath = AgentInfoManager.getProductionPath(agentMeta.getServerId(), filename);
+		String productionPath = AgentInfoManager.getProductionPath(agentMeta.getServiceId(), filename);
 	
 		FilePath filePath = new FilePath(new File(productionPath));
 		

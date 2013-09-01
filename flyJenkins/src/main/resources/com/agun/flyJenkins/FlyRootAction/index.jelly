@@ -26,6 +26,13 @@ THE SOFTWARE.
   <l:layout title="FlyJenkins">
     <l:main-panel>
       <table>
+      
+      	 <t:summary icon="document.gif"
+                     href="/jenkins/flyJenkins/ConfigServiceGroup" iconOnly="true">
+            <div class="link"><a href="${href}">서비스그룹설정</a></div>
+            <div style="color:gray; text-decoration:none;">
+            </div>
+          </t:summary>
           <t:summary icon="document.gif"
                      href="/jenkins/flyJenkins/ConfigServiceMeta" iconOnly="true">
             <div class="link"><a href="${href}">서비스설정</a></div>

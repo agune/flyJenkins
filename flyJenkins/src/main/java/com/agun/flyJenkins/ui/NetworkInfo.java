@@ -8,9 +8,14 @@ import java.util.List;
 import java.util.Map;
 
 
-import com.agun.flyJenkins.service.AgentService;
-import com.agun.flyJenkins.service.NetworkSpace;
-import com.agun.flyJenkins.service.ServiceGroup;
+
+
+
+
+import com.agun.flyJenkins.FlyFactory;
+import com.agun.flyJenkins.model.AgentService;
+import com.agun.flyJenkins.model.ServiceGroup;
+import com.agun.flyJenkins.persistence.ServiceGroupSaveableUtil;
 
 import hudson.Extension;
 
@@ -22,27 +27,8 @@ public class NetworkInfo extends FlyUI {
 		return "You can see network group of service";
 	}
 
-	public List<AgentService> getAgentList(){
-		return NetworkSpace.getInstance().getSaveAgentList();
-	}
-	
-	public Collection<List<AgentService>> getAgentListFromNetworkMap(){
-		Map<String, List<AgentService>> networkMap = NetworkSpace.getInstance().getNetworkMap();
-
-		Map<Integer, List<AgentService>> hashMap = new Hashtable<Integer, List<AgentService>>();
-		for(List<AgentService> agentList : networkMap.values()){
-			for(AgentService agentService : agentList){
-				ServiceGroup serviceGroup =  agentService.getServiceGroup();
-				if(hashMap.containsKey(serviceGroup.getGroupId())){
-					hashMap.get(serviceGroup.getGroupId()).add(agentService);
-				}else{
-					List<AgentService> saveAgentList = new ArrayList<AgentService>();
-					saveAgentList.add(agentService);
-					hashMap.put(serviceGroup.getGroupId(), saveAgentList);
-				}
-			}
-		}
-		return hashMap.values();
+	public List<ServiceGroup> getServiceGroupList(){
+		return ServiceGroupSaveableUtil.getServiceGroupList();
 	}
 	
 	 @Extension

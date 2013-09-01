@@ -5,24 +5,21 @@
 
 <div style="padding:2em:"><p></p></div>
 
-<j:forEach items="${it.agentListFromNetworkMap}" var="agentList">
-	<j:forEach items="${agentList}" var="agent">
-		<j:set var="serviceGroup" value="${agent.serviceGroup}"/>
-				<div style="padding-top:2em;"><img height="48" style="margin-right:1em" alt="" width="48" src="/jenkins/static/1d061002/images/48x48/computer.png" />  (group id :  ${serviceGroup.groupId})</div>
-				  <div style="border: 1px #bbb solid;padding:2em;">
-					<j:forEach items="${serviceGroup.serverMetaList}" var="serverMeta">
-						<div>
-						<j:if test="${serverMeta.pid > 0}">
-						<img alt="Success" class="icon32x32" src="/jenkins/static/1d061002/images/32x32/blue.png" tooltip="Success" title="Success" /> 
-						 </j:if>
-						 <j:if test="${serverMeta.pid== 0}">
-						 	<img alt="Failed" class="icon32x32" src="/jenkins/static/1d061002/images/32x32/red.png" tooltip="Failed" title="Failed" /> 
-						 </j:if>
-						 ${serverMeta.destination}  (serverId: ${serverMeta.serverId}, host : ${serverMeta.host} . pid : ${serverMeta.pid}) 
-						</div>
-					</j:forEach>
-			    </div>
-	</j:forEach>
+<j:forEach items="${it.serviceGroupList}" var="serviceGroup">
+	<div style="padding-top:2em;"><img height="48" style="margin-right:1em" alt="" width="48" src="/jenkins/static/1d061002/images/48x48/computer.png" />  (group id :  ${serviceGroup.groupId})</div>
+		<div style="border: 1px #bbb solid;padding:2em;">
+		<j:forEach items="${serviceGroup.serviceMetaList}" var="serviceMeta">
+			<div>
+				<j:if test="${serviceMeta.pid > 0}">
+					<img alt="Success" class="icon32x32" src="/jenkins/static/1d061002/images/32x32/blue.png" tooltip="Success" title="Success" /> 
+				</j:if>
+				<j:if test="${serviceMeta.pid== 0}">
+					<img alt="Failed" class="icon32x32" src="/jenkins/static/1d061002/images/32x32/red.png" tooltip="Failed" title="Failed" /> 
+				</j:if>
+				${serviceMeta.destination}  (serverId: ${serviceMeta.serviceId}, host : ${serviceMeta.host} . pid : ${serviceMeta.pid}) 
+			</div>
+		</j:forEach>
+		</div>
 </j:forEach>
 
 </l:main-panel>

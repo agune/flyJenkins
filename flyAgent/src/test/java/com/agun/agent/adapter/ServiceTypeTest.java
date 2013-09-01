@@ -71,7 +71,7 @@ public class ServiceTypeTest {
 	public void tomcatGetProductionTest(){
 		AgentMeta agentMeta = new AgentMeta();
 		agentMeta.setDestination("/Users/pdc222/app/apache-tomcat-7.0.21");
-		agentMeta.setServerId(1);
+		agentMeta.setServiceId(1);
 		agentMeta.setId(1);
 		TomcatService serviceType = new TomcatService();
 		serviceType.getProduction(agentMeta, "/Users/pdc222/work/text.xml");

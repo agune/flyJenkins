@@ -5,12 +5,11 @@ public class AgentMeta {
 	private int id;
 	private int type;
 	private int pid;
-	private int serverId;
-
+	private int serviceId;
 	
+	private String command;
+	private String testUrl;
 	
-	private String name;
-	private String testCmd;
 	private String destination;
 	
 	public int getId() {
@@ -37,22 +36,22 @@ public class AgentMeta {
 	public void setPid(int pid) {
 		this.pid = pid;
 	}
-	public String getName() {
-		return name;
+	public String getCommand() {
+		return command;
 	}
-	public void setName(String name) {
-		this.name = name;
+	public void setCommand(String command) {
+		this.command = command;
 	}
-	public String getTestCmd() {
-		return testCmd;
+	public int getServiceId() {
+		return serviceId;
 	}
-	public void setTestCmd(String testCmd) {
-		this.testCmd = testCmd;
+	public void setServiceId(int serviceId) {
+		this.serviceId = serviceId;
 	}
-	public int getServerId() {
-		return serverId;
+	public String getTestUrl() {
+		return testUrl;
 	}
-	public void setServerId(int serverId) {
-		this.serverId = serverId;
+	public void setTestUrl(String testUrl) {
+		this.testUrl = testUrl;
 	}
 }

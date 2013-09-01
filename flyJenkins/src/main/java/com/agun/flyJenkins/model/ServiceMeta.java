@@ -33,7 +33,7 @@ public class ServiceMeta {
 	/**
 	 * test cmd after deploy 
 	 */
-	private String testCmd;
+	private String command;
 	
 	/**
 	 * priority of deployment  
@@ -99,6 +99,9 @@ public class ServiceMeta {
 
 
 	public Integer getServiceId() {
+		if(this.serviceId == null)
+			return 0;
+		
 		return this.serviceId;
 	}
 
@@ -108,13 +111,13 @@ public class ServiceMeta {
 	}
 
 
-	public String getTestCmd() {
-		return testCmd;
+	public String getCommand() {
+		return command;
 	}
 
 
-	public void setTestCmd(String testCmd) {
-		this.testCmd = testCmd;
+	public void setCommand(String command) {
+		this.command = command;
 	}
 
 
@@ -129,6 +132,8 @@ public class ServiceMeta {
 
 
 	public Integer getPid() {
+		if(pid == null)
+			return 0;
 		return pid;
 	}
 

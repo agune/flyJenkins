@@ -73,7 +73,7 @@ public class CheckRequest {
 		for(AgentMeta agent :  agentList){
 			ServiceType serviceType = AdapterFactory.getServiceType(agent, null);
 			serviceType.getPid(agent);
-			onServerPidMap.put(agent.getServerId(), agent.getPid());
+			onServerPidMap.put(agent.getServiceId(), agent.getPid());
 		}
 		if(onServerPidMap.size() > 0)
 			cliHelper.callActionFunction("FlyIdentify", "identify",  onServerPidMap);
@@ -100,7 +100,7 @@ public class CheckRequest {
 		List<AgentMeta> agentMetaList = agentMemoryStore.getAgentMetaList();
 		ServiceType service = null;
 		for(AgentMeta agentMeta : agentMetaList){
-			if(agentMeta.getServerId() == serverId){
+			if(agentMeta.getServiceId() == serverId){
 				System.out.println("dest : " + agentMeta.getDestination());
 				service = AdapterFactory.getServiceType(agentMeta, filePathHelper);
 				service.stop(agentMeta);
@@ -115,7 +115,7 @@ public class CheckRequest {
 		}
 	}
 	private void completeDeploy(AgentMeta agentMeta){
-		cliHelper.callActionFunction("FlyDeploy", "deployComplete", agentMeta.getServerId());
+		cliHelper.callActionFunction("FlyDeploy", "deployComplete", agentMeta.getServiceId());
 	}
 	/**
 	 *	서버에 프로세스 정보를 전달해 준다.  

@@ -6,19 +6,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.agun.flyJenkins.service.AgentService;
-import com.agun.flyJenkins.service.InstanceModel;
-import com.agun.flyJenkins.service.NetworkSpace;
-import com.agun.flyJenkins.service.ServerMeta;
-import com.agun.flyJenkins.service.ServiceGroup;
+import com.agun.flyJenkins.FlyFactory;
+import com.agun.flyJenkins.model.AgentService;
+import com.agun.flyJenkins.model.InstanceModel;
+import com.agun.flyJenkins.model.ServiceMeta;
+import com.agun.flyJenkins.model.util.ConvertUtil;
+import com.agun.flyJenkins.network.NetworkSpace;
 
 public class FlyIdentify implements FlyProcess {
 	
 	private static FlyIdentify flyIdentify = new FlyIdentify();
 	
-	private FlyIdentify(){
-		
-	}
+	private FlyIdentify(){}
 	
 	public static FlyIdentify getInstance(){
 		return flyIdentify;
@@ -30,18 +29,19 @@ public class FlyIdentify implements FlyProcess {
 	 * @param Map<Integer, Integer>
 	 */
 	
-	public void identify(Map<Integer, Integer> serverPidMap){
-		NetworkSpace networkSpace  = NetworkSpace.getInstance();
+	public void identify(Map<Integer, Integer> servicePidMap){
+		NetworkSpace networkSpace = FlyFactory.getNetworkSpace();
 		Map<String, List<AgentService>> networkMap = networkSpace.getNetworkMap();
 		
-		Map<String, Object> resultMap = new Hashtable<String, Object>();
-		for(List<AgentService> agentList :  networkMap.values()){
-			for(AgentService agent :  agentList){
-				ServiceGroup serverGroup = agent.getServiceGroup();
-				for(ServerMeta serverMeta : serverGroup.getServerMetaList()){
-					if(serverPidMap.containsKey(serverMeta.getServerId())){
-						serverMeta.setPid(serverPidMap.get(serverMeta.getServerId()));
-						break;
+		synchronized (networkMap) {
+			for(List<AgentService> agentList :  networkMap.values()){
+				for(AgentService agentService :  agentList){
+					if(agentService.getServiceMetaList() !=null){
+						for(ServiceMeta serviceMeta : agentService.getServiceMetaList()){
+							if(servicePidMap.containsKey(serviceMeta.getServiceId())){
+								serviceMeta.setPid(servicePidMap.get(serviceMeta.getServiceId()));
+							}
+						}
 					}
 				}
 			}
@@ -53,10 +53,12 @@ public class FlyIdentify implements FlyProcess {
 	 * @param argMap
 	 */
 	public void instanceModel(Map<Integer, String> argMap){
-		NetworkSpace networkSpace  = NetworkSpace.getInstance();
-		Map<String, List<InstanceModel>> instanceMap =  networkSpace.getInstanceModelMap();
 		
+		NetworkSpace networkSpace = FlyFactory.getNetworkSpace();
+		Map<String, List<InstanceModel>> instanceMap =  networkSpace.getInstanceModelMap();
+
 		String host  = argMap.get(0);
+		
 		instanceMap.remove(host);
 		List<InstanceModel> instanceModelList = new ArrayList<InstanceModel>();
 		for(Entry<Integer, String> entry : argMap.entrySet()){
@@ -64,7 +66,7 @@ public class FlyIdentify implements FlyProcess {
 				InstanceModel newInstanceModel = new InstanceModel();
 				newInstanceModel.setPid(entry.getKey());
 				newInstanceModel.setHost(host);
-				newInstanceModel.setArgList(entry.getValue());
+				newInstanceModel.setArgs(entry.getValue());
 				instanceModelList.add(newInstanceModel);
 			}
 		}
@@ -78,15 +80,14 @@ public class FlyIdentify implements FlyProcess {
 	 */
 	
 	public Map<String, Object> getIdentifyAgent(String host){
-		NetworkSpace networkSpace  = NetworkSpace.getInstance();
-		List<AgentService> agentList = networkSpace.getAgentList(host);
-		
+		NetworkSpace networkSpace = FlyFactory.getNetworkSpace();
+		List<AgentService> agentServiceList = networkSpace.getAgentListByHost(host);
 		Map<String, Object> resultMap = new Hashtable<String, Object>();
-		for(AgentService agent :  agentList){
-			resultMap.put("agentId", agent.getAgentId());
-			ServiceGroup serverGroup = agent.getServiceGroup();
-			for(ServerMeta serverMeta : serverGroup.getServerMetaList())
-				resultMap.put(serverMeta.getServerId().toString(), serverMeta.convertMap());
+		for(AgentService agentService :  agentServiceList){
+			if(agentService.getServiceMetaList() != null){
+				for(ServiceMeta serviceMeta : agentService.getServiceMetaList())
+					resultMap.put(serviceMeta.getServiceId().toString(), ConvertUtil.getMapFromServiceMeta(serviceMeta));
+			}
 		}
 		return (Map<String, Object>)resultMap;
 	}

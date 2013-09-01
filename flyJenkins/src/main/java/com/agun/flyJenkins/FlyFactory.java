@@ -13,6 +13,7 @@ import hudson.model.Project;
 import jenkins.model.Jenkins;
 
 import com.agun.flyJenkins.model.util.IncreaseIndexer;
+import com.agun.flyJenkins.network.NetworkSpace;
 import com.agun.flyJenkins.schedule.PeriodWork;
 import com.agun.flyJenkins.ui.DeployInfo;
 
@@ -51,6 +52,10 @@ public class FlyFactory {
 		return null;
 	}
 	
+	
+	public static NetworkSpace getNetworkSpace(){
+		return NetworkSpace.getInstance();
+	}
 	
 	
 	public static String getRootPathOfJob(String name){

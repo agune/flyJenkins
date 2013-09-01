@@ -13,7 +13,7 @@ import com.agun.agent.model.AgentMeta;
 import com.agun.jenkins.CLIHelper;
 
 public class AgentBootstrapTest {
-	@Ignore
+	
 	@Test
 	public void startTest() {
 		URL url  = this.getClass().getResource("/id_rsa");
@@ -29,13 +29,25 @@ public class AgentBootstrapTest {
 			System.out.println("========> ");
 			System.out.println(agentMeta.getId());
 			System.out.println(agentMeta.getDestination());
-			System.out.println(agentMeta.getServerId());
+			System.out.println(agentMeta.getServiceId());
 			System.out.println(agentMeta.getType());
-			System.out.println(agentMeta.getTestCmd());
+			System.out.println(agentMeta.getCommand());
 			System.out.println("pid: " + agentMeta.getPid());
 			System.out.println("========> end");
 					
 		}
+	}
+	
+	@Ignore
+	@Test
+	public void initTest(){
+		URL url  = this.getClass().getResource("/id_rsa");
+		AgentBootstrap agentBootstrap = new AgentBootstrap();
+		
+		CLIHelper cliHelper= agentBootstrap.auth(url.getPath(), "http://127.0.0.1:8080/jenkins");
+		agentBootstrap.init(cliHelper);
+		cliHelper.destory();
+		
 	}
 
 }
