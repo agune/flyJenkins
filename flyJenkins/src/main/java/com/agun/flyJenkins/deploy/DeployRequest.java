@@ -20,7 +20,7 @@ import hudson.model.listeners.SaveableListener;
  *
  */
 
-public class DeployRequest implements Saveable{
+public class DeployRequest{
 
 	/**
 	 * 요청자
@@ -61,7 +61,6 @@ public class DeployRequest implements Saveable{
 	 */
 	private int serverGroup = 0;
 	
-	List<DeployRequest> deployRequestList;
 	
 	public String getRequester() {
 		return requester;
@@ -103,14 +102,6 @@ public class DeployRequest implements Saveable{
 		this.date = date;
 	}
 
-	public List<DeployRequest> getDeployRequestList() {
-		return deployRequestList;
-	}
-
-	public void setDeployRequestList(List<DeployRequest> deployRequestList) {
-		this.deployRequestList = deployRequestList;
-	}
-
 	public boolean isRun() {
 		return run;
 	}
@@ -135,36 +126,7 @@ public class DeployRequest implements Saveable{
 		this.serverGroup = serverGroup;
 	}
 	
-	public void edit() throws IOException {
-		if(BulkChange.contains(this))   return;
-        try {
-            getConfigFile().write(this);
-            SaveableListener.fireOnChange(this, getConfigFile());
-        } catch (IOException e) {
-           	e.printStackTrace();
-        }
-	}
 	
-	public void save() throws IOException {
-		DeployRequest deployRequest =  this.getCopy();
-		load();
-		
-		if(this.deployRequestList != null){
-			this.deployRequestList.add(deployRequest);
-		}else{
-			this.deployRequestList = new ArrayList<DeployRequest>();
-			deployRequestList.add(deployRequest);
-		}
-			
-		
-		if(BulkChange.contains(this))   return;
-        try {
-            getConfigFile().write(this);
-            SaveableListener.fireOnChange(deployRequest, getConfigFile());
-        } catch (IOException e) {
-           	e.printStackTrace();
-        }
-	}
 	
 	public boolean isCheckConfirmUser(){
 		User user = User.current();
@@ -176,33 +138,6 @@ public class DeployRequest implements Saveable{
 		return false;
 	}
 
-	public DeployRequest getCopy(){
-		DeployRequest deployRequest = new DeployRequest();
-		deployRequest.setDate(this.date);
-		deployRequest.setJobName(this.jobName);
-		deployRequest.setLicenser(this.licenser);
-		deployRequest.setProduction(this.production);
-		deployRequest.setRequester(this.requester);
-		deployRequest.setConfirm(this.confirm);
-		deployRequest.setRun(this.run);
-		deployRequest.setServerGroup(this.serverGroup);
-		return deployRequest;
-	}
 	
-	protected XmlFile getConfigFile() {
-	    return new XmlFile(new File(Jenkins.getInstance().getRootDir(), this.getClass().getSimpleName()+".xml"));
-    }
-	
-	 public synchronized void load() {
-	        XmlFile file = getConfigFile();
-	        if(!file.exists())
-	            return;
-
-	        try {
-	            file.unmarshal(this);
-	        } catch (IOException e) {
-	        	e.printStackTrace();
-	        }
-	    }
 	
 }

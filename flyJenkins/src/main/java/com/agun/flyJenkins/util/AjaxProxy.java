@@ -8,10 +8,12 @@ import java.util.List;
 import java.util.Map;
 
 
+
 import org.kohsuke.stapler.bind.JavaScriptMethod;
 
 import com.agun.flyJenkins.FlyFactory;
 import com.agun.flyJenkins.deploy.DeployRequest;
+import com.agun.flyJenkins.persistence.DeployRequestSaveable;
 import com.agun.flyJenkins.request.ProcessKill;
 import com.agun.flyJenkins.request.RequestMap;
 import com.agun.flyJenkins.request.RequestQueue;
@@ -40,9 +42,10 @@ public class AjaxProxy {
 	@JavaScriptMethod
 	public String deployRequest(String type, String jobName, long timeValue ){
 
-		DeployRequest deployRequest = new DeployRequest();
-		deployRequest.load();
-		List<DeployRequest> deployRequestList = deployRequest.getDeployRequestList();
+		DeployRequestSaveable deployRequestSable = new DeployRequestSaveable();
+		deployRequestSable.load();
+		
+		List<DeployRequest> deployRequestList = deployRequestSable.getDeployRequestList();
 		
 		if(deployRequestList ==  null)
 			return "Not exist request";
@@ -59,11 +62,8 @@ public class AjaxProxy {
 		
 		if(deployRequestSel !=null ){
 			try {
-				
-				deployRequestSel.setDeployRequestList(deployRequestList);
-				deployRequestSel.edit();
+				deployRequestSable.save();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			return "ok";

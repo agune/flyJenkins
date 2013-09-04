@@ -12,6 +12,8 @@ import java.util.Map.Entry;
 
 import com.agun.flyJenkins.FlyFactory;
 import com.agun.flyJenkins.job.JobExtends;
+import com.agun.flyJenkins.persistence.DeployLogSaveable;
+import com.agun.flyJenkins.persistence.DeployRequestSaveable;
 import com.agun.flyJenkins.service.AgentService;
 import com.agun.flyJenkins.service.NetworkSpace;
 import com.agun.flyJenkins.service.ServerMeta;
@@ -26,9 +28,9 @@ public class DeploySurveillant {
 	 * 초기화를 할 경우 저장된 deploy log 를 가져 온다. 저장된 deploy log 가 없을때 새로 생성한다. 
 	 */
 	public DeploySurveillant(){
-		DeployLog deployLog = new DeployLog();
-		deployLog.load();
-		deployLogList = deployLog.getDeployLogList();
+		DeployLogSaveable deployLogSaveable = new DeployLogSaveable();
+		deployLogSaveable.load();
+		deployLogList = deployLogSaveable.getDeployLogList();
 		
 		if(deployLogList == null)
 			deployLogList = new ArrayList<DeployLog>();
@@ -39,11 +41,10 @@ public class DeploySurveillant {
 	 * 
 	 */
 	public void checkDeploy(){
-		DeployRequest deployRequest = new DeployRequest();
-    	deployRequest.load();
+		DeployRequestSaveable deployRequestSaveable = new DeployRequestSaveable();
+		deployRequestSaveable.load();
     	
-    	
-    	List<DeployRequest> saveDeployRequestList =deployRequest.getDeployRequestList();
+    	List<DeployRequest> saveDeployRequestList =deployRequestSaveable.getDeployRequestList();
     	if(saveDeployRequestList != null){
     		for(DeployRequest saveDeployRequest : saveDeployRequestList){
     			if(checkDeployLog(saveDeployRequest)){
@@ -78,9 +79,11 @@ public class DeploySurveillant {
 		 * jenkins fail over 시 상태값을 저장하기 위하여 저장한다.
 		 * 
 		 */
-		lastDeployLog.setDeployLogList(deployLogList);
+		DeployLogSaveable deployLogSaveable = new DeployLogSaveable();
+		
+		deployLogSaveable.setDeployLogList(deployLogList);
 		try {
-			lastDeployLog.edit();
+			deployLogSaveable.save();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

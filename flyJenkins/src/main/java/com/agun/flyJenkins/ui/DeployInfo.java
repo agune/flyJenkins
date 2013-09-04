@@ -15,6 +15,7 @@ import org.kohsuke.stapler.StaplerResponse;
 import com.agun.flyJenkins.FlyFactory;
 import com.agun.flyJenkins.deploy.DeployRequest;
 import com.agun.flyJenkins.job.JobExtends;
+import com.agun.flyJenkins.persistence.DeployRequestSaveable;
 import com.agun.flyJenkins.ui.ConfigServiceMeta.DescriptorImpl;
 import com.agun.flyJenkins.util.AjaxProxy;
 
@@ -71,9 +72,19 @@ public class DeployInfo extends FlyUI {
     	deployRequest.setProduction(production);
     	deployRequest.setRequester(usedId);
     	deployRequest.setServerGroup(serverGroup);
+    
+    	DeployRequestSaveable deployRequestSaveable = new DeployRequestSaveable();
+    	deployRequestSaveable.load();
+    	List<DeployRequest> deployRequestList = deployRequestSaveable.getDeployRequestList();
+    	
+    	if(deployRequestList == null)
+    		deployRequestList = new ArrayList<DeployRequest>();
+    	
+    	deployRequestList.add(deployRequest);
+    	deployRequestSaveable.setDeployRequestList(deployRequestList);
     	
     	try {
-			deployRequest.save();
+    		deployRequestSaveable.save();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -84,9 +95,11 @@ public class DeployInfo extends FlyUI {
     	if(jobName == null)
     		return Collections.EMPTY_LIST;
     	
-    	DeployRequest deployRequest = new DeployRequest();
-    	deployRequest.load();
-    	List<DeployRequest> saveDeployRequestList =deployRequest.getDeployRequestList();
+    	
+    	DeployRequestSaveable deployRequestSaveable = new DeployRequestSaveable();
+    	deployRequestSaveable.load();
+    	
+    	List<DeployRequest> saveDeployRequestList = deployRequestSaveable.getDeployRequestList();
     	if(saveDeployRequestList == null)
     		return Collections.EMPTY_LIST;
     	List<DeployRequest> deployRequestList = new ArrayList<DeployRequest>();
@@ -98,10 +111,11 @@ public class DeployInfo extends FlyUI {
     }
     
     public void setComplete(String jobName, Date date){
-    	DeployRequest deployRequest = new DeployRequest();
-    	deployRequest.load();
+    
+    	DeployRequestSaveable deployRequestSaveable = new DeployRequestSaveable();
+    	deployRequestSaveable.load();
     	
-    	List<DeployRequest> requestList = deployRequest.getDeployRequestList();
+    	List<DeployRequest> requestList = deployRequestSaveable.getDeployRequestList();
     	System.out.println("====> " + jobName + "," + date);
     	DeployRequest saveDeployRequest = null;
     	for(DeployRequest iDeployRequest : requestList){
@@ -118,9 +132,9 @@ public class DeployInfo extends FlyUI {
     	
     	System.out.println("====> " + saveDeployRequest.getDate());
     	try {
-    		saveDeployRequest.setDeployRequestList(requestList);
-			saveDeployRequest.edit();
-		} catch (IOException e) {
+    		deployRequestSaveable.setDeployRequestList(requestList);
+    		deployRequestSaveable.save();
+    	} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

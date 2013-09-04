@@ -17,7 +17,7 @@ import jenkins.model.Jenkins;
  * @author agun
  *
  */
-public class DeployLog implements Saveable{
+public class DeployLog {
 	/**
 	 * jobName
 	 */
@@ -90,64 +90,5 @@ public class DeployLog implements Saveable{
 	public void setDeployLogList(List<DeployLog> deployLogList) {
 		this.deployLogList = deployLogList;
 	}
-	
-	public DeployLog getCopy(){
-		DeployLog deployLog = new DeployLog();
-		deployLog.setDate(this.date);
-		deployLog.setGroupId(this.groupId);
-		deployLog.setJobName(this.jobName);
-		deployLog.setStepOrder(this.stepOrder);
-		deployLog.setWorkSize(this.workSize);
-		return deployLog;
-	}
-	
-	
-	public void edit() throws IOException {
-		if(BulkChange.contains(this))   return;
-        try {
-            getConfigFile().write(this);
-            SaveableListener.fireOnChange(this, getConfigFile());
-        } catch (IOException e) {
-           	e.printStackTrace();
-        }
-	}
-	
-	public void save() throws IOException {
-	
-		DeployLog deployLog = getCopy();
 		
-		load();
-		
-		if(this.deployLogList != null){
-			this.deployLogList.add(deployLog);
-		}else{
-			this.deployLogList = new ArrayList<DeployLog>();
-			deployLogList.add(deployLog);
-		}
-			
-		
-		if(BulkChange.contains(this))   return;
-        try {
-            getConfigFile().write(this);
-            SaveableListener.fireOnChange(deployLog, getConfigFile());
-        } catch (IOException e) {
-           	e.printStackTrace();
-        }
-	}
-	
-	protected XmlFile getConfigFile() {
-	    return new XmlFile(new File(Jenkins.getInstance().getRootDir(), this.getClass().getSimpleName()+".xml"));
-    }
-	
-	 public synchronized void load() {
-		 XmlFile file = getConfigFile();
-		 if(!file.exists())
-			 return;
-		 try {
-			 file.unmarshal(this);
-		 } catch (IOException e) {
-			 e.printStackTrace();
-		 }
-	 }
-	
 }

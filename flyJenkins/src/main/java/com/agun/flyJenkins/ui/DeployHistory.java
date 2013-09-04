@@ -5,6 +5,7 @@ import java.util.List;
 import hudson.Extension;
 
 import com.agun.flyJenkins.deploy.DeployLog;
+import com.agun.flyJenkins.persistence.DeployLogSaveable;
 import com.agun.flyJenkins.ui.DeployInfo.DescriptorImpl;
 @Extension
 public class DeployHistory extends FlyUI {
@@ -20,9 +21,9 @@ public class DeployHistory extends FlyUI {
     }
 	
 	public List<DeployLog> getDeployLogList(){
-		DeployLog deployLog = new DeployLog();
-		deployLog.load();
-		return deployLog.getDeployLogList();
+		DeployLogSaveable deployLogSaveable = new DeployLogSaveable();
+		deployLogSaveable.load();
+		return deployLogSaveable.getDeployLogList();
 	}
 	
 		@Extension
