@@ -16,6 +16,19 @@ import java.util.Map;
 import java.util.Map.Entry;
 public class AgentBootstrap {
 	
+	private String agentHost = null;
+	
+	public AgentBootstrap(){
+		try {
+			agentHost = InetAddress.getLocalHost().getHostName();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public AgentBootstrap(String host){
+		agentHost = host;
+	}
 	public CLIHelper auth(String rsaPath, String jenkinsHost){
 		CLIHelper cliHelper = new CLIHelper(jenkinsHost, rsaPath);
 		return cliHelper;
@@ -33,31 +46,27 @@ public class AgentBootstrap {
 	 * @param cliHelper
 	 */
 	public void init(CLIHelper cliHelper){
-		try {
-			
-			Map<String, Object> resultMap = cliHelper.callActionFunction("FlyIdentify", "identifyAgent", InetAddress.getLocalHost().getHostName());
 		
-			if(resultMap == null)
-				return;
-			
-			/**
-			 * agent의 기본 식별 정보를 구한다.
-			 */
-			int index = 1;
-			AgentMemoryStore agentMemory = AgentMemoryStore.getInstance();
-			for(Entry<String, Object> resultEntry : resultMap.entrySet()){
-				Map<String, Object> valueMap =  (Map<String, Object>)resultEntry.getValue();
-				valueMap.put("id", index);
-				AgentMeta agentMeta = new AgentMeta();
-				ModelAssignUtil.assignAgentMeta(agentMeta, valueMap);
-				agentMemory.addAgentMeta(agentMeta);
-				index++;
-			}
+		Map<String, Object> resultMap = cliHelper.callActionFunction("FlyIdentify", "identifyAgent", agentHost);
+	
+		if(resultMap == null)
+			return;
 		
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		/**
+		 * agent의 기본 식별 정보를 구한다.
+		 */
+		int index = 1;
+		AgentMemoryStore agentMemory = AgentMemoryStore.getInstance();
+		for(Entry<String, Object> resultEntry : resultMap.entrySet()){
+			Map<String, Object> valueMap =  (Map<String, Object>)resultEntry.getValue();
+			valueMap.put("id", index);
+			AgentMeta agentMeta = new AgentMeta();
+			ModelAssignUtil.assignAgentMeta(agentMeta, valueMap);
+			agentMemory.addAgentMeta(agentMeta);
+			index++;
 		}
+	
+	
 	}
 
 	/**
@@ -91,13 +100,7 @@ public class AgentBootstrap {
 	
 	private void instanceModel(CLIHelper cliHelper){
 		Map<Integer, String> processMap  = ProcessTreeHelper.refresh();
-		
-		try {
-			processMap.put(0, InetAddress.getLocalHost().getHostName());
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		processMap.put(0, agentHost);
 		cliHelper.callActionFunction("FlyIdentify", "instanceModel",  processMap);
 	}
 	

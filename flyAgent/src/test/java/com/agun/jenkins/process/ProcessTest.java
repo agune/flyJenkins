@@ -21,7 +21,7 @@ public class ProcessTest {
 		URL url  = this.getClass().getResource("/id_rsa");
 		CLIHelper cliHelper = new CLIHelper("http://127.0.0.1:8080/jenkins", url.getPath());
 		FilePathHelper filePathHelper = new FilePathHelper(cliHelper);
-		CheckRequest checkRequest = new CheckRequest(cliHelper, filePathHelper);
+		CheckRequest checkRequest = new CheckRequest(cliHelper, filePathHelper, "127.0.0.1");
 		List<AgentMeta> agentList = new ArrayList<AgentMeta>();
 		AgentMeta agent = new AgentMeta();
 		agent.setPid(789);

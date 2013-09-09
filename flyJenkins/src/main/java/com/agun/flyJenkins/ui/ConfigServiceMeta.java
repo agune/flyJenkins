@@ -15,7 +15,6 @@ import com.agun.flyJenkins.model.ServiceMeta;
 import com.agun.flyJenkins.network.NetworkSpace;
 import com.agun.flyJenkins.persistence.ServiceGroupSaveable;
 import com.agun.flyJenkins.persistence.ServiceGroupSaveableUtil;
-import com.agun.flyJenkins.service.ServerMeta;
 import com.agun.flyJenkins.user.FlyUser;
 
 import hudson.Extension;
@@ -116,14 +115,6 @@ public class ConfigServiceMeta extends FlyUI {
     @Extension
     public static class DescriptorImpl extends FlyUIDescriptor {
     	
-    	private ServerMeta serverMeta;
-    	
-    	public ServerMeta getServerMeta() {
-			return serverMeta;
-		}
-
-		public void setServerMeta(ServerMeta serverMeta) {
-			this.serverMeta = serverMeta;
-		}
+    
     }
 }

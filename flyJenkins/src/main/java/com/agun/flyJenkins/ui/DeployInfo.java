@@ -13,7 +13,7 @@ import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
 import com.agun.flyJenkins.FlyFactory;
-import com.agun.flyJenkins.deploy.DeployRequest;
+import com.agun.flyJenkins.model.DeployRequest;
 import com.agun.flyJenkins.job.JobExtends;
 import com.agun.flyJenkins.persistence.DeployRequestSaveable;
 import com.agun.flyJenkins.ui.ConfigServiceMeta.DescriptorImpl;
@@ -111,7 +111,8 @@ public class DeployInfo extends FlyUI {
     }
     
     public void setComplete(String jobName, Date date){
-    
+  
+    	/*
     	DeployRequestSaveable deployRequestSaveable = new DeployRequestSaveable();
     	deployRequestSaveable.load();
     	
@@ -138,7 +139,7 @@ public class DeployInfo extends FlyUI {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-    	
+    	*/
     }
     
     public AjaxProxy getAjaxProxy(){

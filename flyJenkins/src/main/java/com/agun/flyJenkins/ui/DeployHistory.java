@@ -1,12 +1,15 @@
 package com.agun.flyJenkins.ui;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import hudson.Extension;
 
-import com.agun.flyJenkins.deploy.DeployLog;
+import com.agun.flyJenkins.FlyFactory;
+import com.agun.flyJenkins.model.DeployLog;
+import com.agun.flyJenkins.model.DeployReport;
 import com.agun.flyJenkins.persistence.DeployLogSaveable;
-import com.agun.flyJenkins.ui.DeployInfo.DescriptorImpl;
 @Extension
 public class DeployHistory extends FlyUI {
 
@@ -26,12 +29,19 @@ public class DeployHistory extends FlyUI {
 		return deployLogSaveable.getDeployLogList();
 	}
 	
-		@Extension
-		 public static class DescriptorImpl extends FlyUIDescriptor {
-		
-			 @Override
-		     public String getDisplayName() {
-				 return "";
-		     }
-		 }
+	
+	public Collection<DeployReport> getDeployReportList(){
+		Map<String, DeployReport> deployReportMap = FlyFactory.getPeriodWork().getDeployReportMap();
+		System.out.println("===> deployReportMap : " + deployReportMap);
+		return deployReportMap.values();
+	}
+	
+	@Extension
+	 public static class DescriptorImpl extends FlyUIDescriptor {
+	
+		 @Override
+	     public String getDisplayName() {
+			 return "";
+	     }
+	 }
 }

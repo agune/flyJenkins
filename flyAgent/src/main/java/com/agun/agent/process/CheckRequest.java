@@ -12,18 +12,19 @@ import com.agun.jenkins.CLIHelper;
 import com.agun.jenkins.FilePathHelper;
 import com.agun.jenkins.ProcessTreeHelper;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 public class CheckRequest {
 
 	private CLIHelper cliHelper;
 	private FilePathHelper filePathHelper;
+	private String agentHost = null;
 	
-	public CheckRequest(CLIHelper cliHelper, FilePathHelper filePathHelper){
+	
+	public CheckRequest(CLIHelper cliHelper, FilePathHelper filePathHelper, String host){
+		this.agentHost = host;
 		this.cliHelper = cliHelper; 
 		this.filePathHelper = filePathHelper;
 	}
-		
+
 	public void process(List<AgentMeta> agentList){
 	
 		if(agentList.size() == 0)
@@ -33,15 +34,11 @@ public class CheckRequest {
 		instanceModel();
 		
 		Map<String, Object> resultMap = null;
-		try {
-			resultMap = cliHelper.callActionFunction("FlyRequester", "peekRequest",InetAddress.getLocalHost().getHostName() );
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		resultMap = cliHelper.callActionFunction("FlyRequester", "peekRequest", agentHost);
 		if(resultMap == null 
 				|| resultMap.containsKey("type") == false
-				|| resultMap.containsKey("arg") == false)
+				|| resultMap.containsKey("arg") == false
+				|| resultMap.containsKey("deployId") == false)
 			return;
 		
 		int type = (Integer)resultMap.get("type");
@@ -61,7 +58,6 @@ public class CheckRequest {
 				}
 			}
 		}
-		
 	}
 	
 	/**
@@ -82,20 +78,17 @@ public class CheckRequest {
 	
 	public void checkDeploy(){
 		Map<String, Object> resultMap = null;
-		try {
-			resultMap = cliHelper.callActionFunction("FlyDeploy", "deployInfo", InetAddress.getLocalHost().getHostName());
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		resultMap = cliHelper.callActionFunction("FlyDeploy", "deployInfo", agentHost);
 		if(resultMap == null || 
 				resultMap.containsKey("production") == false 
 				|| resultMap.containsKey("serverId") == false)
 			return;
 		
 		String result = (String) resultMap.get("production");
+		String deployId = (String)resultMap.get("deployId");
 		int serverId = (Integer) resultMap.get("serverId");
 		
+		System.out.println("agent check deploy ====>: " + deployId);
 		AgentMemoryStore agentMemoryStore = AgentMemoryStore.getInstance();
 		List<AgentMeta> agentMetaList = agentMemoryStore.getAgentMetaList();
 		ServiceType service = null;
@@ -108,26 +101,21 @@ public class CheckRequest {
 				boolean deployOk = service.deploy(agentMeta);
 				if(deployOk){
 					service.complete(agentMeta);
-					completeDeploy(agentMeta);
+					completeDeploy(agentMeta, deployId);
 				}
 				break;
 			}
 		}
 	}
-	private void completeDeploy(AgentMeta agentMeta){
-		cliHelper.callActionFunction("FlyDeploy", "deployComplete", agentMeta.getServiceId());
+	private void completeDeploy(AgentMeta agentMeta, String deployId){
+		cliHelper.callActionFunction("FlyDeploy", "deployComplete", deployId);
 	}
 	/**
 	 *	서버에 프로세스 정보를 전달해 준다.  
 	 */
 	private void instanceModel(){
 		Map<Integer, String> processMap  = ProcessTreeHelper.refresh();
-		try {
-			processMap.put(0, InetAddress.getLocalHost().getHostName());
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		processMap.put(0, agentHost);
 		cliHelper.callActionFunction("FlyIdentify", "instanceModel",  processMap);
 	}
 	

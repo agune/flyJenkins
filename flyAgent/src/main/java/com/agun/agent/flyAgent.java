@@ -21,7 +21,7 @@ public class flyAgent implements Daemon{
 	private Thread thread;
 	private boolean stoped= false;
 	private boolean lastOneWasTick = false;
-	
+	private String agentHost = null;
 	
 	@Override
 	public void destroy() {
@@ -45,11 +45,17 @@ public class flyAgent implements Daemon{
 			@Override
 			public synchronized void start(){
 				
-				AgentBootstrap agentBootstrap = new AgentBootstrap();
+				AgentBootstrap agentBootstrap =null;
+				
+				if(agentHost != null)
+					agentBootstrap = new AgentBootstrap(agentHost);
+				else
+					agentBootstrap = new AgentBootstrap();
+						
 				CLIHelper cliHelper = agentBootstrap.start(rasDir, "http://"+ host);
 				FilePathHelper filePathHelper = new FilePathHelper(cliHelper);
 				AgentMemoryStore agentMemory = AgentMemoryStore.getInstance();
-				CheckRequest checkRequest = new CheckRequest(cliHelper, filePathHelper);
+				CheckRequest checkRequest = new CheckRequest(cliHelper, filePathHelper, agentHost);
 				
 				while(!stoped){
 					long now = System.currentTimeMillis();
@@ -81,4 +87,9 @@ public class flyAgent implements Daemon{
 				throw e;
 			}
 	}
+	
+	public void setAgentHost(String host){
+		this.agentHost = host;
+	}
+	
 }

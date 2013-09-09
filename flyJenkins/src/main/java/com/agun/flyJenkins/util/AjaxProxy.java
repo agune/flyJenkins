@@ -12,7 +12,7 @@ import java.util.Map;
 import org.kohsuke.stapler.bind.JavaScriptMethod;
 
 import com.agun.flyJenkins.FlyFactory;
-import com.agun.flyJenkins.deploy.DeployRequest;
+import com.agun.flyJenkins.model.DeployRequest;
 import com.agun.flyJenkins.persistence.DeployRequestSaveable;
 import com.agun.flyJenkins.request.ProcessKill;
 import com.agun.flyJenkins.request.RequestMap;

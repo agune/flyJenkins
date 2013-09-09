@@ -1,31 +1,40 @@
-package com.agun.flyJenkins.deploy;
+package com.agun.flyJenkins.model;
 
 import java.util.Date;
 
-/**
- * deploy 에 대한 meta 정보 
- * @author pdc222
- *
- */
-
 public class DeployMeta {
 	private String host;
-	private int serverId;
+	private String deployId;
+	private int serviceId;
 	private int groupId;
+	private int order;
 	private String jobName;
 	private Date date;
 	private String production;
+	
 	public String getHost() {
 		return host;
 	}
 	public void setHost(String host) {
 		this.host = host;
 	}
-	public int getServerId() {
-		return serverId;
+	public String getDeployId() {
+		return deployId;
 	}
-	public void setServerId(int serverId) {
-		this.serverId = serverId;
+	public void setDeployId(String deployId) {
+		this.deployId = deployId;
+	}
+	public int getServiceId() {
+		return serviceId;
+	}
+	public void setServiceId(int serviceId) {
+		this.serviceId = serviceId;
+	}
+	public int getGroupId() {
+		return groupId;
+	}
+	public void setGroupId(int groupId) {
+		this.groupId = groupId;
 	}
 	public String getJobName() {
 		return jobName;
@@ -45,10 +54,11 @@ public class DeployMeta {
 	public void setProduction(String production) {
 		this.production = production;
 	}
-	public int getGroupId() {
-		return groupId;
+	public int getOrder() {
+		return order;
 	}
-	public void setGroupId(int groupId) {
-		this.groupId = groupId;
+	public void setOrder(int order) {
+		this.order = order;
 	}
+
 }

@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import com.agun.flyJenkins.deploy.DeployRequest;
+import com.agun.flyJenkins.model.DeployRequest;
 
 import jenkins.model.Jenkins;
 import hudson.BulkChange;

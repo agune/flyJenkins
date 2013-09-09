@@ -2,174 +2,146 @@
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
+import com.agun.flyJenkins.model.DeployMeta;
+import com.agun.flyJenkins.model.DeployReport;
+import com.agun.flyJenkins.model.ServiceGroup;
+import com.agun.flyJenkins.model.DeployRequest;
+import com.agun.flyJenkins.model.ServiceMeta;
+import com.agun.flyJenkins.model.DeployLog;
 import com.agun.flyJenkins.FlyFactory;
 import com.agun.flyJenkins.job.JobExtends;
 import com.agun.flyJenkins.persistence.DeployLogSaveable;
 import com.agun.flyJenkins.persistence.DeployRequestSaveable;
-import com.agun.flyJenkins.service.AgentService;
-import com.agun.flyJenkins.service.NetworkSpace;
-import com.agun.flyJenkins.service.ServerMeta;
-import com.agun.flyJenkins.service.ServiceGroup;
+import com.agun.flyJenkins.persistence.ServiceGroupSaveable;
+
 
 public class DeploySurveillant {
-	List<DeployLog> deployLogList;
 	
 	private Map<String, LinkedList<DeployMeta>> deployQueueMap = new Hashtable<String, LinkedList<DeployMeta>>();
-	
+	private LinkedList<DeployLog> deployLogQueue = new LinkedList<DeployLog>();
+	private Map<String, DeployReport> deployReportMap = new ConcurrentHashMap<String, DeployReport>();
+	private Map<String, DeployMeta> deployWorkMap = new Hashtable<String, DeployMeta>();
 	/**
 	 * 초기화를 할 경우 저장된 deploy log 를 가져 온다. 저장된 deploy log 가 없을때 새로 생성한다. 
 	 */
 	public DeploySurveillant(){
 		DeployLogSaveable deployLogSaveable = new DeployLogSaveable();
 		deployLogSaveable.load();
-		deployLogList = deployLogSaveable.getDeployLogList();
-		
-		if(deployLogList == null)
-			deployLogList = new ArrayList<DeployLog>();
 	}
 	
 	/**
 	 * deploy request 요청한 항목중에 DeployLog 로 전환되지 않는 값들을 저장한다.
 	 * 
 	 */
-	public void checkDeploy(){
+	public void checkDeploy(Date date){
 		DeployRequestSaveable deployRequestSaveable = new DeployRequestSaveable();
 		deployRequestSaveable.load();
-    	
-    	List<DeployRequest> saveDeployRequestList =deployRequestSaveable.getDeployRequestList();
-    	if(saveDeployRequestList != null){
-    		for(DeployRequest saveDeployRequest : saveDeployRequestList){
-    			if(checkDeployLog(saveDeployRequest)){
-    				addDeployLog(saveDeployRequest);
-    			}
-    		}
-    	}
-	}
+	   	List<DeployRequest> saveDeployRequestList =deployRequestSaveable.getDeployRequestList();
+	   	if(saveDeployRequestList == null)
+	   		return;
+	   	
+		ServiceGroupSaveable serviceGroupSaveable = new ServiceGroupSaveable();
+    	serviceGroupSaveable.load();
+    	List<ServiceGroup> serviceGroupList = serviceGroupSaveable.getServiceGroupList();
+    	if(serviceGroupList == null)
+    		return;
+    	boolean isChange = false;
+		for(DeployRequest saveDeployRequest : saveDeployRequestList){
+			Date reserveDate  = saveDeployRequest.getReserveDate();
+			if(saveDeployRequest.isQueue() == false 
+					&& saveDeployRequest.isConfirm() 
+					&& (reserveDate == null || (reserveDate.getTime() <= date.getTime()))
+			   )
+			
+			{
+				extractDeployLog(saveDeployRequest, serviceGroupList);
+				isChange = true;
+			}
+		}
+		
+		if(isChange){
+			try {
+				deployRequestSaveable.save();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+   }
 	
 	
-	public List<DeployLog> getDeployLogList(){
-		return this.deployLogList;
-	}
 	
 	/**
 	 * 주기적으로 deploy 관련 작업을 진행한다. 
 	 */
 	public void process(){
-		
-		checkDeploy();
-    	DeployLog lastDeployLog = null;
-		for(DeployLog deployLog : deployLogList){
-			 Map<String, ServerMeta> weightMap = checkPriority(deployLog);
-			createDeployMeta(deployLog,  weightMap);
-			nextDeploy(deployLog,  weightMap);
-			lastDeployLog = deployLog;
-		}
-		if(lastDeployLog == null)
-			return;
-		
-		/**
-		 * jenkins fail over 시 상태값을 저장하기 위하여 저장한다.
-		 * 
-		 */
-		DeployLogSaveable deployLogSaveable = new DeployLogSaveable();
-		
-		deployLogSaveable.setDeployLogList(deployLogList);
-		try {
-			deployLogSaveable.save();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		Date date = new Date();
+		checkDeploy(date);
+ 		nextWorkMap();
+ 		System.out.println("work map : " + deployWorkMap);
+ 		
+ 		nextDeploy();
+ 		System.out.println("deploy queue map : " + deployQueueMap);
+ 	 	
 	}
 	
-	/**
-	 * Service Group 의 배포 우선순위를 구한다. 
-	 * @param deployLog
-	 */
-	private  Map<String, ServerMeta> checkPriority(DeployLog deployLog){
-		NetworkSpace networkSpace = NetworkSpace.getInstance();
-		Map<String, List<AgentService>> networkMap = networkSpace.getNetworkMap();
+	public Map<String, DeployReport> getDeployReportMap(){
+		return deployReportMap;
+	}
 	
-		if(networkMap == null)
-			return Collections.EMPTY_MAP;
-		boolean isGroup = false;
-		Map<String, ServerMeta> weightMap = new TreeMap<String, ServerMeta>();
-		for(List<AgentService> agentList : networkMap.values()){
-			for(AgentService agent : agentList){
-				ServiceGroup serviceGroup = agent.getServiceGroup();
+	private void nextWorkMap(){
+		if(deployLogQueue.size() == 0)
+			return;
+		addDeployWorkMap(deployLogQueue.remove());
+	}
+	
+	private void nextDeploy(){
+		if(deployWorkMap.size() == 0)
+			return;
+		
+		for(Entry<String, DeployMeta> entry : deployWorkMap.entrySet()){
+			DeployMeta deployMeta = entry.getValue();
+			String key = deployMeta.getDeployId();
+			if(deployReportMap.containsKey(key)){
+				DeployReport deployReport =  deployReportMap.get(key); 
+				int nextOrder = deployReport.getNextOrder();
 				
-				if(serviceGroup.getGroupId() == deployLog.getGroupId()){
-					List<ServerMeta> serverList = serviceGroup.getServerMetaList();
-					isGroup = true;
-					for(ServerMeta serverMeta: serverList){
-						weightMap.put(serverMeta.getWeight() + "_" + serverMeta.getServerId()  , serverMeta);
-					}
-					break;
+				if(nextOrder == deployMeta.getOrder()){
+					DeployMeta selDeployMeta = deployWorkMap.remove(entry.getKey());
+					addDeployMetaQueue(selDeployMeta);
 				}
 			}
-			if(isGroup){
-				break;
-			}
-		}
-		return weightMap;
-	}
-	
-	/**
-	 * Deploy Log 를 기준으로 Deploy Meta 를 생성한다. 
-	 * @param deployLog
-	 * @param weightMap
-	 */
-	private void createDeployMeta(DeployLog deployLog, Map<String, ServerMeta> weightMap){
-		if(deployLog.getStepOrder() > 0)
-			return;
-		deployLog.setStepOrder(1);
-		deployLog.setWorkSize(weightMap.size());
-		for(String key : weightMap.keySet()){
-			ServerMeta serverMeta = weightMap.get(key);
-			DeployMeta deployMeta = new DeployMeta();
-			deployMeta.setDate(deployLog.getDate());
-			deployMeta.setGroupId(serverMeta.getGroupId());
-			deployMeta.setHost(serverMeta.getHost());
-			deployMeta.setJobName(deployLog.getJobName());
-			deployMeta.setProduction(deployLog.getProduction());
-			deployMeta.setServerId(serverMeta.getServerId());
-			addDeployMetaQueue(deployMeta);
-			break;
 		}
 	}
 	
-	private void nextDeploy(DeployLog deployLog, Map<String, ServerMeta> weightMap){
-		if(deployLog.getCompleteCount() != deployLog.getStepOrder() 
-		   || deployLog.getWorkSize() <= deployLog.getStepOrder())
+	private void addDeployWorkMap(DeployLog deployLog){
+		if(deployLog == null)
 			return;
-		int stepOrder = deployLog.getStepOrder();
-		stepOrder++;
-		deployLog.setStepOrder(stepOrder);
 		
-		int count = 1;
-		for(String key : weightMap.keySet()){
-			if(count == stepOrder){
-				ServerMeta serverMeta = weightMap.get(key);
-				DeployMeta deployMeta = new DeployMeta();
-				deployMeta.setDate(deployLog.getDate());
-				deployMeta.setGroupId(serverMeta.getGroupId());
-				deployMeta.setHost(serverMeta.getHost());
-				deployMeta.setJobName(deployLog.getJobName());
-				deployMeta.setProduction(deployLog.getProduction());
-				deployMeta.setServerId(serverMeta.getServerId());
-				addDeployMetaQueue(deployMeta);
-				break;
-			}
-			count++;
-		}
+		DeployMeta deployMeta = new DeployMeta();
+		deployMeta.setDate(new Date());
+		deployMeta.setDeployId(deployLog.getDeployId());
+		deployMeta.setGroupId(deployLog.getServiceGroupId());
+		deployMeta.setHost(deployLog.getHost());
+		deployMeta.setJobName(deployLog.getJobName());
+		deployMeta.setOrder(deployLog.getRequestOrder());
+		deployMeta.setProduction(deployLog.getProduction());
+		deployMeta.setServiceId(deployLog.getServiceId());
+		
+		deployWorkMap.put(deployMeta.getDeployId()+deployMeta.getOrder(), deployMeta);
 	}
+	
 	
 	/**
 	 * deployMeta 를 queue 에 저장 하여 deploy 가 진행 되게 한다. 
@@ -220,32 +192,40 @@ public class DeploySurveillant {
 	 * deployLog list 에 deployLog 를 추가
 	 * @param deployRequest
 	 */
-	private void addDeployLog(DeployRequest deployRequest){
+	private void addDeployLog(DeployRequest deployRequest, ServiceMeta serviceMeta, int order){
 		DeployLog deployLog = new DeployLog();
+		deployLog.setDeployId(deployRequest.getJobName() + deployRequest.getDate().getTime());
 		deployLog.setJobName(deployRequest.getJobName());
-		deployLog.setGroupId(deployRequest.getServerGroup());
+		deployLog.setServiceGroupId(deployRequest.getServerGroup());
 		deployLog.setDate(deployRequest.getDate());
-		deployLog.setStepOrder(0);
+		deployLog.setServiceId(serviceMeta.getServiceId());
+		deployLog.setRequestOrder(order);
+		deployLog.setHost(serviceMeta.getHost());
+		deployLog.setReserveDate(deployRequest.getReserveDate());
 		getJobProduction(deployLog);
-		synchronized (deployLogList) {
-			deployLogList.add(deployLog);
-		}
+		deployLogQueue.add(deployLog);
 	}
-	/**
-	 * deploy request 가 deploy log 로 존재하는지 체크 
-	 * @param deployRequest
-	 * @return
-	 */
-	private boolean checkDeployLog(DeployRequest deployRequest){
-		// confirm 이 안된건 제외한다.
-		if(deployRequest.isConfirm() == false)
-			return false;
-		for(DeployLog deployLog : deployLogList){
-			if(deployRequest.getDate().getTime() == deployLog.getDate().getTime()
-				&& deployRequest.getJobName() == deployLog.getJobName()){
-				return false;
+	
+	
+	private void extractDeployLog(DeployRequest deployRequest, List<ServiceGroup> serviceGroupList){
+		int order = 0;
+		for(ServiceGroup serviceGroup :  serviceGroupList){
+			if(deployRequest.getServerGroup() == serviceGroup.getGroupId()){
+				List<ServiceMeta> serviceMetaList = serviceGroup.getServiceMetaList();
+	
+				order = 1;
+				for(ServiceMeta serviceMeta : serviceMetaList){
+					addDeployLog(deployRequest, serviceMeta, order);
+					order++;
+				}
+				
+				DeployReport deployReport = new DeployReport();
+				deployReport.setDeployId(deployRequest.getJobName() + deployRequest.getDate().getTime());
+				deployReport.setDeploySize(serviceMetaList.size());
+				deployReportMap.put(deployReport.getDeployId(), deployReport);
+				break;
 			}
 		}
-		return true;
+		deployRequest.setQueue(true);
 	}
 }

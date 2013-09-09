@@ -6,7 +6,7 @@ import java.util.List;
 
 import jenkins.model.Jenkins;
 
-import com.agun.flyJenkins.deploy.DeployLog;
+import com.agun.flyJenkins.model.DeployLog;
 
 import hudson.BulkChange;
 import hudson.XmlFile;

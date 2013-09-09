@@ -1,10 +1,12 @@
 package com.agun.flyJenkins.schedule;
 
 import java.util.List;
+import java.util.Map;
 
 import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement;
 
-import com.agun.flyJenkins.deploy.DeployLog;
+import com.agun.flyJenkins.model.DeployLog;
+import com.agun.flyJenkins.model.DeployReport;
 import com.agun.flyJenkins.deploy.DeploySurveillant;
 import com.agun.flyJenkins.request.RequestQueue;
 
@@ -32,8 +34,8 @@ public class PeriodWork extends PeriodicWork {
 		return deploySurveillant;
 	}
 	
-	public List<DeployLog> getDeployLogList(){
-		return deploySurveillant.getDeployLogList();
+	public Map<String, DeployReport> getDeployReportMap(){
+		return deploySurveillant.getDeployReportMap();
 	}
 	
 	@Override
