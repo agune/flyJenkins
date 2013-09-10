@@ -1,9 +1,12 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
  	<f:optionalBlock title="Fly Deploy" name="flyRequest"
- 	checked="${instance.serverGroup !=0 || instanse.production != null || instance.licenser != null}">
-    	<f:entry title="serverGroup" field="serverGroup">
-      		<f:textbox />
-    	</f:entry> 
+ 	checked="${instance.serviceGroup !=0 || instanse.production != null || instance.licenser != null}">
+    	<f:dropdownList name="serviceGroup" title="serviceGroup" >
+	    	<j:forEach var="serviceGroup" items="${descriptor.getServiceGroupList()}" varStatus="loop">
+				<f:dropdownListBlock title="${serviceGroup.groupName}" value="${serviceGroup.groupId}"
+				selected="${serviceGroup.groupId==instance.serviceGroup}"  />
+	    	 </j:forEach>
+	    	 </f:dropdownList>
     	<f:entry title="production" field="production">
       		<f:textbox />
     	</f:entry>
@@ -11,4 +14,4 @@
       		<f:textbox />
     	</f:entry> 
      </f:optionalBlock>
-</j:jelly>
+    </j:jelly>

@@ -56,7 +56,7 @@ public class DeployInfo extends FlyUI {
     			JobExtends jobExtend = (JobExtends) entry.getValue();
     			production =  jobExtend.production;
     			licenser  = jobExtend.licenser;
-    			serverGroup =  jobExtend.serverGroup;
+    			serverGroup =  jobExtend.serviceGroup;
     			break;
     		}
     	}

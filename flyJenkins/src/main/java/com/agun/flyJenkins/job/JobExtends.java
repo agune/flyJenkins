@@ -3,11 +3,15 @@ package com.agun.flyJenkins.job;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import net.sf.json.JSONObject;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
+
+import com.agun.flyJenkins.model.ServiceGroup;
+import com.agun.flyJenkins.persistence.ServiceGroupSaveable;
 
 import hudson.Extension;
 import hudson.FilePath;
@@ -22,20 +26,21 @@ import hudson.model.AbstractProject;
 public class JobExtends extends JobProperty<AbstractProject<?,?>>  {
 	public final String production;
 	public final String licenser;
-	public final int serverGroup;
+	public final int serviceGroup;
 	
 	@DataBoundConstructor
-	public JobExtends(String production, String licenser, int serverGroup){
+	public JobExtends(String production, String licenser, int serviceGroup){
 		this.production = production;
 		this.licenser = licenser;
-		this.serverGroup = serverGroup;
+		this.serviceGroup = serviceGroup;
+		System.out.println("===> start : " + serviceGroup);
 	}
 	
 	@Override
 	public Action getJobAction(AbstractProject<?, ?> job) {
 		return new JobAction(this.owner.getName());
 	}
-
+	
 	@Override
 	public boolean perform(AbstractBuild<?,?> build, Launcher launcher, BuildListener listener){
 		System.out.println("build result: " + build.getResult());
@@ -87,6 +92,13 @@ public class JobExtends extends JobProperty<AbstractProject<?,?>>  {
 					JobExtends.class,
 					formData.getJSONObject("flyRequest"));
 			return bpp;
+		}
+		
+		public List<ServiceGroup> getServiceGroupList(){
+			ServiceGroupSaveable serviceGroupSaveable = new ServiceGroupSaveable();
+			serviceGroupSaveable.load();
+			
+			return serviceGroupSaveable.getServiceGroupList();
 		}
 	}
 
