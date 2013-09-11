@@ -53,6 +53,20 @@ public class NetworkSpace {
 		processInitNetwork(serviceMetaList);
 	}
 	
+	
+	public ServiceMeta getServiceMeta(String host, int serviceId){
+		List<AgentService> agentServiceList = this.getAgentListByHost(host);
+		for(AgentService agentService : agentServiceList){
+			List<ServiceMeta> serviceMetaList = agentService.getServiceMetaList();
+			for(ServiceMeta serviceMeta : serviceMetaList){
+				if(serviceId == serviceMeta.getServiceId())
+					return serviceMeta;
+			}
+		}
+		return null;
+	
+	}
+	
 	/**
 	 * obtain agent of service list 
 	 * @param host

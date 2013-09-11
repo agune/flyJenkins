@@ -1,13 +1,20 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
  	<f:optionalBlock title="Fly Deploy" name="flyRequest"
  	checked="${instance.serviceGroup !=0 || instanse.production != null || instance.licenser != null}">
-    	<f:dropdownList name="serviceGroup" title="serviceGroup" >
-	    	<j:forEach var="serviceGroup" items="${descriptor.getServiceGroupList()}" varStatus="loop">
-				<f:dropdownListBlock title="${serviceGroup.groupName}" value="${serviceGroup.groupId}"
-				selected="${serviceGroup.groupId==instance.serviceGroup}"  />
+        <f:entry name="serviceGroup" title="serviceGroup" field="serviceGroup">
+        	<select name="serviceGroup">
+        	<j:forEach var="serviceGroup" items="${descriptor.getServiceGroupList()}" varStatus="loop">
+	    	 	<j:if test="${instance.serviceGroup ==  serviceGroup.groupId }">
+	    	 		<option value="${serviceGroup.groupId}" selected="selected" >${serviceGroup.groupName}</option>
+	    	 	</j:if>
+	    	 	<j:if test="${instance.serviceGroup !=  serviceGroup.groupId }">
+	    	 			<option value="${serviceGroup.groupId}">${serviceGroup.groupName}</option>
+	    	 	</j:if>
 	    	 </j:forEach>
-	    	 </f:dropdownList>
-    	<f:entry title="production" field="production">
+	    	 </select>
+		</f:entry>
+    
+		<f:entry title="production" field="production">
       		<f:textbox />
     	</f:entry>
     	<f:entry title="licenser" field="licenser">

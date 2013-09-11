@@ -81,12 +81,16 @@ public class CheckRequest {
 		resultMap = cliHelper.callActionFunction("FlyDeploy", "deployInfo", agentHost);
 		if(resultMap == null || 
 				resultMap.containsKey("production") == false 
-				|| resultMap.containsKey("serverId") == false)
+				|| resultMap.containsKey("serverId") == false
+				|| resultMap.containsKey("deployId") == false
+			)
 			return;
 		
 		String result = (String) resultMap.get("production");
 		String deployId = (String)resultMap.get("deployId");
 		int serverId = (Integer) resultMap.get("serverId");
+		
+		
 		
 		System.out.println("agent check deploy ====>: " + deployId);
 		AgentMemoryStore agentMemoryStore = AgentMemoryStore.getInstance();

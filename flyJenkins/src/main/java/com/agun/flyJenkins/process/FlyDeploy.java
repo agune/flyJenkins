@@ -7,6 +7,8 @@ import java.util.Map;
 import com.agun.flyJenkins.FlyFactory;
 import com.agun.flyJenkins.model.DeployMeta;
 import com.agun.flyJenkins.model.DeployReport;
+import com.agun.flyJenkins.model.ServiceMeta;
+import com.agun.flyJenkins.network.NetworkSpace;
 import com.agun.flyJenkins.deploy.DeploySurveillant;
 import com.agun.flyJenkins.schedule.PeriodWork;
 
@@ -45,7 +47,6 @@ public class FlyDeploy implements FlyProcess{
 		deployInfoMap.put("serverId", deployMeta.getServiceId());
 		deployInfoMap.put("deployId", deployMeta.getDeployId());
 		deployInfoMap.put("order", deployMeta.getOrder());
-		
 		
 		return deployInfoMap;
 	}
