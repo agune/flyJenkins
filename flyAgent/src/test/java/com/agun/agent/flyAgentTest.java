@@ -14,7 +14,7 @@ public class flyAgentTest {
 	@Test
 	public void doStartTest() {
 		flyAgent agent = new flyAgent();
-		agent.setAgentHost("127.0.0.2");
+		agent.setAgentHost("127.0.0.1");
 		String[] args = new String[2];
 		args[0] = "127.0.0.1:8080/jenkins";
 		args[1] = "/Users/pdc222/jenkins/flyJenkins/flyAgent/src/test/resources/id_rsa";

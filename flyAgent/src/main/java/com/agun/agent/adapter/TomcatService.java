@@ -90,10 +90,8 @@ public class TomcatService implements ServiceType {
 				launcher.launch().cmds(shutdownPath)
 				.envs(envTable)
 				.stderr(System.out)
-				.start().join();
+				.start();
 			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (InterruptedException e) {
 				e.printStackTrace();
 			} 
 			 return checkPid(true, agentMeta);
@@ -123,6 +121,7 @@ public class TomcatService implements ServiceType {
 	
 	@Override
 	public boolean monitoring(AgentMeta agentMeta){
+		System.out.println("====> start monitoring : " + agentMeta.getTestUrl());
 		if(agentMeta.getTestUrl() != null && agentMeta.getTestUrl().length() > 0){
 			DefaultHttpClient httpClient = new DefaultHttpClient();
 			HttpGet httpGet = new HttpGet(agentMeta.getTestUrl());
@@ -131,6 +130,7 @@ public class TomcatService implements ServiceType {
 				HttpResponse response1 =  httpClient.execute(httpGet);
 				StatusLine statusLine = response1.getStatusLine();
 				int statusCode = statusLine.getStatusCode();
+				System.out.println("==> check monitoring  : " + statusCode);
 				if(statusCode == 200)
 					return true;
 				

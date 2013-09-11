@@ -68,6 +68,8 @@ public class GeneralService implements ServiceType {
 				FilePath sourceFilePath = new FilePath(new File(agentMeta.getDestination() + "/" + filename));
 				filePath.renameTo(sourceFilePath);
 				
+				sourceFilePath.chmod(0755);
+				
 				/**
 				 * make start script
 				 */
@@ -123,14 +125,11 @@ public class GeneralService implements ServiceType {
         try {
                 launcher.launch().cmds(command).stderr(System.out)
                 .stdout(System.out)
-                .start().join();
+                .start();
         } catch (IOException e) {
                 e.printStackTrace();
                 return false;
-        } catch (InterruptedException e) {
-                e.printStackTrace();
-                return false;
-        }
+        }         
         return true;
 	}
 	
@@ -141,7 +140,7 @@ public class GeneralService implements ServiceType {
 	}
 	
 	private void createStopSh(String destination, String production){
-		String command = "#! /bin/bash \n pid=`ps ex | grep "+production+" | grep -v grep | awk '{print $1}'`  \n kill -9 $pid";
+		String command = "#! /bin/bash \n pid=`ps ex | grep "+destination+"/"+production+" | grep -v grep | awk '{print $1}'`  \n kill -9 $pid";
 		createSh(destination, "stop.sh", command);
 	}
 	private void createCommandSh(String destination, String command){
@@ -155,7 +154,7 @@ public class GeneralService implements ServiceType {
 		try {
 			if(sourceFilePath.exists() == false){
 				sourceFilePath.write(command, null);
-				sourceFilePath.chmod(755);
+				sourceFilePath.chmod(0755);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

@@ -37,8 +37,7 @@ public class CheckRequest {
 		resultMap = cliHelper.callActionFunction("FlyRequester", "peekRequest", agentHost);
 		if(resultMap == null 
 				|| resultMap.containsKey("type") == false
-				|| resultMap.containsKey("arg") == false
-				|| resultMap.containsKey("deployId") == false)
+				|| resultMap.containsKey("arg") == false)
 			return;
 		
 		int type = (Integer)resultMap.get("type");
