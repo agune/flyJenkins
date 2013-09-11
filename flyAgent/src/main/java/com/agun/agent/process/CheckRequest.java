@@ -105,15 +105,25 @@ public class CheckRequest {
 				boolean deployOk = service.deploy(agentMeta);
 				if(deployOk){
 					service.complete(agentMeta);
-					completeDeploy(agentMeta, deployId);
+					deployOk = service.monitoring(agentMeta);
+					if(deployOk)
+						completeDeploy(agentMeta, deployId);
+					else
+						failDeploy(agentMeta, deployId);
 				}
 				break;
 			}
 		}
 	}
+	
 	private void completeDeploy(AgentMeta agentMeta, String deployId){
 		cliHelper.callActionFunction("FlyDeploy", "deployComplete", deployId);
 	}
+	
+	private void failDeploy(AgentMeta agentMeta, String deployId){
+		cliHelper.callActionFunction("FlyDeploy", "deployFail", deployId);
+	}
+	
 	/**
 	 *	서버에 프로세스 정보를 전달해 준다.  
 	 */

@@ -43,6 +43,13 @@ public interface ServiceType {
 	public boolean start(AgentMeta agentMeta);
 	
 	/**
+	 * 서비스 상태를 테스트 한다.
+	 * @param agentMeta
+	 * @return
+	 */
+	public boolean monitoring(AgentMeta agentMeta);
+	
+	/**
 	 * deploy 완료후 호출한다. 
 	 */
 	public void complete(AgentMeta agentMeta);

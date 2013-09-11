@@ -5,6 +5,12 @@ import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Map;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+
 import hudson.FilePath;
 import hudson.Launcher.LocalLauncher;
 import hudson.util.StreamTaskListener;
@@ -114,6 +120,31 @@ public class TomcatService implements ServiceType {
 		}
 		return false;
 	}
+	
+	@Override
+	public boolean monitoring(AgentMeta agentMeta){
+		if(agentMeta.getTestUrl() != null && agentMeta.getTestUrl().length() > 0){
+			DefaultHttpClient httpClient = new DefaultHttpClient();
+			HttpGet httpGet = new HttpGet(agentMeta.getTestUrl());
+			
+			try {
+				HttpResponse response1 =  httpClient.execute(httpGet);
+				StatusLine statusLine = response1.getStatusLine();
+				int statusCode = statusLine.getStatusCode();
+				if(statusCode == 200)
+					return true;
+				
+			} catch (ClientProtocolException e) {
+				e.printStackTrace();
+				
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return false;
+		}
+		return true;
+	}
+	
 	
 	/**
 	 * 15초 프로세스의 상태를 확인하고 

@@ -36,6 +36,10 @@ public class DeployReport {
 		this.successCount++;
 	}
 	
+	public void plusFailCount(){
+		this.failCount++;
+	}
+	
 	public boolean isFinished(){
 		if(deploySize == 0)
 			return true;

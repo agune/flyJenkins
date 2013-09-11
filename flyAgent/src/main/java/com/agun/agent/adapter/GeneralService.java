@@ -1,6 +1,8 @@
 package com.agun.agent.adapter;
 
 import hudson.FilePath;
+import hudson.Launcher.LocalLauncher;
+import hudson.util.StreamTaskListener;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,25 +34,55 @@ public class GeneralService implements ServiceType {
 
 	@Override
 	public boolean deploy(AgentMeta agentMeta) {
-		// TODO Auto-generated method stub
-		return false;
+		stop(agentMeta);
+		return start(agentMeta);
 	}
 
 	@Override
 	public boolean getProduction(AgentMeta agentMeta, String production) {
-		
-		createCmdSh(agentMeta.getDestination(), production);
-		String filename = extractFilename(production);
+	
+		/**
+		 * checked production dir
+		 */
 		AgentInfoManager.checkProductionDir(agentMeta.getServiceId());
-		String productionPath = AgentInfoManager.getProductionPath(agentMeta.getServiceId(), filename);
-		FilePath filePath = new FilePath(new File(productionPath));
 		
+		/**
+		 * obtain filename of production
+		 */
+		String filename = extractFilename(production);
+		
+		/**
+		 * obtain production path on agent
+		 */
+		String productionPath = AgentInfoManager.getProductionPath(agentMeta.getServiceId(), filename);
+		
+		FilePath filePath = new FilePath(new File(productionPath));
 		try {
+			// copy to production 
 			filePathHelper.copyTo(production, productionPath);
 			if(filePath.exists()){
+				/**
+				 * production move agent destination => service destination
+				 */
 				System.out.println("======>" + agentMeta.getDestination() + "/" + filename + "," + productionPath);
 				FilePath sourceFilePath = new FilePath(new File(agentMeta.getDestination() + "/" + filename));
 				filePath.renameTo(sourceFilePath);
+				
+				/**
+				 * make start script
+				 */
+				createStartSh(agentMeta.getDestination(), filename);
+			
+				/**
+				 * make stop script
+				 */
+				createStopSh(agentMeta.getDestination(), filename);
+			
+				/**
+				 * make command script
+				 */
+				createCommandSh(agentMeta.getDestination(), agentMeta.getCommand());
+				
 				return true;
 			}
 		} catch (IOException e) {
@@ -63,39 +95,79 @@ public class GeneralService implements ServiceType {
 
 	@Override
 	public boolean stop(AgentMeta agentMeta) {
-		// TODO Auto-generated method stub
-		return false;
+		boolean isOk  = false;
+		if(agentMeta.getPid() > 0){
+			isOk =  runCommand(agentMeta.getDestination() + "/stop.sh");
+		}
+		return isOk;
 	}
 
 	@Override
 	public boolean start(AgentMeta agentMeta) {
-		// TODO Auto-generated method stub
-		return false;
+		boolean isOk =  runCommand(agentMeta.getDestination() + "/start.sh");
+		if(	isOk 
+				&& (agentMeta.getCommand() !=null) 
+				&& (agentMeta.getCommand().length() > 0)){
+			isOk = runCommand(agentMeta.getDestination() + "/command.sh");
+		}
+		return isOk;
 	}
-
 	
-	private void createCmdSh(String destination, String production){
-		FilePath sourceFilePath = new FilePath(new File(destination + "/cmd.sh"));
+	@Override
+	public boolean monitoring(AgentMeta agentMeta){
+		return true;
+	}
+	
+	private boolean runCommand(String command){
+		LocalLauncher launcher = new LocalLauncher(new StreamTaskListener(System.out, null));
+        try {
+                launcher.launch().cmds(command).stderr(System.out)
+                .stdout(System.out)
+                .start().join();
+        } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+        } catch (InterruptedException e) {
+                e.printStackTrace();
+                return false;
+        }
+        return true;
+	}
+	
+	
+	private void createStartSh(String destination, String production){
+		String command = "#! /bin/bash \n " + destination + "/" + production + " &";
+		createSh(destination, "start.sh", command);
+	}
+	
+	private void createStopSh(String destination, String production){
+		String command = "#! /bin/bash \n pid=`ps ex | grep "+production+" | grep -v grep | awk '{print $1}'`  \n kill -9 $pid";
+		createSh(destination, "stop.sh", command);
+	}
+	private void createCommandSh(String destination, String command){
+		if(command == null || command.length() == 0)
+			return;
+		createSh(destination, "command.sh", command);
+	}
+	
+	private void createSh(String destination, String scriptName, String command){
+		FilePath sourceFilePath = new FilePath(new File(destination + "/" + scriptName));
 		try {
 			if(sourceFilePath.exists() == false){
-				String content = "#! /bin/bash \n pid=`ps ex | grep "+production+" | grep -v grep | awk '{print $1}'`  \n echo $pid";
-				sourceFilePath.write(content, null);
+				sourceFilePath.write(command, null);
+				sourceFilePath.chmod(755);
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
 	@Override
 	public void complete(AgentMeta agentMeta) {
-		// TODO Auto-generated method stub
-		
-	}
 	
+	}
 	
 	private String extractFilename(String filepath){
 		String filePathNormal = filepath.replaceAll("\\\\", "/");

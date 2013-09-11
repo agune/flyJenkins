@@ -62,11 +62,22 @@ public class FlyDeploy implements FlyProcess{
 	}
 	
 	
+	public void deployFail(String deployId){
+		Map<String, DeployReport> deployReportMap = FlyFactory.getPeriodWork().getDeployReportMap();
+		if(deployReportMap.containsKey(deployId)){
+			DeployReport deployReport = deployReportMap.get(deployId);
+			deployReport.plusFailCount();
+		}
+	}
+	
+	
 	public Map<String, Object> run(Object arg1, String operName) {
 		if("deployInfo".equals(operName)){
 			return this.getDeployInfo((String)arg1);
 		}else if("deployComplete".equals(operName)){
 			this.deployComplete((String) arg1);
+		}else if("deployFail".equals(operName)){
+			this.deployFail((String) arg1);
 		}
 		return null;
 	}
