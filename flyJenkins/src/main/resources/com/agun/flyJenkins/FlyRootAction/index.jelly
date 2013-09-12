@@ -46,6 +46,14 @@ THE SOFTWARE.
             </div>
           </t:summary>
           
+          
+          <t:summary icon="document.gif"
+                     href="/jenkins/flyJenkins/ProductionList" iconOnly="true">
+            <div class="link"><a href="${href}">production 내역</a></div>
+            <div style="color:gray; text-decoration:none;">
+            </div>
+          </t:summary>
+          
       </table>
     </l:main-panel>
   </l:layout>

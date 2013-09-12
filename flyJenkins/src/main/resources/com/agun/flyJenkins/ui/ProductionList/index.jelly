@@ -1,0 +1,24 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:s="/lib/samples">
+ <l:layout title="Network Map">
+<l:main-panel>
+
+<table style="margin-top:0px; border-top: none;" class="sortable pane bigtable">
+	<tbody>
+	<tr style="border-top: 0px;">
+	<th>jobName</th> <th>build </th> <th>production </th><th>date</th> 
+	</tr>
+	<j:forEach items="${it.productionMetaList}" var="productionMeta">
+	<tr>
+			<td style="width:120px;text-align:center">${productionMeta.jobName}</td> 
+ 			<td style="width:120px;text-align:center">${productionMeta.buildNumber}</td> 
+ 			<td style="width:120px;text-align:center">${productionMeta.productionPath}</td> 
+ 			<td style="width:120px;text-align:center">${productionMeta.createDate}</td> 
+ 
+     </tr>
+     </j:forEach>
+     </tbody>
+	</table>
+</l:main-panel>
+</l:layout>
+</j:jelly>

@@ -1,5 +1,12 @@
 package com.agun.flyJenkins;
 
+import hudson.FilePath;
+
+import java.io.File;
+import java.io.IOException;
+
+import jenkins.model.Jenkins;
+
 
 /**
  * flyJenkins 의 초기화를 도와 주는 class
@@ -13,6 +20,22 @@ public class FlyBootstrap {
 	 */
 	public static void start(){
 		FlyBootstrap.initNetworkSpace();
+		
+		File fileRootPath = Jenkins.getInstance().getRootDir();
+		String flyJenkinsRoot = fileRootPath.getAbsolutePath() + "/flyJenkins/job";
+		FilePath filePath =  new FilePath(new File(flyJenkinsRoot));
+		
+		try {
+			if(filePath.exists() == false){
+				filePath.mkdirs();
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	/**
