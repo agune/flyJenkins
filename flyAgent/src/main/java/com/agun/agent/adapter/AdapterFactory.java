@@ -8,7 +8,7 @@ public class AdapterFactory {
 	private AdapterFactory(){}
 	private static TomcatService tomcatService = new TomcatService();
 	private static GeneralService generalService = new GeneralService();
-	
+	private static EtcService etcService = new EtcService();
 	public static ServiceType getServiceType(AgentMeta agentMeta, FilePathHelper filePathHelper){
 		if(agentMeta.getType() == 1){
 			generalService.setFilePathHelper(filePathHelper);
@@ -16,6 +16,7 @@ public class AdapterFactory {
 			tomcatService.setFilePathHelper(filePathHelper);
 			return tomcatService;
 		}
-		return generalService;
+		etcService.setFilePathHelper(filePathHelper);
+		return etcService;
 	}
 }

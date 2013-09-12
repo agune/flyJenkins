@@ -48,19 +48,43 @@ public class TomcatService implements ServiceType {
 	
 	@Override
 	public boolean getProduction(AgentMeta agentMeta, String production) {
+		
+		/**
+		 *  obtain filename of production
+		 */
 		String filename = extractFilename(production);
+		
+		/**
+		 * make dir of production on agent
+		 */
 		AgentInfoManager.checkProductionDir(agentMeta.getServiceId());
 		
+		/**
+		 * obtain path of production on agent
+		 */
 		String productionPath = AgentInfoManager.getProductionPath(agentMeta.getServiceId(), filename);
 	
-		FilePath filePath = new FilePath(new File(productionPath));
 		
 		try {
+			FilePath filePath = new FilePath(new File(productionPath));
+			/**
+			 *production of agent copy to  destination
+			 */
 			filePathHelper.copyTo(production, productionPath);
+			
+			/**
+			 * production move agent destination => service destination
+			 */
 			if(filePath.exists()){
 				System.out.println("======>" + agentMeta.getDestination() + "/webapps/" + filename + "," + productionPath);
 				FilePath sourceFilePath = new FilePath(new File(agentMeta.getDestination() + "/webapps/" + filename));
 				filePath.renameTo(sourceFilePath);
+				
+				
+				/**
+				 * make command script
+				 */
+				createCommandSh(agentMeta.getDestination(), agentMeta.getCommand());
 				return true;
 			}
 		} catch (IOException e) {
@@ -102,6 +126,7 @@ public class TomcatService implements ServiceType {
 	@Override
 	public boolean start(AgentMeta agentMeta) {
 		int pid = getPid(agentMeta);
+		boolean isOk = false;
 		if(pid == 0){
 			String startPath = startScriptPath(agentMeta);
 			 LocalLauncher launcher = new LocalLauncher(new StreamTaskListener(System.out, null));
@@ -111,12 +136,17 @@ public class TomcatService implements ServiceType {
 				launcher.launch().cmds(startPath)
 				.envs(envTable)
 				.start();
-				return checkPid(false, agentMeta);
-			} catch (IOException e) {
+				isOk = checkPid(false, agentMeta);
+				if(	isOk 
+						&& (agentMeta.getCommand() !=null) 
+						&& (agentMeta.getCommand().length() > 0)){
+					isOk = runCommand(agentMeta.getDestination() + "/bin/fly_command.sh");
+				}
+			 } catch (IOException e) {
 				e.printStackTrace();
 			} 
 		}
-		return false;
+		return isOk;
 	}
 	
 	@Override
@@ -143,6 +173,40 @@ public class TomcatService implements ServiceType {
 			return false;
 		}
 		return true;
+	}
+	
+	
+	private boolean runCommand(String command){
+		LocalLauncher launcher = new LocalLauncher(new StreamTaskListener(System.out, null));
+        try {
+                launcher.launch().cmds(command).stderr(System.out)
+                .stdout(System.out)
+                .start();
+        } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+        }         
+        return true;
+	}
+	
+	private void createCommandSh(String destination, String command){
+		if(command == null || command.length() == 0)
+			return;
+		createSh(destination, "bin/fly_command.sh", command);
+	}
+	
+	private void createSh(String destination, String scriptName, String command){
+		FilePath sourceFilePath = new FilePath(new File(destination + "/" + scriptName));
+		try {
+			if(sourceFilePath.exists() == false){
+				sourceFilePath.write(command, null);
+				sourceFilePath.chmod(0755);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	

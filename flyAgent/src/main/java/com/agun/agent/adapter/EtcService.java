@@ -7,15 +7,18 @@ import hudson.util.StreamTaskListener;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+
 import com.agun.agent.model.AgentMeta;
 import com.agun.jenkins.FilePathHelper;
 import com.agun.jenkins.ProcessTreeHelper;
 import com.agun.system.AgentInfoManager;
 
-
-
-public class GeneralService implements ServiceType {
-
+public class EtcService implements ServiceType {
 	FilePathHelper filePathHelper;
 	
 	@Override
@@ -33,14 +36,7 @@ public class GeneralService implements ServiceType {
 	}
 
 	@Override
-	public boolean deploy(AgentMeta agentMeta) {
-		stop(agentMeta);
-		return start(agentMeta);
-	}
-
-	@Override
 	public boolean getProduction(AgentMeta agentMeta, String production) {
-	
 		/**
 		 * checked production dir
 		 */
@@ -70,17 +66,7 @@ public class GeneralService implements ServiceType {
 				
 				sourceFilePath.chmod(0755);
 				
-				/**
-				 * make start script
-				 */
-				createStartSh(agentMeta.getDestination(), filename);
-			
-				/**
-				 * make stop script
-				 */
-				createStopSh(agentMeta.getDestination(), filename);
-			
-				/**
+					/**
 				 * make command script
 				 */
 				createCommandSh(agentMeta.getDestination(), agentMeta.getCommand());
@@ -96,56 +82,78 @@ public class GeneralService implements ServiceType {
 	}
 
 	@Override
+	public boolean deploy(AgentMeta agentMeta) {
+		stop(agentMeta);
+		return start(agentMeta);
+	}
+
+	@Override
 	public boolean stop(AgentMeta agentMeta) {
-		boolean isOk  = false;
-		if(agentMeta.getPid() > 0){
-			isOk =  runCommand(agentMeta.getDestination() + "/stop.sh");
-		}
-		return isOk;
+		return true;
 	}
 
 	@Override
 	public boolean start(AgentMeta agentMeta) {
-		boolean isOk =  runCommand(agentMeta.getDestination() + "/start.sh");
-		isOk = checkPid(false, agentMeta);
-		if(	isOk 
-				&& (agentMeta.getCommand() !=null) 
-				&& (agentMeta.getCommand().length() > 0)){
-			isOk = runCommand(agentMeta.getDestination() + "/command.sh");
-		}
-		return isOk;
+		return runCommand(agentMeta.getDestination() + "/command.sh");
 	}
-	
+
 	@Override
-	public boolean monitoring(AgentMeta agentMeta){
+	public boolean monitoring(AgentMeta agentMeta) {
+		if(agentMeta.getTestUrl() != null && agentMeta.getTestUrl().length() > 0){
+			DefaultHttpClient httpClient = new DefaultHttpClient();
+			HttpGet httpGet = new HttpGet(agentMeta.getTestUrl());
+			
+			try {
+				HttpResponse response1 =  httpClient.execute(httpGet);
+				StatusLine statusLine = response1.getStatusLine();
+				int statusCode = statusLine.getStatusCode();
+				System.out.println("==> check monitoring  : " + statusCode);
+				if(statusCode == 200)
+					return true;
+				
+			} catch (ClientProtocolException e) {
+				e.printStackTrace();
+				
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return false;
+		}
 		return true;
 	}
+
+	@Override
+	public void complete(AgentMeta agentMeta) {
+	}
 	
+	private void createCommandSh(String destination, String command){
+		if(command == null || command.length() == 0)
+			return;
+		createSh(destination, "command.sh", command);
+	}
+
 	
-	/**
-	 * 15초 프로세스의 상태를 확인하고 
-	 * @param isDown
-	 * @param agentMeta
-	 * @return
-	 */
-	private boolean checkPid(boolean isDown, AgentMeta agentMeta){
+	private void createSh(String destination, String scriptName, String command){
+		FilePath sourceFilePath = new FilePath(new File(destination + "/" + scriptName));
 		try {
-			int count = 0;
-			while(true){	
-					Thread.sleep(5000);		
-					int pid = getPid(agentMeta);
-					if(isDown && pid == 0)
-						return true;
-					else if(isDown == false && pid > 0)
-						return true;
-				
-					count++;
-					if(count == 3)
-						break;
+			if(sourceFilePath.exists() == false){
+				sourceFilePath.write(command, null);
+				sourceFilePath.chmod(0755);
 			}
+		} catch (IOException e) {
+			e.printStackTrace();
 		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
-		return false;
+	}
+	
+	private String extractFilename(String filepath){
+		String filePathNormal = filepath.replaceAll("\\\\", "/");
+		String[] fileExtractList = filePathNormal.split("/");
+		if(fileExtractList != null && fileExtractList.length > 0){
+			return fileExtractList[fileExtractList.length -1];
+		}
+		return filepath;
 	}
 	
 	private boolean runCommand(String command){
@@ -162,49 +170,6 @@ public class GeneralService implements ServiceType {
 	}
 	
 	
-	private void createStartSh(String destination, String production){
-		String command = "#! /bin/bash \n " + destination + "/" + production + " &";
-		createSh(destination, "start.sh", command);
-	}
-	
-	private void createStopSh(String destination, String production){
-		String command = "#! /bin/bash \n pid=`ps ex | grep "+destination+"/"+production+" | grep -v grep | awk '{print $1}'`  \n kill -9 $pid";
-		createSh(destination, "stop.sh", command);
-	}
-	private void createCommandSh(String destination, String command){
-		if(command == null || command.length() == 0)
-			return;
-		createSh(destination, "command.sh", command);
-	}
-	
-	private void createSh(String destination, String scriptName, String command){
-		FilePath sourceFilePath = new FilePath(new File(destination + "/" + scriptName));
-		try {
-			if(sourceFilePath.exists() == false){
-				sourceFilePath.write(command, null);
-				sourceFilePath.chmod(0755);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	@Override
-	public void complete(AgentMeta agentMeta) {
-	
-	}
-	
-	private String extractFilename(String filepath){
-		String filePathNormal = filepath.replaceAll("\\\\", "/");
-		String[] fileExtractList = filePathNormal.split("/");
-		if(fileExtractList != null && fileExtractList.length > 0){
-			return fileExtractList[fileExtractList.length -1];
-		}
-		return filepath;
-	}
-
 	public FilePathHelper getFilePathHelper() {
 		return filePathHelper;
 	}
