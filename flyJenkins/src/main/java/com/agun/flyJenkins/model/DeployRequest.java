@@ -25,6 +25,8 @@ public class DeployRequest {
 	 */
 	private String licenser;
 	
+	private String displayProduction;
+	
 	/**
 	 * request 요청 날짜
 	 */
@@ -40,6 +42,11 @@ public class DeployRequest {
 	 */
 	private int serverGroup = 0;
 	
+	private int buildNumber = 0;
+	
+	
+	
+
 	/**
 	 * deploy queue 여부 
 	 */
@@ -106,6 +113,14 @@ public class DeployRequest {
 		this.serverGroup = serverGroup;
 	}
 
+	public int getBuildNumber() {
+		return buildNumber;
+	}
+
+	public void setBuildNumber(int buildNumber) {
+		this.buildNumber = buildNumber;
+	}
+	
 	public boolean isQueue() {
 		return isQueue;
 	}
@@ -130,5 +145,13 @@ public class DeployRequest {
 
 	public void setReserveDate(Date reserveDate) {
 		this.reserveDate = reserveDate;
+	}
+
+	public String getDisplayProduction() {
+		return displayProduction;
+	}
+
+	public void setDisplayProduction(String displayProduction) {
+		this.displayProduction = displayProduction;
 	}
 }

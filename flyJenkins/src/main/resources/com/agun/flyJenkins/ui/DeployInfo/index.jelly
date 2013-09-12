@@ -12,10 +12,11 @@
 	<table style="margin-top:0px; border-top: none;" class="sortable pane bigtable">
 	<tbody>
 	<tr style="border-top: 0px;">
-	<th>jobName</th> <th>production</th> <th>requester</th><th>licenser</th><th>date</th><th>serverGroup</th> <th>confirm</th><th>step</th> 
+	<th>jobName</th> <th>build</th> <th>production</th> <th>requester</th><th>licenser</th><th>date</th><th>serverGroup</th> <th>confirm</th><th>step</th> 
 	<j:forEach items="${it.getDeployRequestList(jobName)}" var="deployRequest">
 		<tr>
 			<td style="width:120px;text-align:center">${deployRequest.jobName}</td> 
+			<td style="text-align:center">${deployRequest.buildNumber}</td>
 			<td style="text-align:center">${deployRequest.production}</td>
 			 <td style="text-align:center">${deployRequest.requester}</td>
 			 <td style="text-align:center">${deployRequest.licenser}</td>

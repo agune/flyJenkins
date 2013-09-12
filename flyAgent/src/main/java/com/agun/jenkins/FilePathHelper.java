@@ -25,7 +25,11 @@ public class FilePathHelper{
 		FilePath fileRemotePath = new FilePath(channel, src);
 		
 		try {
-			fileRemotePath.copyTo(filePath);
+			if(fileRemotePath.isDirectory())
+				fileRemotePath.copyRecursiveTo(filePath);
+			else
+				fileRemotePath.copyTo(filePath);
+					
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

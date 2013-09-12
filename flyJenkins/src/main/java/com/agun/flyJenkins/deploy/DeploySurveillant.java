@@ -175,20 +175,6 @@ public class DeploySurveillant {
 	}
 	
 	/**
-	 * job name 을 기준으로 production 정보를 구
-	 * @param deployLog
-	 */
-	private void getJobProduction(DeployLog deployLog){
-		Map<String, Object> resultMap = FlyFactory.getPropertiesOfJob(deployLog.getJobName());
-		for(Entry entry : resultMap.entrySet()){
-    		if(entry.getValue() instanceof JobExtends){
-    			JobExtends jobExtend = (JobExtends) entry.getValue();
-    			deployLog.setProduction(jobExtend.production);
-    			return;
-    		}
-    	}
-   }
-	/**
 	 * deployLog list 에 deployLog 를 추가
 	 * @param deployRequest
 	 */
@@ -202,7 +188,7 @@ public class DeploySurveillant {
 		deployLog.setRequestOrder(order);
 		deployLog.setHost(serviceMeta.getHost());
 		deployLog.setReserveDate(deployRequest.getReserveDate());
-		getJobProduction(deployLog);
+		deployLog.setProduction(deployRequest.getProduction());
 		deployLogQueue.add(deployLog);
 	}
 	

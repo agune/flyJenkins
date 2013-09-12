@@ -1,6 +1,7 @@
 package com.agun.flyJenkins.ui;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -14,8 +15,10 @@ import org.kohsuke.stapler.StaplerResponse;
 
 import com.agun.flyJenkins.FlyFactory;
 import com.agun.flyJenkins.model.DeployRequest;
+import com.agun.flyJenkins.model.ProductionMeta;
 import com.agun.flyJenkins.job.JobExtends;
 import com.agun.flyJenkins.persistence.DeployRequestSaveable;
+import com.agun.flyJenkins.persistence.ProductionSaveable;
 import com.agun.flyJenkins.ui.ConfigServiceMeta.DescriptorImpl;
 import com.agun.flyJenkins.util.AjaxProxy;
 
@@ -43,20 +46,27 @@ public class DeployInfo extends FlyUI {
     public void doSave(final StaplerRequest request, final 
     		StaplerResponse response) { 
     
+    	System.out.println("====> save " + request.getParameter("jobName") + "," + request.getParameter("buildNumber"));
+    	if( request.getParameter("jobName") == null 
+    			|| request.getParameter("buildNumber") ==null)
+    		return;
+    	
     	String jobName  = request.getParameter("jobName");
+    	int buildNumber = Integer.parseInt(request.getParameter("buildNumber"));
+    	
     	Map<String, Object> resultMap = FlyFactory.getPropertiesOfJob(jobName);
-    	//String buildPath = FlyFactory.getRootPathOfJob(jobName);
     	if(resultMap.size() == 0)
     		return;
-    	String production = "";
+    	
     	String licenser = "";
+    	String displayProduction = "";
     	int serverGroup = 0;
     	for(Entry entry : resultMap.entrySet()){
     		if(entry.getValue() instanceof JobExtends){
     			JobExtends jobExtend = (JobExtends) entry.getValue();
-    			production =  jobExtend.production;
     			licenser  = jobExtend.licenser;
     			serverGroup =  jobExtend.serviceGroup;
+    			displayProduction = jobExtend.production;
     			break;
     		}
     	}
@@ -64,14 +74,35 @@ public class DeployInfo extends FlyUI {
      	if(user == null)
     		return;
    
+     	
+     	ProductionSaveable productionSaveable = new ProductionSaveable();
+     	productionSaveable.load();
+     	
+     	List<ProductionMeta> productionMetaList = productionSaveable.getProductionMetaList();
+     	if(productionMetaList == null)
+     		return;
+     	
+     	String production= null;
+     	
+     	for(ProductionMeta productionMeta : productionMetaList){
+     		if(productionMeta.getJobName().equals(jobName) && productionMeta.getBuildNumber() == buildNumber){
+     			production = productionMeta.getProductionPathOfJob();
+     			break;
+     		}
+     	}
+     	
+     	if(production == null){ return; }
+     	
     	String usedId = user.getId();
     	DeployRequest deployRequest = new DeployRequest();
     	deployRequest.setDate(new Date());
     	deployRequest.setJobName(jobName);
     	deployRequest.setLicenser(licenser);
     	deployRequest.setProduction(production);
+    	deployRequest.setBuildNumber(buildNumber);
     	deployRequest.setRequester(usedId);
     	deployRequest.setServerGroup(serverGroup);
+    	deployRequest.setDisplayProduction(displayProduction);
     
     	DeployRequestSaveable deployRequestSaveable = new DeployRequestSaveable();
     	deployRequestSaveable.load();
@@ -86,9 +117,16 @@ public class DeployInfo extends FlyUI {
     	try {
     		deployRequestSaveable.save();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+    	
+    	try {
+    		PrintWriter printWriter = response.getWriter();
+    		printWriter.write("ok");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+    	
     }
     
     public List<DeployRequest> getDeployRequestList(String jobName){

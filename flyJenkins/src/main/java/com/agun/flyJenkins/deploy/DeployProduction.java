@@ -59,12 +59,9 @@ public class DeployProduction {
 		productionMeta.setProductionPath(production);
 		productionMeta.setServiceGroup(serviceGroup);
 		
-		FilePath workSpace = build.getWorkspace();
-		String baseName = getBaseName(production);
-		String productionPathOfJob = FlyJenkinsEnv.getProductionRoot() + "/"+ jobName + "/" + build.getNumber() + "/" + baseName + ".zip";
+		String filename = getName(production);
+		String productionPathOfJob = FlyJenkinsEnv.getProductionRoot() + "/"+ jobName + "/" + build.getNumber() + "/" + filename;
 		productionMeta.setProductionPathOfJob(productionPathOfJob);
-		
-		
 		return productionMeta;
 	}
 	
@@ -98,7 +95,10 @@ public class DeployProduction {
 			if(targetPath.exists() == false)
 				return;
 			System.out.println("=========> process copy "  );
-			targetPath.zip(destinationPath);
+			if(targetPath.isDirectory())
+				targetPath.copyRecursiveTo(destinationPath);
+			else
+				targetPath.copyTo(destinationPath);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {

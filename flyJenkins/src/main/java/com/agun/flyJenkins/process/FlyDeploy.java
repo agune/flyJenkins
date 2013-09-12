@@ -42,6 +42,8 @@ public class FlyDeploy implements FlyProcess{
 		if(deployMeta == null)
 			return Collections.EMPTY_MAP;
 		
+		System.out.println("deploy info ====>" + deployMeta.getProduction());
+		
 		Map<String, Object> deployInfoMap = new Hashtable<String, Object>();
 		deployInfoMap.put("production", deployMeta.getProduction());
 		deployInfoMap.put("serverId", deployMeta.getServiceId());

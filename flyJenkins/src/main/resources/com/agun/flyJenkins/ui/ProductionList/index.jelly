@@ -6,7 +6,7 @@
 <table style="margin-top:0px; border-top: none;" class="sortable pane bigtable">
 	<tbody>
 	<tr style="border-top: 0px;">
-	<th>jobName</th> <th>build </th> <th>production </th><th>date</th> 
+	<th>jobName</th> <th>build </th> <th>production </th><th>date</th><th>request</th> 
 	</tr>
 	<j:forEach items="${it.productionMetaList}" var="productionMeta">
 	<tr>
@@ -14,11 +14,27 @@
  			<td style="width:120px;text-align:center">${productionMeta.buildNumber}</td> 
  			<td style="width:120px;text-align:center">${productionMeta.productionPath}</td> 
  			<td style="width:120px;text-align:center">${productionMeta.createDate}</td> 
- 
+ 			<td style="width:120px;text-align:center">
+ 			<input type="button" value="request" onclick="flyRequest('/jenkins/flyJenkins/DeployInfo/save?jobName=${productionMeta.jobName}&amp;buildNumber=${productionMeta.buildNumber}')" /></td> 
+ 			
      </tr>
      </j:forEach>
      </tbody>
 	</table>
+
+<script>
+	function flyRequest(requestString) {
+  		new Ajax.Request(requestString, {method : 'post', onComplete: requestComplete});
+  	}
+  	
+  	function requestComplete(originalRequest){
+  		alert(originalRequest.responseText);
+  	}
+</script>
+
+
 </l:main-panel>
 </l:layout>
+
+
 </j:jelly>

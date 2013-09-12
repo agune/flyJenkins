@@ -182,10 +182,8 @@ public class GeneralService implements ServiceType {
 	private void createSh(String destination, String scriptName, String command){
 		FilePath sourceFilePath = new FilePath(new File(destination + "/" + scriptName));
 		try {
-			if(sourceFilePath.exists() == false){
-				sourceFilePath.write(command, null);
-				sourceFilePath.chmod(0755);
-			}
+			sourceFilePath.write(command, null);
+			sourceFilePath.chmod(0755);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
