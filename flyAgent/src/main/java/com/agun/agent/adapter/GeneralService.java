@@ -106,6 +106,8 @@ public class GeneralService implements ServiceType {
 
 	@Override
 	public boolean start(AgentMeta agentMeta) {
+		System.out.println("====> start : process: " + agentMeta.getDestination() + "/start.sh" );
+		
 		boolean isOk =  runCommand(agentMeta.getDestination() + "/start.sh");
 		isOk = checkPid(false, agentMeta);
 		if(	isOk 

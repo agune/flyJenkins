@@ -12,6 +12,7 @@ public class AdapterFactory {
 	public static ServiceType getServiceType(AgentMeta agentMeta, FilePathHelper filePathHelper){
 		if(agentMeta.getType() == 1){
 			generalService.setFilePathHelper(filePathHelper);
+			return generalService;
 		}else if(agentMeta.getType() == 2){
 			tomcatService.setFilePathHelper(filePathHelper);
 			return tomcatService;
