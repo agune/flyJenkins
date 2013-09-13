@@ -2,6 +2,8 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:s="/lib/samples">
  <l:layout title="Network Map">
 <l:main-panel>
+
+
 <form method="post" action="save">
 <div>host: <input type="text" name="host" /> </div>
 <div>destination: <input type="text" name="destination" /> </div>
@@ -15,13 +17,26 @@
 	</j:forEach>
 </select>
 </div>
+
 <div>
 service type: 
-<select name="type">
+<select name="type"  id="serviceType" >
 	<option value="1">general process</option>
 	<option value="2">tomcat</option>
 	<option value="3">etc</option>
+	<option value="4">copy</option>
 </select>
+
+<span id="copyServiceView" > 
+<select name="copyService">
+	<j:forEach items="${it.serviceGroupList}" var="serviceGroup">
+		<j:set var="serviceMetaList" value="${serviceGroup.serviceMetaList}" />
+		<j:forEach items="${serviceMetaList}" var="serviceMeta">
+			<option value="${serviceMeta.serviceId}">${serviceMeta.serviceId}</option>
+		</j:forEach>
+	</j:forEach>
+</select>
+</span>
 </div>
 <div><input type="submit" value="save" /></div>
 </form>
@@ -60,6 +75,7 @@ service type:
 				<img src="/jenkins/static/1d061002/images/32x32/red.png" />
 			</j:if>
 			<input type="button" value="process" onclick="javascript:location.href='../ProcessInfo?host=${serviceMeta.host}&amp;servicePid=${serviceMeta.pid}'" />	
+			
 			</div>
 		</j:forEach>
 	</j:forEach>

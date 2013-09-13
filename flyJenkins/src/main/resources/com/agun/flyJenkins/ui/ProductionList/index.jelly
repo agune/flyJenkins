@@ -15,8 +15,8 @@
  			<td style="width:120px;text-align:center">${productionMeta.productionPath}</td> 
  			<td style="width:120px;text-align:center">${productionMeta.createDate}</td> 
  			<td style="width:120px;text-align:center">
- 			<input type="button" value="request" onclick="flyRequest('/jenkins/flyJenkins/DeployInfo/save?jobName=${productionMeta.jobName}&amp;buildNumber=${productionMeta.buildNumber}')" /></td> 
- 			
+ 				<input type="button" value="request" onclick="flyRequest('/jenkins/flyJenkins/DeployInfo/save?jobName=${productionMeta.jobName}&amp;buildNumber=${productionMeta.buildNumber}')" />
+ 			</td> 
      </tr>
      </j:forEach>
      </tbody>
