@@ -8,7 +8,10 @@ import java.io.IOException;
 public class AgentInfoManager {
 
 	public static String getAgnetHome(){
-		return "/Users/pdc222/test";
+		String agentHome = System.getenv("FLY_AGENT_HOME");
+		if(agentHome == null)
+			return ".";
+		return agentHome;
 	}
 	
 	public static String getProductionPath(int serverId, String productionPath){

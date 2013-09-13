@@ -4,6 +4,8 @@
  */
 package com.agun.agent;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.List;
 
 import org.apache.commons.daemon.Daemon;
@@ -47,11 +49,16 @@ public class flyAgent implements Daemon{
 				
 				AgentBootstrap agentBootstrap =null;
 				
-				if(agentHost != null)
-					agentBootstrap = new AgentBootstrap(agentHost);
-				else
-					agentBootstrap = new AgentBootstrap();
-						
+				if(agentHost == null){
+					try {
+						agentHost = InetAddress.getLocalHost().getHostName();
+					} catch (UnknownHostException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				
+				agentBootstrap = new AgentBootstrap(agentHost);
 				CLIHelper cliHelper = agentBootstrap.start(rasDir, "http://"+ host);
 				FilePathHelper filePathHelper = new FilePathHelper(cliHelper);
 				AgentMemoryStore agentMemory = AgentMemoryStore.getInstance();

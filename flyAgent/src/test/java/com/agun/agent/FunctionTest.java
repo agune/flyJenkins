@@ -15,6 +15,7 @@ import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.log4j.Logger;
 import org.apache.tools.ant.taskdefs.condition.Http;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -67,6 +68,7 @@ public class FunctionTest {
 	
 	}
 	
+	@Ignore
 	@Test
 	public void testHttpClient(){
 		DefaultHttpClient httpClient = new DefaultHttpClient();
@@ -87,6 +89,18 @@ public class FunctionTest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	@Test
+	public void getEnvTest(){
+		String agentHome = System.getenv("FLY_AGENT_HOME");
+		System.out.println("==> " + agentHome);
+	}
+	
+	@Test
+	public void log4jTest(){
+		Logger log = Logger.getLogger(FunctionTest.class.getName());
+		log.info("test");
 	}
 
 }

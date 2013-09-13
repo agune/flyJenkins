@@ -14,17 +14,13 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.apache.log4j.Logger;
 public class AgentBootstrap {
 	
-	private String agentHost = null;
+	static Logger log = Logger.getLogger(AgentBootstrap.class.getName());
 	
-	public AgentBootstrap(){
-		try {
-			agentHost = InetAddress.getLocalHost().getHostName();
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		}
-	}
+	private String agentHost = null;
 	
 	public AgentBootstrap(String host){
 		agentHost = host;
@@ -35,6 +31,8 @@ public class AgentBootstrap {
 	}
 
 	public CLIHelper start(String rsaPath, String jenkinsHost){
+		log.info("start agent init");
+		
 		CLIHelper cliHelper = auth(rsaPath, jenkinsHost);
 		init(cliHelper);
 		identity(cliHelper);
@@ -65,14 +63,15 @@ public class AgentBootstrap {
 			agentMemory.addAgentMeta(agentMeta);
 			index++;
 		}
-	
-	
+		log.info(" agentMeta assign completed : " + index);
 	}
 
 	/**
 	 * Agent Service 들의 인스턴스를 구분한다. 
 	 */
 	public void identity(CLIHelper cliHelper){
+	
+		log.info("start identity service ");
 		AgentMemoryStore agentMemory = AgentMemoryStore.getInstance();
 		List<AgentMeta> agentMetaList = agentMemory.getAgentMetaList();
 		Map<Integer, Integer> onServerPidMap = new Hashtable<Integer, Integer>();
@@ -95,7 +94,8 @@ public class AgentBootstrap {
 			cliHelper.callActionFunction("FlyIdentify", "identify",  onServerPidMap);
 		
 		instanceModel(cliHelper);
-		
+
+		log.info("identity service completed : " + onServerPidMap.size());
 	}
 	
 	private void instanceModel(CLIHelper cliHelper){
@@ -108,6 +108,6 @@ public class AgentBootstrap {
 	 * Agent 의 초기화 완
 	 */
 	public void complete(){
-		
+		log.info(" initialization agent completed : ");
 	}
 }

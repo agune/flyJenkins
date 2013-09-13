@@ -4,6 +4,9 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
+import com.agun.agent.AgentBootstrap;
 import com.agun.agent.adapter.AdapterFactory;
 import com.agun.agent.adapter.ServiceType;
 import com.agun.agent.model.AgentMemoryStore;
@@ -14,6 +17,8 @@ import com.agun.jenkins.ProcessTreeHelper;
 
 public class CheckRequest {
 
+	static Logger log = Logger.getLogger(CheckRequest.class.getName());
+	
 	private CLIHelper cliHelper;
 	private FilePathHelper filePathHelper;
 	private String agentHost = null;
@@ -89,15 +94,13 @@ public class CheckRequest {
 		String deployId = (String)resultMap.get("deployId");
 		int serverId = (Integer) resultMap.get("serverId");
 		
+		log.info("start deployment: " + deployId + " to " + result);
 		
-		
-		System.out.println("agent check deploy ====>: " + deployId);
 		AgentMemoryStore agentMemoryStore = AgentMemoryStore.getInstance();
 		List<AgentMeta> agentMetaList = agentMemoryStore.getAgentMetaList();
 		ServiceType service = null;
 		for(AgentMeta agentMeta : agentMetaList){
 			if(agentMeta.getServiceId() == serverId){
-				System.out.println("dest : " + agentMeta.getDestination());
 				service = AdapterFactory.getServiceType(agentMeta, filePathHelper);
 				service.stop(agentMeta);
 				service.getProduction(agentMeta, result);
@@ -105,10 +108,11 @@ public class CheckRequest {
 				if(deployOk){
 					service.complete(agentMeta);
 					deployOk = service.monitoring(agentMeta);
-					if(deployOk)
+					if(deployOk){
 						completeDeploy(agentMeta, deployId);
-					else
+					}else{
 						failDeploy(agentMeta, deployId);
+					}
 				}
 				break;
 			}
@@ -116,10 +120,12 @@ public class CheckRequest {
 	}
 	
 	private void completeDeploy(AgentMeta agentMeta, String deployId){
+		log.info(" deployment completed : " + deployId);
 		cliHelper.callActionFunction("FlyDeploy", "deployComplete", deployId);
 	}
 	
 	private void failDeploy(AgentMeta agentMeta, String deployId){
+		log.info(" deployment failure : " + deployId);
 		cliHelper.callActionFunction("FlyDeploy", "deployFail", deployId);
 	}
 	

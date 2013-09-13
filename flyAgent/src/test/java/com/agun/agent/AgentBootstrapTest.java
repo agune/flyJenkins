@@ -2,7 +2,9 @@ package com.agun.agent;
 
 import static org.junit.Assert.*;
 
+import java.net.InetAddress;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.List;
 
 import org.junit.Ignore;
@@ -17,7 +19,16 @@ public class AgentBootstrapTest {
 	@Test
 	public void startTest() {
 		URL url  = this.getClass().getResource("/id_rsa");
-		AgentBootstrap agentBootstrap = new AgentBootstrap();
+		String agentHost = null;
+		
+		try {
+			agentHost = InetAddress.getLocalHost().getHostName();
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		AgentBootstrap agentBootstrap = new AgentBootstrap(agentHost);
 		CLIHelper cliHelper = agentBootstrap.start(url.getPath(), "http://127.0.0.1:8080/jenkins");
 		cliHelper.destory();
 		
@@ -42,7 +53,17 @@ public class AgentBootstrapTest {
 	@Test
 	public void initTest(){
 		URL url  = this.getClass().getResource("/id_rsa");
-		AgentBootstrap agentBootstrap = new AgentBootstrap();
+		
+		String agentHost = null;
+		
+		try {
+			agentHost = InetAddress.getLocalHost().getHostName();
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		AgentBootstrap agentBootstrap = new AgentBootstrap(agentHost);
 		
 		CLIHelper cliHelper= agentBootstrap.auth(url.getPath(), "http://127.0.0.1:8080/jenkins");
 		agentBootstrap.init(cliHelper);

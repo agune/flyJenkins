@@ -10,6 +10,7 @@ import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.log4j.Logger;
 
 import hudson.FilePath;
 import hudson.Launcher.LocalLauncher;
@@ -23,6 +24,8 @@ import com.agun.system.SystemUtil;
 
 public class TomcatService implements ServiceType {
 
+	static Logger log = Logger.getLogger(TomcatService.class.getName());
+	
 	FilePathHelper filePathHelper;
 	
 	public FilePathHelper getFilePathHelper() {
@@ -76,10 +79,13 @@ public class TomcatService implements ServiceType {
 			 * production move agent destination => service destination
 			 */
 			if(filePath.exists()){
-				System.out.println("======>" + agentMeta.getDestination() + "/webapps/" + filename + "," + productionPath);
+				
+				
+				
 				FilePath sourceFilePath = new FilePath(new File(agentMeta.getDestination() + "/webapps/" + filename));
 				filePath.renameTo(sourceFilePath);
 				
+				log.debug("deployment copy completed : " +  productionPath + " to " + agentMeta.getDestination() + "/webapps/" + filename );
 				
 				/**
 				 * make command script
@@ -110,6 +116,9 @@ public class TomcatService implements ServiceType {
 			 LocalLauncher launcher = new LocalLauncher(new StreamTaskListener(System.out, null));
 			 Map<String, String> envTable = new Hashtable<String, String>();
 			 envTable.put("CATALINA_HOME", agentMeta.getDestination());
+			 
+			 log.debug(" stop tomcat : " + shutdownPath);
+			 
 			 try {
 				launcher.launch().cmds(shutdownPath)
 				.envs(envTable)
@@ -136,6 +145,7 @@ public class TomcatService implements ServiceType {
 				launcher.launch().cmds(startPath)
 				.envs(envTable)
 				.start();
+				log.debug(" start tomcat : " + startPath);
 				isOk = checkPid(false, agentMeta);
 				if(	isOk 
 						&& (agentMeta.getCommand() !=null) 
@@ -151,7 +161,6 @@ public class TomcatService implements ServiceType {
 	
 	@Override
 	public boolean monitoring(AgentMeta agentMeta){
-		System.out.println("====> start monitoring : " + agentMeta.getTestUrl());
 		if(agentMeta.getTestUrl() != null && agentMeta.getTestUrl().length() > 0){
 			DefaultHttpClient httpClient = new DefaultHttpClient();
 			HttpGet httpGet = new HttpGet(agentMeta.getTestUrl());
@@ -160,7 +169,9 @@ public class TomcatService implements ServiceType {
 				HttpResponse response1 =  httpClient.execute(httpGet);
 				StatusLine statusLine = response1.getStatusLine();
 				int statusCode = statusLine.getStatusCode();
-				System.out.println("==> check monitoring  : " + statusCode);
+				
+				log.debug(agentMeta.getTestUrl() + " testing " + " status code : " + statusCode);
+				
 				if(statusCode == 200)
 					return true;
 				
@@ -182,6 +193,8 @@ public class TomcatService implements ServiceType {
                 launcher.launch().cmds(command).stderr(System.out)
                 .stdout(System.out)
                 .start();
+                
+                log.debug("run command : " + command);
         } catch (IOException e) {
                 e.printStackTrace();
                 return false;
@@ -200,6 +213,7 @@ public class TomcatService implements ServiceType {
 		try {
 			sourceFilePath.write(command, null);
 			sourceFilePath.chmod(0755);
+			log.debug(" make script : " + destination + "/" + scriptName);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
@@ -220,11 +234,14 @@ public class TomcatService implements ServiceType {
 			while(true){	
 					Thread.sleep(5000);		
 					int pid = getPid(agentMeta);
+					log.debug(" check pid : " + pid);
+					
 					if(isDown && pid == 0)
 						return true;
+					
 					else if(isDown == false && pid > 0)
 						return true;
-				
+					
 					count++;
 					if(count == 3)
 						break;
