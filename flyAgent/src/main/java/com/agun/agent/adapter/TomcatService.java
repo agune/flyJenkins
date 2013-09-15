@@ -16,7 +16,10 @@ import hudson.FilePath;
 import hudson.Launcher.LocalLauncher;
 import hudson.util.StreamTaskListener;
 
+import com.agun.agent.function.CommonFunction;
+import com.agun.agent.model.AgentMemoryStore;
 import com.agun.agent.model.AgentMeta;
+import com.agun.flyJenkins.util.FlyJenkinsInfoManager;
 import com.agun.jenkins.FilePathHelper;
 import com.agun.jenkins.ProcessTreeHelper;
 import com.agun.system.AgentInfoManager;
@@ -279,6 +282,6 @@ public class TomcatService implements ServiceType {
 
 	@Override
 	public void complete(AgentMeta agentMeta) {
-		
+		CommonFunction.deployComplete(agentMeta, filePathHelper);
 	}
 }

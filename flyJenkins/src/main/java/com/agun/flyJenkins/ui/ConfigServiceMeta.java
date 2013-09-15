@@ -2,6 +2,7 @@ package com.agun.flyJenkins.ui;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -15,7 +16,11 @@ import com.agun.flyJenkins.model.ServiceMeta;
 import com.agun.flyJenkins.network.NetworkSpace;
 import com.agun.flyJenkins.persistence.ServiceGroupSaveable;
 import com.agun.flyJenkins.persistence.ServiceGroupSaveableUtil;
+import com.agun.flyJenkins.request.RequestMap;
+import com.agun.flyJenkins.request.RequestQueue;
+import com.agun.flyJenkins.schedule.PeriodWork;
 import com.agun.flyJenkins.user.FlyUser;
+import com.agun.flyJenkins.util.FlyJenkinsEnv;
 
 import hudson.Extension;
 
@@ -71,6 +76,7 @@ public class ConfigServiceMeta extends FlyUI {
     	int type  = Integer.parseInt(request.getParameter("type"));
     	int weight = Integer.parseInt(request.getParameter("weight"));
    
+    	
     	ServiceMeta serviceMeta = new ServiceMeta();
     	serviceMeta.setHost(host);
         serviceMeta.setCommand(command);
@@ -79,6 +85,15 @@ public class ConfigServiceMeta extends FlyUI {
     	serviceMeta.setTestUrl(testUrl);
     	serviceMeta.setType(type);
     	serviceMeta.setWeight(weight);
+    	serviceMeta.setInstallAble(true);
+    	
+    	if(type == 4){
+   		 	int copyService  = Integer.parseInt(request.getParameter("copyService"));
+   		 	serviceMeta.setType(getCopyServiceType(copyService));
+   		   	serviceMeta.setInstallAble(false);
+   		   	serviceMeta.setDependenceService(copyService);
+    	}
+   
     	
     	ServiceGroupSaveableUtil.saveServiceMeta(serviceMeta);
        
@@ -87,6 +102,42 @@ public class ConfigServiceMeta extends FlyUI {
          */
     	NetworkSpace networkSpace = FlyFactory.getNetworkSpace();
     	networkSpace.attachServiceMeta(serviceMeta);
+    	
+    	
+    	PeriodWork periodWork = FlyFactory.getPeriodWork();
+		RequestQueue requestQueue = periodWork.getRequestQueue();
+    	
+    	if(type == 4){
+	    	Map<String, Object> argMap = new Hashtable<String, Object>();
+			argMap.put("host", host);
+			argMap.put("production", FlyJenkinsEnv.getLastBuildPath(serviceMeta.getDependenceService()));
+			argMap.put("serviceType", serviceMeta.getType());
+			argMap.put("destination", serviceMeta.getDestination());
+			
+			RequestMap requestMap = new RequestMap();
+			requestMap.setType(2);
+			requestMap.setArg(argMap);
+    	
+			/**
+			 * request 를 queue 저장
+			 */
+		
+			requestQueue.add(host, requestMap);
+    	}
+		
+    	Map<String, Object> argMap = new Hashtable<String, Object>();
+		argMap.put("host", host);
+		argMap.put("serviceId", serviceMeta.getServiceId());
+		argMap.put("type", serviceMeta.getType());
+		argMap.put("command", serviceMeta.getCommand());
+		argMap.put("testUrl", serviceMeta.getTestUrl());
+		argMap.put("destination", serviceMeta.getDestination());
+				
+		RequestMap requestMap = new RequestMap();
+		requestMap.setType(3);
+		requestMap.setArg(argMap);
+    	
+		requestQueue.add(host, requestMap);
     	
         try {
 			response.sendRedirect("/jenkins/flyJenkins/ConfigServiceMeta");
@@ -105,6 +156,14 @@ public class ConfigServiceMeta extends FlyUI {
         return "You can setting meta info of deploy service";
     }
 
+    
+    private int getCopyServiceType(int serviceId){
+    	NetworkSpace networkSpace = FlyFactory.getNetworkSpace();
+    	ServiceMeta serviceMeta = networkSpace.getServiceMeta(serviceId);
+    	if(serviceMeta == null)
+    		return 0;
+    	return serviceMeta.getType();
+    }
       
     @Override
     public DescriptorImpl getDescriptor() {

@@ -64,7 +64,26 @@ public class NetworkSpace {
 			}
 		}
 		return null;
+	}
 	
+	public ServiceMeta getServiceMeta(int serviceId){
+		for(String host : networkMap.keySet()){
+			ServiceMeta serviceMeta = getServiceMeta(host, serviceId);
+			if(serviceMeta != null)
+				return serviceMeta;
+		}
+		return null;
+	}
+	
+	public List<ServiceMeta> getServiceMetaList(){
+		List<AgentService> agentServiceList = getAgentServiceList();
+		List<ServiceMeta> resultList = new ArrayList<ServiceMeta>();
+		for(AgentService agentService : agentServiceList){
+			List<ServiceMeta> serviceMetaList = agentService.getServiceMetaList();
+			if(serviceMetaList != null)
+				resultList.addAll(serviceMetaList);
+		}
+		return resultList;
 	}
 	
 	/**
@@ -98,10 +117,15 @@ public class NetworkSpace {
 		return instanceModelMap;
 	}
 	
+	public void reload(){
+		this.networkMap.clear();
+		this.instanceModelMap.clear();
+		this.initNetwork();
+	}
+	
 	private void processInitNetwork(List<ServiceMeta> serviceMetaList){
 		
 		int agentId = networkMap.size() + 1 ;
-		
 		for(ServiceMeta serviceMeta : serviceMetaList){
 			
 			// exist agent in networkMap
@@ -136,7 +160,6 @@ public class NetworkSpace {
 				
 				// add agent service list into network map
 				networkMap.put(serviceMeta.getHost(), agentServiceList);
-				
 				agentId++;
 			}
 		}

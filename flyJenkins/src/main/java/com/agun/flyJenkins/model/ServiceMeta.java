@@ -56,10 +56,20 @@ public class ServiceMeta {
 	private String testUrl;
 
 
+	/**
+	 * install able
+	 */
+	private boolean installAble;
+
+	
+	private int dependenceService =0 ;
+	
+	
+	
+
 	public String getHost() {
 		return host;
 	}
-
 
 	public void setHost(String host) {
 		this.host = host;
@@ -160,6 +170,24 @@ public class ServiceMeta {
 
 	public void setTestUrl(String testUrl) {
 		this.testUrl = testUrl;
+	}
+
+
+	public boolean isInstallAble() {
+		return installAble;
+	}
+
+
+	public void setInstallAble(boolean installAble) {
+		this.installAble = installAble;
+	}
+	
+	public int getDependenceService() {
+		return dependenceService;
+	}
+
+	public void setDependenceService(int dependenceService) {
+		this.dependenceService = dependenceService;
 	}
 
 }

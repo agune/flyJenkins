@@ -9,11 +9,14 @@ import org.apache.log4j.Logger;
 import com.agun.agent.AgentBootstrap;
 import com.agun.agent.adapter.AdapterFactory;
 import com.agun.agent.adapter.ServiceType;
+import com.agun.agent.function.CommonFunction;
 import com.agun.agent.model.AgentMemoryStore;
 import com.agun.agent.model.AgentMeta;
+import com.agun.agent.model.util.ModelAssignUtil;
 import com.agun.jenkins.CLIHelper;
 import com.agun.jenkins.FilePathHelper;
 import com.agun.jenkins.ProcessTreeHelper;
+import com.agun.system.AgentInfoManager;
 
 public class CheckRequest {
 
@@ -61,6 +64,28 @@ public class CheckRequest {
 					break;
 				}
 			}
+		
+			// Copy Service
+		}else if(type == 2){
+			 Map<String, Object> argMap = (Map<String, Object>)resultMap.get("arg");
+			 if(argMap.containsKey("serviceType") == false 
+					 || argMap.containsKey("production") == false
+					 || argMap.containsKey("destination") == false
+					 ){
+				 log.error("fail copy service info: " + argMap);
+				 return;
+			 }
+			log.info("start copy service : " + argMap.get("serviceType") + "," + argMap.get("production") + "," + argMap.get("destination") );
+			CommonFunction.copyService((Integer)argMap.get("serviceType"), (String)argMap.get("production"), (String)argMap.get("destination") , filePathHelper);
+		}else if(type == 3){
+			int maxId = AgentInfoManager.getAgentMaxId();
+			Map<String, Object> argMap = (Map<String, Object>)resultMap.get("arg");
+			argMap.put("id", maxId);
+			AgentMeta agentMeta = new AgentMeta();
+			ModelAssignUtil.assignAgentMeta(agentMeta, argMap);
+			AgentMemoryStore agentMemory = AgentMemoryStore.getInstance();
+			agentMemory.addAgentMeta(agentMeta);	
+			log.info(" attach service meta : " + agentMeta.getId() + "," + agentMeta.getServiceId() + "," + agentMemory.getAgentTotalSize());
 		}
 	}
 	
@@ -106,9 +131,9 @@ public class CheckRequest {
 				service.getProduction(agentMeta, result);
 				boolean deployOk = service.deploy(agentMeta);
 				if(deployOk){
-					service.complete(agentMeta);
 					deployOk = service.monitoring(agentMeta);
 					if(deployOk){
+						service.complete(agentMeta);
 						completeDeploy(agentMeta, deployId);
 					}else{
 						failDeploy(agentMeta, deployId);

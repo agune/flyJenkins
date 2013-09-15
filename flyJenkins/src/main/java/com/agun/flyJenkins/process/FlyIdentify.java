@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import jenkins.model.Jenkins;
+
 import com.agun.flyJenkins.FlyFactory;
 import com.agun.flyJenkins.model.AgentService;
 import com.agun.flyJenkins.model.InstanceModel;
@@ -22,6 +24,14 @@ public class FlyIdentify implements FlyProcess {
 	public static FlyIdentify getInstance(){
 		return flyIdentify;
 	}
+	
+	public Map<String, Object> getInitInfo(){
+		Map<String, Object> resultMap = new Hashtable<String, Object>();
+		resultMap.put("JENKINS_HOME", Jenkins.getInstance().getRootDir().getAbsolutePath());
+		resultMap.put("FLY_JENKINS_HOME", Jenkins.getInstance().getRootDir().getAbsolutePath() + "/flyJenkins");
+		return resultMap;
+	}
+	
 	
 	
 	/**
@@ -93,7 +103,9 @@ public class FlyIdentify implements FlyProcess {
 	}
 	
 	public Map<String, Object> run(Object arg1, String operName) {
-		if("identifyAgent".equals(operName)){
+		if("initInfo".equals(operName)){
+			return getInitInfo();
+		}else if("identifyAgent".equals(operName)){
 			return getIdentifyAgent((String)arg1);
 		}else if("identify".equals(operName)){
 			identify((Map<Integer, Integer>)arg1);

@@ -88,12 +88,8 @@ public class DeploySurveillant {
 	public void process(){
 		Date date = new Date();
 		checkDeploy(date);
- 		nextWorkMap();
- 		System.out.println("work map : " + deployWorkMap);
- 		
+		nextWorkMap();
  		nextDeploy();
- 		System.out.println("deploy queue map : " + deployQueueMap);
- 	 	
 	}
 	
 	public Map<String, DeployReport> getDeployReportMap(){

@@ -1,61 +1,50 @@
-<!--
-The MIT License
-
-Copyright (c) 2004-2010, Oracle Corporation
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
--->
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:s="/lib/samples">
-  <l:layout title="FlyJenkins">
-    <l:main-panel>
-      <table>
-      
-      	 <t:summary icon="document.gif"
-                     href="/jenkins/flyJenkins/ConfigServiceGroup" iconOnly="true">
-            <div class="link"><a href="${href}">서비스그룹설정</a></div>
-            <div style="color:gray; text-decoration:none;">
-            </div>
-          </t:summary>
-          <t:summary icon="document.gif"
-                     href="/jenkins/flyJenkins/ConfigServiceMeta" iconOnly="true">
-            <div class="link"><a href="${href}">서비스설정</a></div>
-            <div style="color:gray; text-decoration:none;">
-            </div>
-          </t:summary>
-          <t:summary icon="document.gif"
-                     href="/jenkins/flyJenkins/DeployHistory" iconOnly="true">
-            <div class="link"><a href="${href}">deploy 내역</a></div>
-            <div style="color:gray; text-decoration:none;">
-            </div>
-          </t:summary>
-          
-          
-          <t:summary icon="document.gif"
-                     href="/jenkins/flyJenkins/ProductionList" iconOnly="true">
-            <div class="link"><a href="${href}">production 내역</a></div>
-            <div style="color:gray; text-decoration:none;">
-            </div>
-          </t:summary>
-          
-      </table>
-    </l:main-panel>
+ 
+ 
+ 
+  <l:layout>
+  	<l:header>
+ 		 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+ 		<link href="${rootURL}/plugin/flyJenkins/bootstrap/css/bootstrap.css" rel="stylesheet" />   
+ 		<link href="${rootURL}/plugin/flyJenkins/css/flat-ui.css" rel="stylesheet" />   
+ 		  
+      </l:header>
+  
+  <l:main-panel>
+  <div class="container" style="padding-top:3em">
+ <div class="row demo-tiles">
+        <div class="span3">
+          <div class="tile">
+            <img src="${rootURL}/plugin/flyJenkins/images/icons/Compas@2x.png" alt="Compas@2x" class="tile-image big-illustration" />
+            <h3 class="tile-title">Web Oriented</h3>
+            <p>100% convertable to HTML/CSS layout.</p>
+            <a style="color:#ffffff;text-decoration:none" class="btn btn-primary btn-large btn-block" href="http://designmodo.com/flat">Get Pro</a>
+          </div>
+        </div>
+
+        <div class="span3">
+          <div class="tile">
+            <img src="${rootURL}/plugin/flyJenkins/images/icons/Pensils@2x.png" alt="Pensils@2x" class="tile-image" />
+            <h3 class="tile-title">Color Swatches</h3>
+            <p>Easy to add or change elements. </p>
+            <a style="color:#ffffff;text-decoration:none" class="btn btn-primary btn-large btn-block" href="http://designmodo.com/flat">Get Pro</a>
+          </div>
+        </div>
+
+        <div class="span3">
+          <div class="tile">
+            <img src="${rootURL}/plugin/flyJenkins/images/icons/Chat@2x.png" alt="Chat@2x" class="tile-image" />
+            <h3 class="tile-title">Free for Share</h3>
+            <p>Your likes, shares and comments helps us.</p>
+            <a style="color:#ffffff;text-decoration:none" class="btn btn-primary btn-large btn-block" href="http://designmodo.com/flat">Get Pro</a>
+          </div>
+
+        </div>
+      </div>
+      </div>
+      </l:main-panel>
+ 
   </l:layout>
 </j:jelly>
 

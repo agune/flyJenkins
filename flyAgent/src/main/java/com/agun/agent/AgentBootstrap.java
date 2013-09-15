@@ -4,6 +4,7 @@ import com.agun.agent.adapter.ServiceType;
 import com.agun.agent.adapter.TomcatService;
 import com.agun.agent.model.AgentMemoryStore;
 import com.agun.agent.model.AgentMeta;
+import com.agun.agent.model.FlyJenkinsInfo;
 import com.agun.agent.model.util.ModelAssignUtil;
 import com.agun.jenkins.CLIHelper;
 import com.agun.jenkins.ProcessTreeHelper;
@@ -44,11 +45,36 @@ public class AgentBootstrap {
 	 * @param cliHelper
 	 */
 	public void init(CLIHelper cliHelper){
+
 		
-		Map<String, Object> resultMap = cliHelper.callActionFunction("FlyIdentify", "identifyAgent", agentHost);
-	
-		if(resultMap == null)
+		Map<String, Object> resultMap = cliHelper.callActionFunction("FlyIdentify", "initInfo", null);
+		if(resultMap == null){
+			log.error("can't obtain flyJenkins info");
 			return;
+		}
+		
+		String flyJenkinsHome = (String)resultMap.get("FLY_JENKINS_HOME");
+		String jenkinsHome = (String)resultMap.get("JENKINS_HOME");
+	
+		if(flyJenkinsHome == null || jenkinsHome == null){
+			log.error("can't obtain flyJenkins info: " + flyJenkinsHome + "," + jenkinsHome);
+			return;
+		}
+		
+		log.debug("get flyjenkins info : " + jenkinsHome +" : "  + flyJenkinsHome);
+		FlyJenkinsInfo flyJenkinsInfo = new FlyJenkinsInfo();
+		flyJenkinsInfo.setFlyJenkinsHome(flyJenkinsHome);
+		flyJenkinsInfo.setJenkinsHome(jenkinsHome);
+		AgentMemoryStore agentMemoryStore = AgentMemoryStore.getInstance();
+		agentMemoryStore.setFlyJenkinsInfo(flyJenkinsInfo);
+		
+		resultMap = cliHelper.callActionFunction("FlyIdentify", "identifyAgent", agentHost);
+	
+		if(resultMap == null){
+			log.error("can't identify agent");
+			return;
+		}
+	
 		
 		/**
 		 * agent의 기본 식별 정보를 구한다.

@@ -12,8 +12,9 @@ import java.util.List;
 public class AgentMemoryStore {
 
 	private static AgentMemoryStore agentMemory = new AgentMemoryStore();
-	List<AgentMeta> agentMetaList;
-
+	private List<AgentMeta> agentMetaList;
+	private FlyJenkinsInfo flyJenkinsInfo = null;
+	
 	public static AgentMemoryStore getInstance(){
 		return agentMemory;
 	}
@@ -37,5 +38,19 @@ public class AgentMemoryStore {
 		}
 		return null;
 	}
+
+	public int getAgentTotalSize(){
+		return agentMetaList.size();
+	}
+	
+	public FlyJenkinsInfo getFlyJenkinsInfo() {
+		return flyJenkinsInfo;
+	}
+
+	public void setFlyJenkinsInfo(FlyJenkinsInfo flyJenkinsInfo) {
+		this.flyJenkinsInfo = flyJenkinsInfo;
+	}
+	
+	
 	
 }

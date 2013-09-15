@@ -48,7 +48,7 @@ service type:
 <j:forEach items="${it.serviceGroupList}" var="serviceGroup">
 	<j:set var="serviceMetaList" value="${serviceGroup.serviceMetaList}" />
 	<j:forEach items="${serviceMetaList}" var="serviceMeta">
-		<div>${serviceMeta.serviceId}, ${serviceMeta.host} </div>
+		<div>${serviceMeta.serviceId}, ${serviceMeta.host}, ${serviceMeta.isInstallAble()} </div>
 	</j:forEach>
 </j:forEach>
 <div><p> </p> </div>

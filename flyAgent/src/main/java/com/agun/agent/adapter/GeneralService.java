@@ -7,6 +7,9 @@ import hudson.util.StreamTaskListener;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.log4j.Logger;
+
+import com.agun.agent.function.CommonFunction;
 import com.agun.agent.model.AgentMeta;
 import com.agun.jenkins.FilePathHelper;
 import com.agun.jenkins.ProcessTreeHelper;
@@ -16,6 +19,8 @@ import com.agun.system.AgentInfoManager;
 
 public class GeneralService implements ServiceType {
 
+	static Logger log = Logger.getLogger(GeneralService.class.getName());
+	
 	FilePathHelper filePathHelper;
 	
 	@Override
@@ -193,7 +198,7 @@ public class GeneralService implements ServiceType {
 	
 	@Override
 	public void complete(AgentMeta agentMeta) {
-	
+		CommonFunction.deployComplete(agentMeta, filePathHelper);
 	}
 	
 	private String extractFilename(String filepath){

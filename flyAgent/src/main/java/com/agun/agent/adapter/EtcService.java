@@ -13,6 +13,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
+import com.agun.agent.function.CommonFunction;
 import com.agun.agent.model.AgentMeta;
 import com.agun.jenkins.FilePathHelper;
 import com.agun.jenkins.ProcessTreeHelper;
@@ -124,6 +125,7 @@ public class EtcService implements ServiceType {
 
 	@Override
 	public void complete(AgentMeta agentMeta) {
+		CommonFunction.deployComplete(agentMeta, filePathHelper);
 	}
 	
 	private void createCommandSh(String destination, String command){

@@ -40,4 +40,54 @@ public class FilePathHelper{
 		
 	}
 	
+	
+	
+	public void sendCopyTo(String src, String target){
+		FilePath filePath = new FilePath(new File(target));
+		Channel channel = cliHelper.getChannel();
+		FilePath fileRemotePath = new FilePath(channel, src);
+		
+		try {
+			if(filePath.isDirectory())
+				filePath.copyRecursiveTo(fileRemotePath);
+			else
+				filePath.copyTo(fileRemotePath);
+					
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void sendCopyTo(FilePath srcFilePath, String target){
+		Channel channel = cliHelper.getChannel();
+		FilePath fileRemotePath = new FilePath(channel, target);
+		try {
+			if(srcFilePath.isDirectory())
+				srcFilePath.copyRecursiveTo(fileRemotePath);
+			else
+				srcFilePath.copyTo(fileRemotePath);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public FilePath unzip(String zipFileSrc, String target){
+		Channel channel = cliHelper.getChannel();
+		FilePath fileRemotePath = new FilePath(channel, zipFileSrc);
+		FilePath targetFilePath = new FilePath(new File(target));
+		try {
+			fileRemotePath.unzip(targetFilePath);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return targetFilePath;
+	}
 }
