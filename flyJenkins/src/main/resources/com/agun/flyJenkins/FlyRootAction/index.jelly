@@ -1,34 +1,29 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:s="/lib/samples">
- 
- 
- 
   <l:layout>
   	<l:header>
- 		 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
- 		<link href="${rootURL}/plugin/flyJenkins/bootstrap/css/bootstrap.css" rel="stylesheet" />   
+ 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+ 		 <link href="${rootURL}/plugin/flyJenkins/bootstrap/css/bootstrap.css" rel="stylesheet" />  
  		<link href="${rootURL}/plugin/flyJenkins/css/flat-ui.css" rel="stylesheet" />   
- 		  
-      </l:header>
-  
+     </l:header>
   <l:main-panel>
   <div class="container" style="padding-top:3em">
  <div class="row demo-tiles">
         <div class="span3">
           <div class="tile">
             <img src="${rootURL}/plugin/flyJenkins/images/icons/Compas@2x.png" alt="Compas@2x" class="tile-image big-illustration" />
-            <h3 class="tile-title">Web Oriented</h3>
-            <p>100% convertable to HTML/CSS layout.</p>
-            <a style="color:#ffffff;text-decoration:none" class="btn btn-primary btn-large btn-block" href="http://designmodo.com/flat">Get Pro</a>
+            <h3 class="tile-title">서비스 설정</h3>
+            <p>서비스를 설정하고 제어 할 수 있습니다.</p>
+            <a style="color:#ffffff;text-decoration:none" class="btn btn-primary btn-large btn-block" href="${rootURL}/flyJenkins/ConfigServiceMeta">SERVICE</a>
           </div>
         </div>
 
         <div class="span3">
           <div class="tile">
             <img src="${rootURL}/plugin/flyJenkins/images/icons/Pensils@2x.png" alt="Pensils@2x" class="tile-image" />
-            <h3 class="tile-title">Color Swatches</h3>
-            <p>Easy to add or change elements. </p>
-            <a style="color:#ffffff;text-decoration:none" class="btn btn-primary btn-large btn-block" href="http://designmodo.com/flat">Get Pro</a>
+            <h3 class="tile-title">배포 설정</h3>
+            <p>배포 내역이나 배포 요청을 할 수 있습니다.</p>
+            <a style="color:#ffffff;text-decoration:none" class="btn btn-primary btn-large btn-block" href="${rootURL}/flyJenkins/DeployInfo">Deploy</a>
           </div>
         </div>
 

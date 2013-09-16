@@ -54,7 +54,6 @@ public class ConfigServiceMeta extends FlyUI {
 	}
 	
 	
-	
     /**
      * save meta info of service 
      * @param request
