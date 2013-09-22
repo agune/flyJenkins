@@ -11,28 +11,27 @@
  <div class="row demo-tiles">
         <div class="span3">
           <div class="tile">
-            <img src="${rootURL}/plugin/flyJenkins/images/icons/Compas@2x.png" alt="Compas@2x" class="tile-image big-illustration" />
+            <img src="${rootURL}/plugin/flyJenkins/images/icons/Pensils@2x.png" alt="Compas@2x" class="tile-image big-illustration" />
             <h3 class="tile-title">서비스 설정</h3>
             <p>서비스를 설정하고 제어 할 수 있습니다.</p>
             <a style="color:#ffffff;text-decoration:none" class="btn btn-primary btn-large btn-block" href="${rootURL}/flyJenkins/ConfigServiceMeta">SERVICE</a>
           </div>
         </div>
-
         <div class="span3">
           <div class="tile">
-            <img src="${rootURL}/plugin/flyJenkins/images/icons/Pensils@2x.png" alt="Pensils@2x" class="tile-image" />
-            <h3 class="tile-title">배포 설정</h3>
-            <p>배포 내역이나 배포 요청을 할 수 있습니다.</p>
+            <img src="${rootURL}/plugin/flyJenkins/images/icons/Clipboard@2x.png" alt="Pensils@2x" class="tile-image" />
+            <h3 class="tile-title">배포 내역</h3>
+            <p>배포의 요청, 진행 상태, 내역을 확인 할 수 있습니다.</p>
             <a style="color:#ffffff;text-decoration:none" class="btn btn-primary btn-large btn-block" href="${rootURL}/flyJenkins/DeployInfo">Deploy</a>
           </div>
         </div>
 
         <div class="span3">
           <div class="tile">
-            <img src="${rootURL}/plugin/flyJenkins/images/icons/Chat@2x.png" alt="Chat@2x" class="tile-image" />
-            <h3 class="tile-title">Free for Share</h3>
-            <p>Your likes, shares and comments helps us.</p>
-            <a style="color:#ffffff;text-decoration:none" class="btn btn-primary btn-large btn-block" href="http://designmodo.com/flat">Get Pro</a>
+            <img src="${rootURL}/plugin/flyJenkins/images/icons/Book@2x.png" alt="Chat@2x" class="tile-image" />
+            <h3 class="tile-title">결과물</h3>
+            <p>빌드된 결과물을 확인하고 배포 요청을 할 수 있습니다.</p>
+            <a style="color:#ffffff;text-decoration:none" class="btn btn-primary btn-large btn-block" href="${rootURL}/flyJenkins/ProductionList">Production</a>
           </div>
 
         </div>

@@ -7,139 +7,358 @@
  		<link href="${rootURL}/plugin/flyJenkins/bootstrap/css/bootstrap3.0.css" rel="stylesheet" />   
  	 	<link href="${rootURL}/plugin/flyJenkins/bootstrap/css/theme.min.css" rel="stylesheet" />
      	<link href="${rootURL}/plugin/flyJenkins/bootstrap/css/theme.css" rel="stylesheet" />
-     	<link href="${rootURL}/plugin/flyJenkins/css/flat-ui.css" rel="stylesheet" />   
-     <style id="holderjs-style" type="text/css">.holderjs-fluid {font-size:16px;font-weight:bold;text-align:center;font-family:sans-serif;margin:0}</style>
+     	<link href="${rootURL}/plugin/flyJenkins/css/flat-ui.css" rel="stylesheet" />  
+     	<link href="${rootURL}/plugin/flyJenkins/css/select-bootstrap.css" rel="stylesheet" />  
+     <style id="holderjs-style" type="text/css">
+     	.holderjs-fluid {
+     		font-size:16px;
+     		font-weight:bold;
+     		text-align:center;
+     		font-family:sans-serif;
+     		margin:0
+     	}
+     	
+     	.fly-label{
+     		float: left;
+     		width: 70px;
+     		padding-top: 5px;
+     		text-align: left
+     	}
+     	.fly-require{
+     		color: #D35400
+     	}
+     </style>
      </l:header>
 
     <l:main-panel>
-    
-    	
    	<div class="theme-showcase" >
    	<div class="page-header">
-        <h1>Service Group</h1>
+        <h1>서비스 설정 <a href="${rootURL}/flyJenkins/NetworkInfo" title="network map 보기" ><span class="fui-cmd"></span></a></h1>
       </div>
+      	<div style="padding-top:1px;float:left"><input type="text" value="" placeholder="그룹추가"  style="height:24px;" name="saveGroupText" /></div> <a href="#" onclick="addGroup(); return false;"><div class="tagsinput-add" style="margin-left:1px"></div></a>
    		<div class="row">
-        <div class="col-sm-4">
+   	    <div class="col-sm-4">
           <ul class="list-group">
             <j:forEach items="${it.serviceGroupList}" var="serviceGroup">
 	            <li class="list-group-item">
-	            <label class="radio">
-	            	<span class="icons">
+	            
+	            <div id="noneEditGroupView_${serviceGroup.groupId}" >
+	            <label class="radio" onclick="selectGroup(${serviceGroup.groupId});" style="width:130px;">
+	            	<span class="icons" >
 	            		<span class="first-icon fui-radio-unchecked"></span>
 	            		<span class="second-icon fui-radio-checked"></span>
 	            	</span>
-	            		<input type="radio" name="optionsRadios" id="optionsRadios${serviceGroup.groupId}" value="${serviceGroup.groupId}" data-toggle="radio" checked="checked" />
+	            		<input type="radio" name="optionsRadios" id="optionsRadios${serviceGroup.groupId}" value="${serviceGroup.groupId}" data-toggle="radio" checked="checked"  />
 	            		${serviceGroup.groupName}
+	            </label>
+                
+                <a href="#" onclick="delGroup(${serviceGroup.groupId}); return false;" > <span class="fui-cross" title="삭제" ></span> </a>
+	            <a href="#" onclick="editGroup(${serviceGroup.groupId}); return false;" > <span style="margin-left:3px;" class="fui-new" title="수정" ></span> </a>
+	            </div>
 	            
-	            </label></li>
+	            <div id="editGroupView_${serviceGroup.groupId}" style="display:none">
+					<input type="text" name="groupName_${serviceGroup.groupId}" value="${serviceGroup.groupName}" placeholder="groupName" class="span3" />
+	            	<a href="#" onclick="renameGroup(${serviceGroup.groupId}); return false;"><span class="fui-check" style="padding-left:2px;" ></span></a>
+	            	<a href="#" onclick="cancelGroup(${serviceGroup.groupId}); return false;"> <span class="fui-cross" style="padding-left:2px;"  ></span></a>
+	            </div>
+             	
+	         	</li>
               </j:forEach> 
           </ul>
         </div><!-- /.col-sm-4 -->
-        <div class="col-sm-4">
+        
+		<j:forEach items="${it.serviceGroupList}" var="serviceGroup">
+        
+        <div class="col-sm-4" id="serviceList_${serviceGroup.groupId}" style="display:none;"  >
           <div class="list-group">
-            <a href="#" class="list-group-item active">
-              Cras justo odio
-            </a>
-            <a href="#" class="list-group-item">Dapibus ac facilisis in</a>
-            <a href="#" class="list-group-item">Morbi leo risus</a>
-            <a href="#" class="list-group-item">Porta ac consectetur ac</a>
-            <a href="#" class="list-group-item">Vestibulum at eros</a>
-          </div>
+        	<div style="padding-bottom:5px;" ><a href="#" onclick="addServiceView(); return false;"> <span class="fui-plus" title="서비스추가" >서비스추가</span></a> </div>
+          	
+        	<j:set var="serviceMetaList" value="${serviceGroup.serviceMetaList}" />
+			<j:forEach items="${serviceMetaList}" var="serviceMeta">
+    			<a id="serviceItem_${serviceMeta.serviceId}" href="#" class="list-group-item"  onclick="selectService(${serviceMeta.serviceId}); return false;" >${serviceMeta.serviceId} . ${serviceMeta.host} , (weight: ${serviceMeta.weight}) 
+    				<j:if test="${serviceMeta.pid > 0 }">
+							<img src="${rootURL}/images/32x32/blue.png" />
+					</j:if>
+					<j:if test="${serviceMeta.pid == 0 }">
+						<img src="${rootURL}/images/32x32/red.png" />
+					</j:if> <br />
+					HOME: ${serviceMeta.destination}
+    			</a>
+	 			<input type="hidden" name="save_serviceId_${serviceMeta.serviceId}" value="${serviceMeta.serviceId}" />
+	 			<input type="hidden" name="save_host_${serviceMeta.serviceId}" value="${serviceMeta.host}" />
+	 			<input type="hidden" name="save_destination_${serviceMeta.serviceId}" value="${serviceMeta.destination}" />
+	 			<input type="hidden" name="save_type_${serviceMeta.serviceId}" value="${serviceMeta.type}" />
+	 			<input type="hidden" name="save_command_${serviceMeta.serviceId}" value="${serviceMeta.command}" />
+				<input type="hidden" name="save_testUrl_${serviceMeta.serviceId}" value="${serviceMeta.testUrl}" />
+				<input type="hidden" name="save_groupId_${serviceMeta.serviceId}" value="${serviceMeta.groupId}" />
+				<input type="hidden" name="save_weight_${serviceMeta.serviceId}" value="${serviceMeta.weight}" />
+	 			<input type="hidden" name="save_pid_${serviceMeta.serviceId}" value="${serviceMeta.pid}" />
+	 		</j:forEach>
+	      </div>
+	   	<a href="#" onclick="copyService(); return false;"> <span class="fui-new" style="padding-top:1px;" title="copy">copy</span></a>
+        <a href="#" onclick="delService(); return false;"><span class="fui-cross" title="del" style="padding-left:2px;">del</span></a>
+        <a href="#" onclick="showProcess(); return false;"><span style="padding-left:3px;" class="fui-list">process</span></a>
         </div><!-- /.col-sm-4 -->
-        <div class="col-sm-4">
-          <div class="list-group">
-            <a href="#" class="list-group-item active">
-              <h4 class="list-group-item-heading">List group item heading</h4>
-              <p class="list-group-item-text">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
-            </a>
-            <a href="#" class="list-group-item">
-              <h4 class="list-group-item-heading">List group item heading</h4>
-              <p class="list-group-item-text">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
-            </a>
-            <a href="#" class="list-group-item">
-              <h4 class="list-group-item-heading">List group item heading</h4>
-              <p class="list-group-item-text">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
-            </a>
+        
+        </j:forEach>
+         
+        <div id="serviceFormView" class="col-sm-4" style="display:none;width:320px;">
+          <div class="list-group" style="background: white;border: 2px solid #1abc9c;border-radius: 6px;margin-bottom: 18px;padding: 6px 1px 1px 6px;" >
+          	<form name="editForm" method="post" action="save" >
+  			<input type="hidden" id="edit_serviceId" name="serviceId" value="0" />
+  			<input type="hidden" id="edit_copyService" name="copyService" />
+  			<input type="hidden" id="edit_mode" name="mode" value="" />
+  			<fieldset>
+    			<legend>Service</legend>
+          		<label class="fly-label fly-require" for="edit_host">HOST</label> <input type="text" name="host" value="" placeholder="service host" class="span3"  id="edit_host" />
+           		<label class="fly-label fly-require" for="edit_destination">HOME</label><input type="text" name="destination" value="" placeholder="service home" class="span3" id="edit_destination" />
+ 				<label class="fly-label" for="edit_command">COMMAND</label><input type="text" name="command" value="" placeholder="command" class="span3" id="edit_command" />
+ 				<label class="fly-label" for="edit_testUrl">TEST URL</label><input type="text" name="testUrl" value="" placeholder="test url" class="span3" id="edit_testUrl" />
+         		<label class="fly-label fly-require" for="edit_weight">WEIGHT</label><input type="text" name="weight" value="" placeholder="weight" class="span3" id="edit_weight" />
+          	<br /><br />
+    		<label class="fly-label fly-require" for="edit_serviceType">SERVICE TYPE</label>
+    		<select name="type"  id="edit_serviceType" >
+				<option value="1">general process</option>
+				<option value="2">tomcat</option>
+				<option value="3">etc</option>
+			</select>
+	      	<br /><br /><br />
+          	<label class="fly-label fly-require" for="edit_serviceGroup">SERVICE GROUP</label>
+          	<select id="edit_serviceGroup" name="groupId" class="selectpicker" data-style="btn-primary" >
+			<j:forEach items="${it.serviceGroupList}" var="serviceGroup">
+				<option value="${serviceGroup.groupId}">${serviceGroup.groupName}</option>
+			</j:forEach>
+			</select>
+	       	<br /><br />
+   			<br />
+			<button id="editButton" type="button" class="btn btn-success" onclick="serviceSubmit()" >서비스 수정</button>
+          	</fieldset>
+          	</form>
+         	<br />
           </div>
         </div><!-- /.col-sm-4 -->
       </div>
    	</div>
-<form method="post" action="save">
-<div>host: <input type="text" name="host" /> </div>
-<div>destination: <input type="text" name="destination" /> </div>
-<div>command: <input type="text" name="command" /> </div>
-<div>testUrl: <input type="text" name="testUrl" /> </div>
-<div>weight: <input type="text" name="weight" /> </div>
-<div>service group: 
-<select name="groupId">
-	<j:forEach items="${it.serviceGroupList}" var="serviceGroup">
-		<option value="${serviceGroup.groupId}">${serviceGroup.groupName}</option>
-	</j:forEach>
-</select>
-</div>
 
-<div>
-service type: 
-<select name="type"  id="serviceType" >
-	<option value="1">general process</option>
-	<option value="2">tomcat</option>
-	<option value="3">etc</option>
-	<option value="4">copy</option>
-</select>
-
-<span id="copyServiceView" > 
-<select name="copyService">
-	<j:forEach items="${it.serviceGroupList}" var="serviceGroup">
-		<j:set var="serviceMetaList" value="${serviceGroup.serviceMetaList}" />
-		<j:forEach items="${serviceMetaList}" var="serviceMeta">
-			<option value="${serviceMeta.serviceId}">${serviceMeta.serviceId}</option>
-		</j:forEach>
-	</j:forEach>
-</select>
-</span>
-</div>
-<div><input type="submit" value="save" /></div>
+<div><p> </p> </div>
+<div><p> </p> </div>
+<form name="saveGroupForm" method="post" action="../ConfigServiceGroup/save">
+<input type="hidden" name="mode" id="save_groupMode" />
+<input type="hidden" name="groupId" value="0" id="save_groupId" />
+<input type="hidden" name="groupName" id="save_groupName" />
 </form>
+ 
+<script type="text/javascript">
+var oldServiceList="";
+var oldService = "";
+function selectGroup(groupId){
+	var sel = jQuery("#serviceList_" + groupId);
+	if(oldServiceList!="")
+		jQuery(oldServiceList).hide();
+	
+	jQuery(sel).show();
+	
+	oldServiceList = sel;
+	serviceClear();
+}
 
-<div><p> </p> </div>
-<div><p> </p> </div>
+function selectService(serviceId){
+	if(oldService != "")
+		jQuery(oldService).removeClass("active");
+	var serviceItem = jQuery("#serviceItem_" + serviceId);
+	jQuery(serviceItem).addClass("active");
+	oldService = serviceItem;
+	jQuery("#serviceFormView").show();
+	editClear();
+	settingService(serviceId);
+	jQuery("#editButton").text("서비스 수정");
+}
 
-<div>Service Meta List</div>
-<j:forEach items="${it.serviceGroupList}" var="serviceGroup">
-	<j:set var="serviceMetaList" value="${serviceGroup.serviceMetaList}" />
-	<j:forEach items="${serviceMetaList}" var="serviceMeta">
-		<div>${serviceMeta.serviceId}, ${serviceMeta.host}, ${serviceMeta.isInstallAble()} </div>
-	</j:forEach>
-</j:forEach>
-<div><p> </p> </div>
-<div><p> </p> </div>
 
-<div>Service Agent List <input type="button" value="Service Group" onclick="javascript:location.href='../NetworkInfo'" /></div>
-<j:set var="networkMap" value="${it.agentServiceMap}" />
-<j:forEach items="${networkMap.entrySet()}" var="networkEntry">
-	<j:forEach items="${networkEntry.value}" var="agentService">
-		<div>${agentService.host} </div>
-		<j:set var="serviceMetaList" value="${agentService.serviceMetaList}" />
+function settingService(serviceId){
 
-		<j:forEach items="${serviceMetaList}" var="serviceMeta">
-			
-			<div style="padding-left:2em" >
-			
-			${serviceMeta.serviceId}, ${serviceMeta.host}, ${serviceMeta.destination}
-			<j:if test="${serviceMeta.pid > 0 }">
-				<img src="/jenkins/static/1d061002/images/32x32/blue.png" />
-			</j:if>
-			
-			
-			<j:if test="${serviceMeta.pid == 0 }">
-				<img src="/jenkins/static/1d061002/images/32x32/red.png" />
-			</j:if>
-			<input type="button" value="process" onclick="javascript:location.href='../ProcessInfo?host=${serviceMeta.host}&amp;servicePid=${serviceMeta.pid}'" />	
-			
-			</div>
-		</j:forEach>
-	</j:forEach>
-</j:forEach>
+	var host = jQuery("[name='save_host_" + serviceId + "']").val();
+	var destination = jQuery("[name='save_destination_" + serviceId+ "']").val();
+	var command = jQuery("[name='save_command_" + serviceId+ "']").val();
+	var type = jQuery("[name='save_type_" + serviceId+ "']").val();
+	var testUrl = jQuery("[name='save_testUrl_" + serviceId+ "']").val();
+	var groupId = jQuery("[name='save_groupId_" + serviceId+ "']").val();
+	var weight = jQuery("[name='save_weight_" + serviceId+ "']").val();
+	var type = parseInt(jQuery("[name='save_type_" + serviceId+ "']").val());
+	jQuery("#edit_serviceId").val(serviceId);
+	jQuery("#edit_host").val(host);
+	jQuery("#edit_destination").val(destination);
+	jQuery("#edit_command").val(command);
+	jQuery("#edit_testUrl").val(testUrl);
+	jQuery("#edit_weight").val(weight);
+	type= type -1;
+	jQuery("#edit_serviceType option:eq("+type+")").attr("selected", "selected");
+	var serviceGroups = jQuery("#edit_serviceGroup option");
+	
+	for(var i=0; i&lt; serviceGroups.length; i++){
+		if(serviceGroups[i].value == groupId){
+			jQuery(serviceGroups[i]).attr("selected", "selected");
+			break;	
+		}
+	}
+}
+
+function addServiceView(){
+	jQuery(oldService).removeClass("active");
+	oldService = "";
+	editClear();
+	jQuery("#serviceFormView").show();
+	jQuery("#editButton").text("서비스 추가");
+}
+
+function serviceClear(){
+	editClear();
+	jQuery(oldService).removeClass("active");
+	jQuery("#serviceFormView").hide();
+	oldService = "";
+}
+
+function editClear(){
+	jQuery("#edit_serviceId").val("0");
+	jQuery("#edit_copyService").val("0");
+	jQuery("#edit_host").val("");
+	jQuery("#edit_destination").val("");
+	jQuery("#edit_command").val("");
+	jQuery("#edit_destination").val("");
+	jQuery("#edit_testUrl").val("");
+	jQuery("#edit_weight").val("");
+}
+
+function serviceSubmit(){
+
+	if(jQuery("#edit_host").val().length == 0){
+		alert("서비스 호스트를 작성해 주시기 바랍니다.");
+		jQuery("#edit_host").focus();
+		return;
+	}
+	
+	if(jQuery("#edit_destination").val().length == 0){
+		alert("서비스 home 디렉토리를 작성해 주시기 바랍니다.");
+		jQuery("#edit_destination").focus();
+		return;
+	}
+	
+	if(jQuery("#edit_weight").val().length == 0){
+		alert("배포 가중치를 작성해 주시기 바랍니다.");
+		jQuery("#edit_weight").focus();
+		return;
+	}
+
+	var message = "해당 서비스를 추가 하시겠습니까?";
+
+	if(jQuery("#edit_serviceId").val() != "" &amp;&amp; jQuery("#edit_serviceId").val() != "0"){
+		message = "해당 서비스를 수정 하시겠습니까?";
+	}	
+		
+	if(jQuery("#edit_copyService").val() != "" &amp;&amp; jQuery("#edit_copyService").val() != "0"){
+		message = "해당 서비스를 복사 하시겠습니까?";
+	}	
+	
+	if(confirm(message)){
+		jQuery("[name='editForm']").submit();
+	}
+}
+
+
+function copyService(){
+	var serviceId =jQuery("#edit_serviceId").val();	
+	if(serviceId == "" || serviceId == "0"){
+		alert("복사할 서비스를 선택해 주세요");
+		return;
+	}
+	jQuery("#edit_serviceId").val("0");	
+	jQuery("#edit_copyService").val(serviceId);
+	jQuery("#editButton").text("서비스 복사");
+}
+
+function delService(){
+	var serviceId = jQuery("#edit_serviceId").val();	
+	if(serviceId == "" || serviceId == "0"){
+		alert("삭제 할 서비스를 선택해 주세요");
+		return;
+	}
+	
+	if(confirm("해당 서비스를 삭제 하시겠습니까?")){
+		jQuery("#edit_mode").val("del");
+		jQuery("[name='editForm']").submit();
+	}
+
+}
+
+
+function showProcess(){
+	var serviceId = jQuery("#edit_serviceId").val();	
+	if(serviceId == "" || serviceId == "0"){
+		alert("프로세스 목록을 확인 할 서비스를 선택해 주세요");
+		return;
+	}
+	var host = jQuery("[name='save_host_" + serviceId + "']").val();
+	var pid = jQuery("[name='save_pid_" + serviceId + "']").val();
+	location.href="../ProcessInfo?host=" + host + "&amp;servicePid=" + pid;
+}
+
+
+function addGroup(){
+	var saveGroup = jQuery("[name='saveGroupText']").val();
+	if(saveGroup.length == 0 || saveGroup == " "){
+		alert("저장할 그룹이름을 지정해 주시기 바랍니다.");
+		jQuery("[name='saveGroup']").focus();
+		return;
+	}
+	clearGroupForm();
+	jQuery("#save_groupName").val(saveGroup);
+	jQuery("[name='saveGroupForm']").submit();
+}
+
+function clearGroupForm(){
+	jQuery("#save_groupMode").val("");
+	jQuery("#save_groupId").val("0");
+	jQuery("#save_groupName").val("");
+}
+
+function delGroup(groupId){
+	if(confirm("해당 서비스를 삭제 하시겠습니까?\n서비스 그룹을 삭제하면 하위 서비스도 모두 삭제 됩니다")){
+		clearGroupForm();
+		jQuery("#save_groupMode").val("del");
+		jQuery("#save_groupId").val(groupId);
+		jQuery("[name='saveGroupForm']").submit();
+	}
+}
+
+function editGroup(groupId){
+	jQuery("#noneEditGroupView_" + groupId).hide();
+	jQuery("#editGroupView_" + groupId).show();
+	
+}
+
+function cancelGroup(groupId){
+	jQuery("#editGroupView_" + groupId).hide();
+	jQuery("#noneEditGroupView_" + groupId).show();
+}
+
+function renameGroup(groupId){
+	var groupName = jQuery("[name='groupName_" + groupId+  "']").val();
+	
+	if(groupName.length == 0 || groupName== " "){
+		alert("수정할 그룹명을 작성해 주시기 바랍니다.");
+		jQuery("[name='groupName_" + groupId+  "']").focus();
+		return;
+	}
+	
+	if(confirm("해당 서비스 그룹의 이름을 수정하겠습니까?")){
+		clearGroupForm();
+		jQuery("#save_groupId").val(groupId);
+		jQuery("#save_groupName").val(groupName);
+		jQuery("[name='saveGroupForm']").submit();
+	}
+}
+
+</script>
 
    
  <!-- Load JS here for greater good =============================-->

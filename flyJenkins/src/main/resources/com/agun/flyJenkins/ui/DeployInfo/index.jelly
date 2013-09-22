@@ -1,44 +1,70 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:s="/lib/samples">
  <l:layout title="Network Map">
+<l:header>
+	<link href="${rootURL}/plugin/flyJenkins/bootstrap/css/bootstrap3.0.css" rel="stylesheet" />   
+</l:header>
+
 <l:main-panel>
 <div><p> </p></div>
 
 	<j:set var="paramJobName" value="jobName" />
 	
 	<j:set var="jobName" value="${request.getParameter(paramJobName)}" />
+	
+	<j:if test="${jobName != null}">
+		<div style="padding-bottom:2px;float:left"><a href="${rootURL}/flyJenkins/DeployHistory?jobName=${jobName}"><button type="button" class="btn btn-default"  >배포내역</button></a></div>
+	</j:if>
+	
+	<j:if test="${jobName == null}">
+		<div style="padding-bottom:2px;float:left"><a href="${rootURL}/flyJenkins/DeployHistory"><button type="button" class="btn btn-default"  >배포내역</button></a></div>
+	</j:if>
+	
+	
+	<j:if test="${jobName != null}">
+		<div style="padding-bottom:2px;padding-left:2px;float:left"><a href="${rootURL}/flyJenkins/ProductionList?jobName=${jobName}"><button type="button" class="btn btn-default"  >결과물</button></a></div>
+	</j:if>
 
-
-	<table style="margin-top:0px; border-top: none;" class="sortable pane bigtable">
+	<j:if test="${jobName == null}">
+		<div style="padding-bottom:2px;padding-left:2px;float:left"><a href="${rootURL}/flyJenkins/ProductionList"><button type="button" class="btn btn-default"  >결과물</button></a></div>
+	</j:if>
+	
+	
+	<table class="table table-hover table-bordered" >
 	<tbody>
 	<tr style="border-top: 0px;">
-	<th>jobName</th> <th>build</th> <th>production</th> <th>requester</th><th>licenser</th><th>date</th><th>serverGroup</th> <th>confirm</th><th>step</th> 
+	<th bgcolor="#f0f0f0" style="text-align:center" >프로젝트</th> <th bgcolor="#f0f0f0" style="text-align:center">build</th> <th bgcolor="#f0f0f0" style="text-align:center">저장물</th> <th bgcolor="#f0f0f0" style="text-align:center">요청자</th><th bgcolor="#f0f0f0" style="text-align:center">확인</th><th bgcolor="#f0f0f0" style="text-align:center">요청시간</th><th bgcolor="#f0f0f0" style="text-align:center">서비스</th> <th bgcolor="#f0f0f0" style="text-align:center">상태</th> 
 	<j:forEach items="${it.getDeployRequestList(jobName)}" var="deployRequest">
 		<tr>
 			<td style="width:120px;text-align:center">${deployRequest.jobName}</td> 
-			<td style="text-align:center">${deployRequest.buildNumber}</td>
-			<td style="text-align:center">${deployRequest.production}</td>
+			<td style="text-align:center"><a href="${rootURL}/job/${deployRequest.jobName}/${deployRequest.buildNumber}">${deployRequest.buildNumber}</a></td>
+			<td style="text-align:center;">${deployRequest.production}</td>
 			 <td style="text-align:center">${deployRequest.requester}</td>
 			 <td style="text-align:center">${deployRequest.licenser}</td>
-			 <td style="text-align:center">${deployRequest.date}</td>
-			 <td style="text-align:center">${deployRequest.serverGroup}</td>
+  			 <td style="text-align:center;width:100px;">${deployRequest.date}</td>
+			 <td style="text-align:center">${it.getGroupName(deployRequest.serverGroup)}</td>
 			  <j:if test="${deployRequest.confirm}">
-			 	<td style="text-align:center">ok</td>
+			 	<td style="text-align:center">
+			 			ok
+			 	</td>
 			 </j:if>
 			  <j:if test="${deployRequest.confirm == false}">
-			 	 <j:if test="${deployRequest.checkConfirmUser}">
-			 		<td style="text-align:center"><input type="button" value="confirm"  onclick="requestConfirm('${jobName}', '${deployRequest.date.time}')" /></td>
+			 	  <j:if test="${deployRequest.checkUser}">
+			 		<td style="text-align:center"><input type="button" value="확인"  onclick="requestCheck('${deployRequest.jobName}', '${deployRequest.date.time}')" /></td>
 			 	 </j:if>
-				<j:if test="${deployRequest.checkConfirmUser == false}">
-			 		<td style="text-align:center">standby</td>
+			 	 <j:if test="${deployRequest.checkConfirmUser}">
+			 		<td style="text-align:center"><input type="button" value="배포실행"  onclick="requestConfirm('${deployRequest.jobName}', '${deployRequest.date.time}')" /></td>
+			 	 </j:if>
+				<j:if test="${deployRequest.checkConfirmUser == false and deployRequest.checkUser == false}">
+			 		<j:set var="userNotList" value="${deployRequest.notOkUserList}" />
+			 		<j:if test="${userNotList.size() == 0}"> 
+			 			<td style="text-align:center">대기</td>
+			 		</j:if>
+			 		<j:if test="${userNotList.size() > 0}"> 
+			 			<td style="text-align:center;width:100px;">${userNotList.size()}명 확인중</td>
+			 		</j:if>
+			 		
 				 </j:if>
-			 </j:if>
-			  <j:if test="${deployRequest.run}">
-			 	<td style="text-align:center"><img alt="standby" title="standby"  src="${imagesURL}/${subIconSize}/32x32/blue.png"   /></td>
-			 </j:if>
-			 
-			  <j:if test="${!deployRequest.run}">
-			 	<td style="text-align:center"><img alt="standby" title="standby"  src="${imagesURL}/${subIconSize}/32x32/grey.png"   /></td>
 			 </j:if>
 		</tr>
 	</j:forEach>
@@ -47,8 +73,17 @@
 	</table>
 	
 	<script type="text/javascript">
+		var requester = <st:bind value="${it.ajaxProxy}"/>
+		function requestCheck(jobName, dateValue){
+			if(confirm('배포될 해당 결과물을 확인 하셨습니까?')){
+				requester.requestCheck("requestCheck", jobName, dateValue, function(t) {
+      				alert(t.responseObject());
+      				location.reload();	
+      			})
+			}	
+		}
+		
 		function requestConfirm(jobName, dateValue){
-			var requester = <st:bind value="${it.ajaxProxy}"/>
 			if(confirm('해당 배포 요청을 동의 하시겠습니까?')){
 				requester.deployRequest("requestDeploy", jobName, dateValue, function(t) {
       				alert(t.responseObject());

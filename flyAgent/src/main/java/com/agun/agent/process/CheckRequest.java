@@ -35,11 +35,10 @@ public class CheckRequest {
 
 	public void process(List<AgentMeta> agentList){
 	
-		if(agentList.size() == 0)
-			return;
-	
-		identity(agentList);
-		instanceModel();
+		if(agentList.size() > 0){
+			identity(agentList);
+			instanceModel();
+		}
 		
 		Map<String, Object> resultMap = null;
 		resultMap = cliHelper.callActionFunction("FlyRequester", "peekRequest", agentHost);
@@ -49,7 +48,6 @@ public class CheckRequest {
 			return;
 		
 		int type = (Integer)resultMap.get("type");
-		
 		// stop process
 		if(type ==  1){
 			 Map<String, Object> argMap = (Map<String, Object>)resultMap.get("arg");
@@ -77,6 +75,8 @@ public class CheckRequest {
 			 }
 			log.info("start copy service : " + argMap.get("serviceType") + "," + argMap.get("production") + "," + argMap.get("destination") );
 			CommonFunction.copyService((Integer)argMap.get("serviceType"), (String)argMap.get("production"), (String)argMap.get("destination") , filePathHelper);
+		
+		// attach service
 		}else if(type == 3){
 			int maxId = AgentInfoManager.getAgentMaxId();
 			Map<String, Object> argMap = (Map<String, Object>)resultMap.get("arg");
@@ -85,7 +85,20 @@ public class CheckRequest {
 			ModelAssignUtil.assignAgentMeta(agentMeta, argMap);
 			AgentMemoryStore agentMemory = AgentMemoryStore.getInstance();
 			agentMemory.addAgentMeta(agentMeta);	
+		
+			AgentMeta debugAgentMeta = agentMemory.getAgentMeta(agentMeta.getId());
 			log.info(" attach service meta : " + agentMeta.getId() + "," + agentMeta.getServiceId() + "," + agentMemory.getAgentTotalSize());
+		
+		// delete service
+		}else if(type == 4){
+			
+			Map<String, Object> argMap = (Map<String, Object>)resultMap.get("arg");
+			if(argMap == null)
+				return;
+			int serviceId = (Integer)argMap.get("serviceId");
+			AgentMemoryStore agentMemory = AgentMemoryStore.getInstance();
+			agentMemory.delAgentMeta(serviceId);
+			log.info(" delete service meta " + serviceId + "," + agentMemory.getAgentTotalSize() );
 		}
 	}
 	

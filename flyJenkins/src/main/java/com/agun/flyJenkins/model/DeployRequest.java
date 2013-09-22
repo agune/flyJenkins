@@ -2,7 +2,14 @@ package com.agun.flyJenkins.model;
 
 import hudson.model.User;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
 
 public class DeployRequest {
 
@@ -57,6 +64,9 @@ public class DeployRequest {
 	 */
 	private Date reserveDate;
 	
+	
+	private Map<String, Boolean> licenserMap = new Hashtable<String, Boolean>();
+	
 	public String getRequester() {
 		return requester;
 	}
@@ -87,6 +97,15 @@ public class DeployRequest {
 
 	public void setLicenser(String licenser) {
 		this.licenser = licenser;
+		
+		if(licenser == null || licenser.length() == 0)
+			return;
+		
+		String[] userIds = licenser.split(",");
+		for(String userId : userIds){
+			licenserMap.put(userId, false);
+		}
+		
 	}
 
 	public Date getDate() {
@@ -134,11 +153,26 @@ public class DeployRequest {
 		if(user == null)
 			return false;
 		
-		if(user.getId().equals(this.licenser))
+		for(boolean isCheck : licenserMap.values()){
+			if(isCheck == false)
+				return false;
+		}
+		
+		if(user.getId().equals(this.requester))
 			return true;
 		return false;
 	}
 
+	public boolean isCheckUser(){
+		User user = User.current();
+		if(user == null)
+			return false;
+		
+		if(licenserMap.containsKey(user.getId()) && licenserMap.get(user.getId()) == false){
+			return true;
+		}
+		return false;
+	}
 	public Date getReserveDate() {
 		return reserveDate;
 	}
@@ -153,5 +187,26 @@ public class DeployRequest {
 
 	public void setDisplayProduction(String displayProduction) {
 		this.displayProduction = displayProduction;
+	}
+
+	public Map<String, Boolean> getLicenserMap() {
+		return licenserMap;
+	}
+	public List<String> getNotOkUserList(){
+		List<String> userIdList = new ArrayList<String>();
+		
+		for(Entry<String, Boolean> entry : licenserMap.entrySet()){
+			if(entry.getValue() == false){
+				userIdList.add(entry.getKey());
+			}
+		}
+		return userIdList;
+	}
+	
+	public void okLicenser(String userId){
+		if(licenserMap.containsKey(userId) == false){
+			return;
+		}
+		licenserMap.put(userId, true);
 	}
 }

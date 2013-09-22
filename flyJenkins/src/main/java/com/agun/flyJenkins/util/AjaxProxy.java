@@ -1,11 +1,14 @@
 package com.agun.flyJenkins.util;
 
 
+import hudson.model.User;
+
 import java.io.IOException;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
 
 
 
@@ -55,7 +58,50 @@ public class AjaxProxy {
 			if(saveDeployRequest.getDate().getTime() == timeValue 
 					&& saveDeployRequest.getJobName().equals(jobName)){
 				deployRequestSel = saveDeployRequest;
+				
+				if(deployRequestSel.isCheckConfirmUser() == false){
+					return "Not confirm user";
+				}
 				deployRequestSel.setConfirm(true);
+				break;
+			}
+		}
+		
+		if(deployRequestSel !=null ){
+			try {
+				deployRequestSable.save();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return "ok";
+		}
+		return "Not exist request";
+	}
+	
+	
+	@JavaScriptMethod
+	public String requestCheck(String type, String jobName, long timeValue ){
+
+		
+		User user = User.current();
+		
+		if(user == null)
+			return "Not login";
+			
+		DeployRequestSaveable deployRequestSable = new DeployRequestSaveable();
+		deployRequestSable.load();
+		
+		List<DeployRequest> deployRequestList = deployRequestSable.getDeployRequestList();
+		
+		if(deployRequestList ==  null)
+			return "Not exist request";
+		
+		DeployRequest deployRequestSel = null;
+		for(DeployRequest saveDeployRequest : deployRequestList){
+			if(saveDeployRequest.getDate().getTime() == timeValue 
+					&& saveDeployRequest.getJobName().equals(jobName)){
+				deployRequestSel = saveDeployRequest;
+				deployRequestSel.okLicenser(user.getId());
 				break;
 			}
 		}

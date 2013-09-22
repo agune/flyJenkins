@@ -1,7 +1,7 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
  	<f:optionalBlock title="Fly Deploy" name="flyRequest"
  	checked="${instance.serviceGroup !=0 || instanse.production != null || instance.licenser != null}">
-        <f:entry name="serviceGroup" title="serviceGroup" field="serviceGroup">
+        <f:entry name="serviceGroup" title="서비스" field="serviceGroup">
         	<select name="serviceGroup">
         	<j:forEach var="serviceGroup" items="${descriptor.getServiceGroupList()}" varStatus="loop">
 	    	 	<j:if test="${instance.serviceGroup ==  serviceGroup.groupId }">
@@ -14,10 +14,10 @@
 	    	 </select>
 		</f:entry>
     
-		<f:entry title="production" field="production">
+		<f:entry title="배포결과물" field="production">
       		<f:textbox />
     	</f:entry>
-    	<f:entry title="licenser" field="licenser">
+    	<f:entry title="확인자" field="licenser">
       		<f:textbox />
     	</f:entry> 
      </f:optionalBlock>

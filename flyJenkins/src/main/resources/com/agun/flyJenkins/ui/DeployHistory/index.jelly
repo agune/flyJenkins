@@ -1,21 +1,48 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:s="/lib/samples">
- <l:layout title="deploy History">
+<j:set var="paramJobName" value="jobName" />
+<j:set var="jobName" value="${request.getParameter(paramJobName)}" />
+ 
+<l:layout title="deploy History">
+<l:header>
+	<link href="${rootURL}/plugin/flyJenkins/bootstrap/css/bootstrap3.0.css" rel="stylesheet" />   
+</l:header>
+
+
+<j:set var="deployReportList" value="${it.deployReportList}" />
 <l:main-panel>
 <div><p> </p></div>
-<table style="margin-top:0px; border-top: none;" class="sortable pane bigtable">
+
+
+<div style="float:left"><h4> 배포항목 </h4></div> 
+
+<j:if test="${jobName != null}">
+	<div style="padding-bottom:2px;float:right;"><a href="${rootURL}/flyJenkins/DeployInfo?jobName=${jobName}"><button type="button" class="btn btn-default"  >배포요청내역</button></a></div>
+</j:if>
+
+<j:if test="${jobName == null}">
+	<div style="padding-bottom:2px;float:right;"><a href="${rootURL}/flyJenkins/DeployInfo"><button type="button" class="btn btn-default"  >배포요청내역</button></a></div>
+</j:if>
+
+
+<table class="table table-hover table-bordered">
 <tbody>
 <tr style="border-top: 0px;">
-<th>jobName</th> <th>serverGroupId</th> <th>step</th><th>date</th> 
+<th bgcolor="#f0f0f0" style="text-align:center" >프로젝트</th><th bgcolor="#f0f0f0" style="text-align:center" >배포ID</th> <th bgcolor="#f0f0f0" style="text-align:center">서비스</th> <th bgcolor="#f0f0f0" style="text-align:center">진행여부</th><th bgcolor="#f0f0f0" style="text-align:center">시간</th> 
 <j:forEach items="${it.getDeployLogList()}" var="deployHistory">
 <tr>
 <td style="width:120px;text-align:center">${deployHistory.jobName}</td> 
-<td style="text-align:center">${deployHistory.groupId}</td>
-<td style="text-align:center">
-<j:if test="${deployHistory.isComplete()}">
-	완료 
-</j:if>
-( ${deployHistory.completeCount} / ${deployHistory.workSize})
+<td style="text-align:center">${deployHistory.deployId}</td>
+<td style="text-align:center">${it.getGroupName(deployHistory.serviceGroupId)}</td>
+<td style="text-align:center;">
+	<j:if test="${it.isDeployLogComplete(deployHistory.deployId, deployHistory.requestOrder, deployReportList) }">
+		<img src="${rootURL}/images/24x24/blue.png" />
+	</j:if>
+	<j:if test="${it.isDeployLogComplete(deployHistory.deployId, deployHistory.requestOrder, deployReportList) == false }">
+		<div style="padding-left:70px;" >
+		<table class="progress-bar "><tbody><tr class="unknown"><td></td></tr></tbody></table>
+		</div>
+	</j:if>
 </td>
 <td style="text-align:center">${deployHistory.date}</td>
 </tr>
@@ -24,12 +51,12 @@
 </tbody>
 </table>
 
-<div><p> deploy result </p></div>
-<table style="margin-top:0px; border-top: none;" class="sortable pane bigtable">
+<div><h4> 배포결과 </h4></div>
+<table class="table table-hover table-bordered">
 <tbody>
 <tr style="border-top: 0px;">
-<th>Deploy Id</th> <th>deploySize</th> <th>successCount</th><th>failCount</th> 
-<j:forEach items="${it.getDeployReportList()}" var="deployReport">
+<th bgcolor="#f0f0f0" style="text-align:center" >배포 Id</th> <th bgcolor="#f0f0f0" style="text-align:center">총 배포개수</th> <th bgcolor="#f0f0f0" style="text-align:center">성공개수</th><th bgcolor="#f0f0f0" style="text-align:center">실패개수</th> 
+<j:forEach items="${deployReportList}" var="deployReport">
 <tr>
 <td style="width:120px;text-align:center">${deployReport.deployId}</td> 
 <td style="text-align:center">${deployReport.deploySize}</td>

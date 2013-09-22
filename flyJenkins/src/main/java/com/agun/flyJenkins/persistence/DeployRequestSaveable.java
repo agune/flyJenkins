@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.List;
 
 import com.agun.flyJenkins.model.DeployRequest;
+import com.agun.flyJenkins.model.util.ModelSoting;
 
 import jenkins.model.Jenkins;
 import hudson.BulkChange;
@@ -16,6 +17,8 @@ public class DeployRequestSaveable implements Saveable{
 	List<DeployRequest> deployRequestList = null;
 	
 	public void save() throws IOException {
+		if(deployRequestList != null)
+			ModelSoting.deployRequestSortDate(deployRequestList);
 		if(BulkChange.contains(this))   return;
         try {
             getConfigFile().write(this);

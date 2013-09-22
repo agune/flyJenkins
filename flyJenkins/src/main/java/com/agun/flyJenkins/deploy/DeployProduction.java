@@ -69,7 +69,6 @@ public class DeployProduction {
 	
 	private void makeJobDir(ProductionMeta productionMeta, AbstractBuild<?,?> build){
 		String jobPathString = FlyJenkinsEnv.getProductionRoot() + "/" + productionMeta.getJobName() + "/" + productionMeta.getBuildNumber();
-		System.out.println("========> job path : " + jobPathString);
 		
 		FilePath jobPath = new FilePath(new File(jobPathString));
 		try {
@@ -87,14 +86,13 @@ public class DeployProduction {
 		String targetPathString = productionMeta.getProductionPath();
 		String destinationPathString =productionMeta.getProductionPathOfJob();
 		
-		System.out.println("copy to ====>" +  targetPathString + "," + destinationPathString);
 	
 		FilePath targetPath = new FilePath(new File(targetPathString));
 		FilePath destinationPath = new FilePath(new File(destinationPathString));
 		try {
 			if(targetPath.exists() == false)
 				return;
-			System.out.println("=========> process copy "  );
+			
 			if(targetPath.isDirectory())
 				targetPath.copyRecursiveTo(destinationPath);
 			else

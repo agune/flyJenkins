@@ -23,10 +23,8 @@ public class ProcessInfo extends FlyUI {
 	
 	public List<InstanceModel> getInstanceModel(String host){
 		
-		System.out.println("get instance model ====> " + host);
 		NetworkSpace networkSpace = FlyFactory.getNetworkSpace();
 		Map<String, List<InstanceModel>> instanceMap = networkSpace.getInstanceModelMap();
-		System.out.println("====>  value = " + instanceMap);
 		
 		if(instanceMap == null || instanceMap.containsKey(host) == false){
 			return Collections.EMPTY_LIST;

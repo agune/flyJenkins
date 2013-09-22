@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.agun.flyJenkins.model.ServiceGroup;
 import com.agun.flyJenkins.model.ServiceMeta;
+import com.agun.flyJenkins.model.util.ModelSoting;
 
 /**
  * this class is Service Group unit persistence helper
@@ -15,11 +16,84 @@ import com.agun.flyJenkins.model.ServiceMeta;
  */
 public class ServiceGroupSaveableUtil {
 
+	public static ServiceGroup getServiceGroup(int groupId){
+		ServiceGroupSaveable serviceGroupSaveable = new ServiceGroupSaveable();
+		serviceGroupSaveable.load();
+		List<ServiceGroup> serviceGroupList = serviceGroupSaveable.getServiceGroupList();
+		
+		if(serviceGroupList == null)
+			return null;
+		
+		for(ServiceGroup serviceGroup : serviceGroupList){
+			if(serviceGroup.getGroupId() == groupId){
+				return serviceGroup;
+			}
+		}
+		return null;
+	}
+	
+	
 	public static void saveServiceMeta(ServiceMeta serviceMeta){
 		ServiceGroupSaveable serviceGroupSaveable = new ServiceGroupSaveable();
 		serviceGroupSaveable.load();
 		saveServiceMeta(serviceGroupSaveable, serviceMeta);
 	}
+	
+	public static void delServiceMeta(ServiceMeta serviceMeta){
+		ServiceGroupSaveable serviceGroupSaveable = new ServiceGroupSaveable();
+		serviceGroupSaveable.load();
+		List<ServiceGroup> serviceGroupList = ServiceGroupSaveableUtil.getServiceGroupList(serviceGroupSaveable);
+		boolean isDel = false;
+		for(ServiceGroup serviceGroup : serviceGroupList){
+			List<ServiceMeta> serviceMetaList = serviceGroup.getServiceMetaList();
+			
+			for(ServiceMeta saveServiceMeta : serviceMetaList){
+
+				if(serviceMeta.getServiceId().equals(saveServiceMeta.getServiceId())){
+					serviceMetaList.remove(saveServiceMeta);
+					isDel = true;
+					break;
+				}
+			}
+			if(isDel){
+				serviceGroup.setServiceMetaList(serviceMetaList);
+			}
+		}
+		if(isDel){
+			serviceGroupSaveable.setServiceGroupList(serviceGroupList);
+			
+			try {
+				serviceGroupSaveable.save();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public static void delServiceGroup(int groupId){
+		ServiceGroupSaveable serviceGroupSaveable = new ServiceGroupSaveable();
+		serviceGroupSaveable.load();
+		List<ServiceGroup> serviceGroupList = ServiceGroupSaveableUtil.getServiceGroupList(serviceGroupSaveable);
+
+		boolean isDel = false;
+		for(ServiceGroup serviceGroup : serviceGroupList){
+			if(serviceGroup.getGroupId() == groupId){
+				serviceGroupList.remove(serviceGroup);
+				isDel = true;
+				break;
+			}
+		}
+		if(isDel){
+			serviceGroupSaveable.setServiceGroupList(serviceGroupList);
+			try {
+				serviceGroupSaveable.save();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	
 	/**
 	 * save service meta info
 	 * @param serviceGroupSaveable
@@ -40,18 +114,19 @@ public class ServiceGroupSaveableUtil {
 					serviceGroup.setServiceMetaList(serviceMetaList);
 				}
 				serviceMetaList.add(serviceMeta);
+				ModelSoting.serviceSortByWeight(serviceMetaList);
 			}
-			if(serviceMetaList !=null){
+			if(serviceMetaList !=null && serviceMeta.getServiceId() == 0){
 				for(ServiceMeta partServiceMeta : serviceMetaList){
-					System.out.println("====> test : " + partServiceMeta);
-					
 					if(maxServiceId < partServiceMeta.getServiceId())
 						maxServiceId = partServiceMeta.getServiceId();
 				}
 			}
 		}
-		maxServiceId++;
-		serviceMeta.setServiceId(maxServiceId);
+		if(serviceMeta.getServiceId() == 0){
+			maxServiceId++;
+			serviceMeta.setServiceId(maxServiceId);
+		}
 		
 		try {
 			serviceGroupSaveable.save();
@@ -93,4 +168,23 @@ public class ServiceGroupSaveableUtil {
 			return Collections.EMPTY_LIST;
 		return serviceGroupList;
 	}
+	
+	public static List<ServiceMeta> getServiceMetaListByGroupId(int groupId){
+		ServiceGroupSaveable serviceGroupSaveable = new ServiceGroupSaveable();
+		serviceGroupSaveable.load();
+		return ServiceGroupSaveableUtil.getServiceMetaListByGroupId(groupId, serviceGroupSaveable.getServiceGroupList());
+	}
+	
+	public static List<ServiceMeta> getServiceMetaListByGroupId(int groupId, List<ServiceGroup> serviceGroupList){
+		if(serviceGroupList == null)
+			return Collections.EMPTY_LIST;
+		
+		for(ServiceGroup serviceGroup : serviceGroupList){
+			if(serviceGroup.getGroupId() == groupId)
+				return serviceGroup.getServiceMetaList();
+		}
+		
+		return Collections.EMPTY_LIST;
+	}	
+	
 }

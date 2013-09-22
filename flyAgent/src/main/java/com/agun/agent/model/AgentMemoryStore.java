@@ -24,6 +24,9 @@ public class AgentMemoryStore {
 	}
 	
 	public void addAgentMeta(AgentMeta agentMeta){
+		int agentId = delAgentMeta(agentMeta.getServiceId());
+		if(agentId > 0)
+			agentMeta.setId(agentId);
 		this.agentMetaList.add(agentMeta);
 	}
 	
@@ -42,6 +45,21 @@ public class AgentMemoryStore {
 	public int getAgentTotalSize(){
 		return agentMetaList.size();
 	}
+	
+	public int delAgentMeta(int serviceId){
+		int agentId = 0;
+		if(agentMetaList == null)
+			return 0;
+		for(AgentMeta agentMeta : agentMetaList){
+			if(agentMeta.getServiceId() == serviceId){
+				agentId = agentMeta.getId();
+				agentMetaList.remove(agentMeta);
+				break;
+			}
+		}
+		return agentId;
+	}
+	
 	
 	public FlyJenkinsInfo getFlyJenkinsInfo() {
 		return flyJenkinsInfo;

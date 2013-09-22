@@ -5,18 +5,32 @@
 
 <div style="padding:2em:"><p></p></div>
 
-<j:forEach items="${it.serviceGroupList}" var="serviceGroup">
-	<div style="padding-top:2em;"><img height="48" style="margin-right:1em" alt="" width="48" src="/jenkins/static/1d061002/images/48x48/computer.png" />  (group id :  ${serviceGroup.groupId})</div>
+<j:forEach items="${it.agentServiceList}" var="agentService">
+	<div style="padding-top:2em;"><img height="48" style="margin-right:1em" alt="" width="48" src="${rootURL}/images/48x48/computer.png" />  (host :  ${agentService.host})</div>
 		<div style="border: 1px #bbb solid;padding:2em;">
-		<j:forEach items="${serviceGroup.serviceMetaList}" var="serviceMeta">
+		<j:forEach items="${agentService.serviceMetaList}" var="serviceMeta">
 			<div>
 				<j:if test="${serviceMeta.pid > 0}">
-					<img alt="Success" class="icon32x32" src="/jenkins/static/1d061002/images/32x32/blue.png" tooltip="Success" title="Success" /> 
+					<img alt="Success" class="icon32x32" src="${rootURL}/images/32x32/blue.png" tooltip="Success" title="Success" /> 
 				</j:if>
 				<j:if test="${serviceMeta.pid== 0}">
-					<img alt="Failed" class="icon32x32" src="/jenkins/static/1d061002/images/32x32/red.png" tooltip="Failed" title="Failed" /> 
+					<img alt="Failed" class="icon32x32" src="${rootURL}/images/32x32/red.png" tooltip="Failed" title="Failed" /> 
 				</j:if>
-				${serviceMeta.destination}  (serverId: ${serviceMeta.serviceId}, host : ${serviceMeta.host} . pid : ${serviceMeta.pid}) 
+				${serviceMeta.destination}  (serverId: ${serviceMeta.serviceId}, type :
+				
+				<j:if test="${serviceMeta.type == 1}">
+					process
+				</j:if>
+			
+				<j:if test="${serviceMeta.type == 2}">
+					tomcat
+				</j:if>
+		
+				<j:if test="${serviceMeta.type == 3}">
+					etc
+				</j:if>
+				
+				, pid : ${serviceMeta.pid}) 
 			</div>
 		</j:forEach>
 		</div>

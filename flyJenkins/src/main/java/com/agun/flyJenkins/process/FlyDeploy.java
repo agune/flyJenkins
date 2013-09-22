@@ -16,6 +16,7 @@ import com.agun.flyJenkins.model.ServiceMeta;
 import com.agun.flyJenkins.network.NetworkSpace;
 import com.agun.flyJenkins.persistence.DeployLogSaveable;
 import com.agun.flyJenkins.persistence.DeployMetaSaveable;
+import com.agun.flyJenkins.persistence.DeployReportSaveableUtil;
 import com.agun.flyJenkins.persistence.ServiceGroupSaveable;
 import com.agun.flyJenkins.deploy.DeploySurveillant;
 import com.agun.flyJenkins.schedule.PeriodWork;
@@ -52,8 +53,6 @@ public class FlyDeploy implements FlyProcess{
 		
 		saveDeployMeta(deployMeta);
 		
-		System.out.println("deploy info ====>" + deployMeta.getProduction());
-		
 		Map<String, Object> deployInfoMap = new Hashtable<String, Object>();
 		deployInfoMap.put("production", deployMeta.getProduction());
 		deployInfoMap.put("serverId", deployMeta.getServiceId());
@@ -72,6 +71,7 @@ public class FlyDeploy implements FlyProcess{
 			deployReport.plusSuccessCount();
 			
 			serviceComplete(deployId);
+			DeployReportSaveableUtil.plusSuccessCount(deployId);
 		}
 	}
 	
@@ -81,6 +81,7 @@ public class FlyDeploy implements FlyProcess{
 		if(deployReportMap.containsKey(deployId)){
 			DeployReport deployReport = deployReportMap.get(deployId);
 			deployReport.plusFailCount();
+			DeployReportSaveableUtil.plusfailCount(deployId);
 		}
 	}
 	
@@ -102,9 +103,7 @@ public class FlyDeploy implements FlyProcess{
 		
 		List<DeployMeta> deployMetaList = deployMetaSaveable.getDeployMetaList();
 		
-		System.out.println("====> service complete1 ");
 		if(deployMetaList != null){
-			System.out.println("====> service complete2 ");
 			for(DeployMeta deployMeta : deployMetaList){
 				if(deployMeta.getDeployId().equals(deployId)){
 					saveInstallAble(deployMeta.getServiceId());
@@ -116,7 +115,6 @@ public class FlyDeploy implements FlyProcess{
 	
 	private void saveInstallAble(int serviceId){
 		
-		System.out.println("=====> start save saveInstallAble ");
 		ServiceGroupSaveable serviceGroupSaveable = new ServiceGroupSaveable();
 		serviceGroupSaveable.load();
 		List<ServiceGroup> serviceGroupList = serviceGroupSaveable.getServiceGroupList();
@@ -137,8 +135,6 @@ public class FlyDeploy implements FlyProcess{
 				}
 			}
 		}
-		System.out.println("=====> end save " + isService);
-		
 		
 		if(isService){
 			try {

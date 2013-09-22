@@ -22,6 +22,7 @@ import com.agun.flyJenkins.model.DeployLog;
 import com.agun.flyJenkins.FlyFactory;
 import com.agun.flyJenkins.job.JobExtends;
 import com.agun.flyJenkins.persistence.DeployLogSaveable;
+import com.agun.flyJenkins.persistence.DeployReportSaveable;
 import com.agun.flyJenkins.persistence.DeployRequestSaveable;
 import com.agun.flyJenkins.persistence.ServiceGroupSaveable;
 
@@ -35,10 +36,7 @@ public class DeploySurveillant {
 	/**
 	 * 초기화를 할 경우 저장된 deploy log 를 가져 온다. 저장된 deploy log 가 없을때 새로 생성한다. 
 	 */
-	public DeploySurveillant(){
-		DeployLogSaveable deployLogSaveable = new DeployLogSaveable();
-		deployLogSaveable.load();
-	}
+	public DeploySurveillant(){}
 	
 	/**
 	 * deploy request 요청한 항목중에 DeployLog 로 전환되지 않는 값들을 저장한다.
@@ -174,7 +172,7 @@ public class DeploySurveillant {
 	 * deployLog list 에 deployLog 를 추가
 	 * @param deployRequest
 	 */
-	private void addDeployLog(DeployRequest deployRequest, ServiceMeta serviceMeta, int order){
+	private void addDeployLog(DeployRequest deployRequest, ServiceMeta serviceMeta, int order, List<DeployLog> deployLogList){
 		DeployLog deployLog = new DeployLog();
 		deployLog.setDeployId(deployRequest.getJobName() + deployRequest.getDate().getTime());
 		deployLog.setJobName(deployRequest.getJobName());
@@ -186,18 +184,38 @@ public class DeploySurveillant {
 		deployLog.setReserveDate(deployRequest.getReserveDate());
 		deployLog.setProduction(deployRequest.getProduction());
 		deployLogQueue.add(deployLog);
+		
+		deployLogList.add(deployLog);
 	}
 	
 	
 	private void extractDeployLog(DeployRequest deployRequest, List<ServiceGroup> serviceGroupList){
 		int order = 0;
+		DeployLogSaveable deployLogSaveable = new DeployLogSaveable();
+		deployLogSaveable.load();
+		
+		List<DeployLog> deployLogList = deployLogSaveable.getDeployLogList();
+
+		if(deployLogList == null){
+			deployLogList = new ArrayList<DeployLog>();
+		}
+		
+		DeployReportSaveable deployReportSaveable = new DeployReportSaveable();
+		deployReportSaveable.load();
+		
+		List<DeployReport> deployReportList = deployReportSaveable.getDeployReportList();
+		
+		if(deployReportList == null)
+			deployReportList = new ArrayList<DeployReport>();
+		
+		
 		for(ServiceGroup serviceGroup :  serviceGroupList){
 			if(deployRequest.getServerGroup() == serviceGroup.getGroupId()){
 				List<ServiceMeta> serviceMetaList = serviceGroup.getServiceMetaList();
 	
 				order = 1;
 				for(ServiceMeta serviceMeta : serviceMetaList){
-					addDeployLog(deployRequest, serviceMeta, order);
+					addDeployLog(deployRequest, serviceMeta, order, deployLogList);
 					order++;
 				}
 				
@@ -205,9 +223,21 @@ public class DeploySurveillant {
 				deployReport.setDeployId(deployRequest.getJobName() + deployRequest.getDate().getTime());
 				deployReport.setDeploySize(serviceMetaList.size());
 				deployReportMap.put(deployReport.getDeployId(), deployReport);
+				deployReportList.add(deployReport);
 				break;
 			}
 		}
 		deployRequest.setQueue(true);
+		
+		if(order > 0){
+			deployLogSaveable.setDeployLogList(deployLogList);
+			deployReportSaveable.setDeployReportList(deployReportList);
+			try {
+				deployLogSaveable.save();
+				deployReportSaveable.save();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }

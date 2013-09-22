@@ -1,5 +1,7 @@
 package com.agun.flyJenkins.ui;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.agun.flyJenkins.model.ProductionMeta;
@@ -15,10 +17,23 @@ public class ProductionList extends FlyUI {
 		return "production list";
 	}
 
-	public List<ProductionMeta> getProductionMetaList(){
+	public List<ProductionMeta> getProductionMetaList(String jobName){
 		ProductionSaveable productionSaveable = new ProductionSaveable();
 		productionSaveable.load();
-		return productionSaveable.getProductionMetaList();
+		List<ProductionMeta> productionMetaList = productionSaveable.getProductionMetaList();
+		if(jobName == null)
+			return productionMetaList;
+		if(productionMetaList == null)
+			return Collections.EMPTY_LIST;
+		
+		List<ProductionMeta> saveProductionMetaList = new ArrayList<ProductionMeta>();
+		
+		for(ProductionMeta productionMeta : productionMetaList){
+			if(productionMeta.getJobName().equals(jobName)){
+				saveProductionMetaList.add(productionMeta);
+			}
+		}
+		return saveProductionMetaList;
 	}
 	
 	@Extension

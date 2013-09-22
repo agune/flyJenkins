@@ -10,7 +10,7 @@ public class JobAction implements Action {
 	}
 	
 	public String getDisplayName() {
-		return "deployRequest";
+		return "배포요청항목";
 	}
 
 	public String getIconFileName() {

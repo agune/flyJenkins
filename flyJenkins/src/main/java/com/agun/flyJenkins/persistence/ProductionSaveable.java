@@ -5,9 +5,9 @@ import java.io.IOException;
 import java.util.List;
 
 import com.agun.flyJenkins.model.ProductionMeta;
+import com.agun.flyJenkins.model.util.ModelSoting;
 
 import jenkins.model.Jenkins;
-
 import hudson.BulkChange;
 import hudson.XmlFile;
 import hudson.model.Saveable;
@@ -18,6 +18,9 @@ public class ProductionSaveable implements Saveable{
 	List<ProductionMeta> productionMetaList = null;
 	
 	public void save() throws IOException {
+		if(productionMetaList != null){
+			ModelSoting.productionSortDate(productionMetaList);
+		}
 		if(BulkChange.contains(this))   return;
         try {
             getConfigFile().write(this);

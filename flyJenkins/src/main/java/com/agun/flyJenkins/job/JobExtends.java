@@ -35,7 +35,6 @@ public class JobExtends extends JobProperty<AbstractProject<?,?>>  {
 		this.production = production;
 		this.licenser = licenser;
 		this.serviceGroup = serviceGroup;
-		System.out.println("===> start : " + serviceGroup);
 	}
 	
 	@Override
@@ -53,7 +52,6 @@ public class JobExtends extends JobProperty<AbstractProject<?,?>>  {
 		// check state of building
 		if(DeployProduction.isSuccess(result.toString())){
 			
-			System.out.println("======> start : ");
 			DeployProduction deployProduction = new DeployProduction();
 			deployProduction.process(this.owner.getName(), replaceProduction, serviceGroup, build);
 		}

@@ -61,7 +61,6 @@ public class EtcService implements ServiceType {
 				/**
 				 * production move agent destination => service destination
 				 */
-				System.out.println("======>" + agentMeta.getDestination() + "/" + filename + "," + productionPath);
 				FilePath sourceFilePath = new FilePath(new File(agentMeta.getDestination() + "/" + filename));
 				filePath.renameTo(sourceFilePath);
 				
@@ -108,7 +107,6 @@ public class EtcService implements ServiceType {
 				HttpResponse response1 =  httpClient.execute(httpGet);
 				StatusLine statusLine = response1.getStatusLine();
 				int statusCode = statusLine.getStatusCode();
-				System.out.println("==> check monitoring  : " + statusCode);
 				if(statusCode == 200)
 					return true;
 				

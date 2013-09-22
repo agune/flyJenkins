@@ -16,9 +16,11 @@ import org.kohsuke.stapler.StaplerResponse;
 import com.agun.flyJenkins.FlyFactory;
 import com.agun.flyJenkins.model.DeployRequest;
 import com.agun.flyJenkins.model.ProductionMeta;
+import com.agun.flyJenkins.model.ServiceGroup;
 import com.agun.flyJenkins.job.JobExtends;
 import com.agun.flyJenkins.persistence.DeployRequestSaveable;
 import com.agun.flyJenkins.persistence.ProductionSaveable;
+import com.agun.flyJenkins.persistence.ServiceGroupSaveableUtil;
 import com.agun.flyJenkins.ui.ConfigServiceMeta.DescriptorImpl;
 import com.agun.flyJenkins.util.AjaxProxy;
 
@@ -46,7 +48,6 @@ public class DeployInfo extends FlyUI {
     public void doSave(final StaplerRequest request, final 
     		StaplerResponse response) { 
     
-    	System.out.println("====> save " + request.getParameter("jobName") + "," + request.getParameter("buildNumber"));
     	if( request.getParameter("jobName") == null 
     			|| request.getParameter("buildNumber") ==null)
     		return;
@@ -103,7 +104,7 @@ public class DeployInfo extends FlyUI {
     	deployRequest.setRequester(usedId);
     	deployRequest.setServerGroup(serverGroup);
     	deployRequest.setDisplayProduction(displayProduction);
-    
+    	
     	DeployRequestSaveable deployRequestSaveable = new DeployRequestSaveable();
     	deployRequestSaveable.load();
     	List<DeployRequest> deployRequestList = deployRequestSaveable.getDeployRequestList();
@@ -130,9 +131,6 @@ public class DeployInfo extends FlyUI {
     }
     
     public List<DeployRequest> getDeployRequestList(String jobName){
-    	if(jobName == null)
-    		return Collections.EMPTY_LIST;
-    	
     	
     	DeployRequestSaveable deployRequestSaveable = new DeployRequestSaveable();
     	deployRequestSaveable.load();
@@ -140,6 +138,10 @@ public class DeployInfo extends FlyUI {
     	List<DeployRequest> saveDeployRequestList = deployRequestSaveable.getDeployRequestList();
     	if(saveDeployRequestList == null)
     		return Collections.EMPTY_LIST;
+    	
+    	if(jobName == null)
+    		return saveDeployRequestList;
+    	
     	List<DeployRequest> deployRequestList = new ArrayList<DeployRequest>();
     	for(DeployRequest request : saveDeployRequestList){
     		if(request.getJobName().equals(jobName))
@@ -148,38 +150,13 @@ public class DeployInfo extends FlyUI {
     	return deployRequestList;
     }
     
-    public void setComplete(String jobName, Date date){
-  
-    	/*
-    	DeployRequestSaveable deployRequestSaveable = new DeployRequestSaveable();
-    	deployRequestSaveable.load();
-    	
-    	List<DeployRequest> requestList = deployRequestSaveable.getDeployRequestList();
-    	System.out.println("====> " + jobName + "," + date);
-    	DeployRequest saveDeployRequest = null;
-    	for(DeployRequest iDeployRequest : requestList){
-    		if(iDeployRequest.getDate().getTime() == date.getTime() 
-    				&& iDeployRequest.getJobName().equals(jobName)){ 
-    			saveDeployRequest = iDeployRequest;
-    			saveDeployRequest.setRun(true);
-    			break;
-    		}
-    	}
-    
-    	if(saveDeployRequest == null)
-    		return;
-    	
-    	System.out.println("====> " + saveDeployRequest.getDate());
-    	try {
-    		deployRequestSaveable.setDeployRequestList(requestList);
-    		deployRequestSaveable.save();
-    	} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    	*/
-    }
-    
+	public String getGroupName(int groupId){
+		ServiceGroup serviceGroup = ServiceGroupSaveableUtil.getServiceGroup(groupId);
+		if(serviceGroup == null)
+			return null;
+		return serviceGroup.getGroupName();
+	}
+ 
     public AjaxProxy getAjaxProxy(){
  		return AjaxProxy.getInstance();
  	}

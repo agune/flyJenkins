@@ -3,18 +3,11 @@
    
     
      <td>
-     	 <a href="/jenkins/flyJenkins/DeployInfo/save?jobName=${job.name}">
-     		<img alt="request deploy" title="request deploy"  src="${imagesURL}/${subIconSize}/notepad.png"   onclick="return flyRequest(this)" />
+     	 <a href="/jenkins/flyJenkins/ProductionList?jobName=${job.name}">
+     		<img alt="산출물" title="산출물"  src="${imagesURL}/${subIconSize}/notepad.png"  />
     	</a>
     </td>
     
-     	<script>
-                function flyRequest(img) {
-                  new Ajax.Request(img.parentNode.href, {method : 'post'});
-                  hoverNotification('finished request', img, -100);
-                  return false;
-                }
-       </script>
     
 </j:jelly>
   

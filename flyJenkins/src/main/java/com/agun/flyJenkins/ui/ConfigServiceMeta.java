@@ -41,7 +41,17 @@ public class ConfigServiceMeta extends FlyUI {
 		if(serviceGroupSaveable.getServiceGroupList() == null)
 			return Collections.EMPTY_LIST;
 		
-		return serviceGroupSaveable.getServiceGroupList();
+		NetworkSpace  networkSpace = FlyFactory.getNetworkSpace();
+		
+		List<ServiceGroup> serviceGroupList = serviceGroupSaveable.getServiceGroupList();
+		for(ServiceGroup serviceGroup : serviceGroupList){
+			List<ServiceMeta> serviceMetaList = serviceGroup.getServiceMetaList();
+			for(ServiceMeta serviceMeta : serviceMetaList){
+				ServiceMeta networkServiceMeta = networkSpace.getServiceMeta(serviceMeta.getServiceId());
+				serviceMeta.setPid(networkServiceMeta.getPid());
+			}
+		}
+		return serviceGroupList;
 	}
 	
 	/**
@@ -74,7 +84,46 @@ public class ConfigServiceMeta extends FlyUI {
     	int groupId  = Integer.parseInt(request.getParameter("groupId"));
     	int type  = Integer.parseInt(request.getParameter("type"));
     	int weight = Integer.parseInt(request.getParameter("weight"));
-   
+    	int serviceId = 0;
+    	
+    	if(request.getParameter("serviceId") != null){
+    		serviceId = Integer.parseInt(request.getParameter("serviceId"));
+    	}
+    	
+    	/**
+    	 * case delete 
+    	 */
+    	if(request.getParameter("mode") != null){
+    		if(request.getParameter("mode").equals("del")){
+    			
+    			ServiceMeta serviceMeta = new ServiceMeta();
+    			serviceMeta.setServiceId(serviceId);
+    			ServiceGroupSaveableUtil.delServiceMeta(serviceMeta);
+    			PeriodWork periodWork = FlyFactory.getPeriodWork();
+    			RequestQueue requestQueue = periodWork.getRequestQueue();
+    	    
+    			Map<String, Object> argMap = new Hashtable<String, Object>();
+    			argMap.put("serviceId", serviceId);
+    		
+    			RequestMap requestMap = new RequestMap();
+    			requestMap.setType(4);
+    			requestMap.setArg(argMap);
+    	
+    			NetworkSpace networkSpace = FlyFactory.getNetworkSpace();
+    			ServiceMeta networkServiceMeta = networkSpace.getServiceMeta(serviceId);
+    			
+    			requestQueue.add(networkServiceMeta.getHost(), requestMap);
+    			networkSpace.reload();
+    	    
+    	    	
+    			try {
+    				response.sendRedirect("/jenkins/flyJenkins/ConfigServiceMeta");
+    			} catch (IOException e) {
+    				e.printStackTrace();
+    			}
+    			return;
+    		}
+    	}
     	
     	ServiceMeta serviceMeta = new ServiceMeta();
     	serviceMeta.setHost(host);
@@ -85,28 +134,39 @@ public class ConfigServiceMeta extends FlyUI {
     	serviceMeta.setType(type);
     	serviceMeta.setWeight(weight);
     	serviceMeta.setInstallAble(true);
+    	serviceMeta.setServiceId(serviceId);
     	
-    	if(type == 4){
-   		 	int copyService  = Integer.parseInt(request.getParameter("copyService"));
+    	int copyService =0;
+    	if(request.getParameter("copyService") != null){
+    	 	copyService  = Integer.parseInt(request.getParameter("copyService"));
+    	}
+    	
+    	
+    	if(copyService  > 0){
    		 	serviceMeta.setType(getCopyServiceType(copyService));
    		   	serviceMeta.setInstallAble(false);
    		   	serviceMeta.setDependenceService(copyService);
     	}
    
-    	
+    	if(serviceId > 0){
+    		ServiceGroupSaveableUtil.delServiceMeta(serviceMeta);
+    	}
     	ServiceGroupSaveableUtil.saveServiceMeta(serviceMeta);
        
     	/**
          * 네트워크 space 에 추가 한다.
          */
     	NetworkSpace networkSpace = FlyFactory.getNetworkSpace();
-    	networkSpace.attachServiceMeta(serviceMeta);
+    	networkSpace.reload();
     	
     	
     	PeriodWork periodWork = FlyFactory.getPeriodWork();
 		RequestQueue requestQueue = periodWork.getRequestQueue();
     	
-    	if(type == 4){
+		/**
+		 * case copy service
+		 */
+    	if(copyService > 0){
 	    	Map<String, Object> argMap = new Hashtable<String, Object>();
 			argMap.put("host", host);
 			argMap.put("production", FlyJenkinsEnv.getLastBuildPath(serviceMeta.getDependenceService()));
@@ -124,6 +184,9 @@ public class ConfigServiceMeta extends FlyUI {
 			requestQueue.add(host, requestMap);
     	}
 		
+    	/**
+    	 * case attach service
+    	 */
     	Map<String, Object> argMap = new Hashtable<String, Object>();
 		argMap.put("host", host);
 		argMap.put("serviceId", serviceMeta.getServiceId());
