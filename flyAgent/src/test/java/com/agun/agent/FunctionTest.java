@@ -45,27 +45,6 @@ public class FunctionTest {
 			}
 			
 		}
-		
-		/*
-		try {
-			Process p = Runtime.getRuntime().exec("ps aux");
-			p.getInputStream();
-			String line;
-			
-			
-			BufferedReader input =
-	                new BufferedReader(new InputStreamReader(p.getInputStream()));
-	        while ((line = input.readLine()) != null) {
-	            System.out.println(line); //<-- Parse data here.
-	        }
-	        input.close();
-		
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		*/
-	
 	}
 	
 	@Ignore
@@ -91,12 +70,14 @@ public class FunctionTest {
 		}
 	}
 	
+	@Ignore
 	@Test
 	public void getEnvTest(){
 		String agentHome = System.getenv("FLY_AGENT_HOME");
 		System.out.println("==> " + agentHome);
 	}
 	
+	@Ignore
 	@Test
 	public void log4jTest(){
 		Logger log = Logger.getLogger(FunctionTest.class.getName());

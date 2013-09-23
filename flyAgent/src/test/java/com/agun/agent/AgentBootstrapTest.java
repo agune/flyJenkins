@@ -16,6 +16,7 @@ import com.agun.jenkins.CLIHelper;
 
 public class AgentBootstrapTest {
 	
+	@Ignore
 	@Test
 	public void startTest() {
 		URL url  = this.getClass().getResource("/id_rsa");

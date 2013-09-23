@@ -7,6 +7,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <build>
+    <finalName>flyAgent</finalName>
     <plugins>
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
@@ -17,6 +18,21 @@
                 <target>1.6</target>
             </configuration>
         </plugin>
+        
+        <plugin>
+			    <artifactId>maven-assembly-plugin</artifactId>
+			    <version>2.1</version>
+			    <configuration>
+			    	<descriptorRefs>
+			            <descriptorRef>jar-with-dependencies</descriptorRef>
+			        </descriptorRefs>
+			        <archive>
+			            <manifest>
+			                <mainClass>com.agun.agent.flyAgent</mainClass>
+			            </manifest>
+			        </archive>
+			    </configuration>
+			 </plugin>
     </plugins>
 	</build>
   
