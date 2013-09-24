@@ -41,7 +41,7 @@ public class PeriodWork extends PeriodicWork {
 	@Override
 	public long getRecurrencePeriod() {
 		//return MIN;
-		return 30000;
+		return 10000;
 	}
 
 	@IgnoreJRERequirement

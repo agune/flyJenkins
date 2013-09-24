@@ -75,6 +75,11 @@ public class flyAgent implements Daemon{
 						lastOneWasTick = !lastOneWasTick;
 						lastTick = now;
 					}
+					try {
+						Thread.sleep(2000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 				}
 				cliHelper.destory();
 			}

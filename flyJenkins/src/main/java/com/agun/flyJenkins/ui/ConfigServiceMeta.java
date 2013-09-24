@@ -46,9 +46,11 @@ public class ConfigServiceMeta extends FlyUI {
 		List<ServiceGroup> serviceGroupList = serviceGroupSaveable.getServiceGroupList();
 		for(ServiceGroup serviceGroup : serviceGroupList){
 			List<ServiceMeta> serviceMetaList = serviceGroup.getServiceMetaList();
-			for(ServiceMeta serviceMeta : serviceMetaList){
-				ServiceMeta networkServiceMeta = networkSpace.getServiceMeta(serviceMeta.getServiceId());
-				serviceMeta.setPid(networkServiceMeta.getPid());
+			if(serviceMetaList != null){
+				for(ServiceMeta serviceMeta : serviceMetaList){
+					ServiceMeta networkServiceMeta = networkSpace.getServiceMeta(serviceMeta.getServiceId());
+					serviceMeta.setPid(networkServiceMeta.getPid());
+				}
 			}
 		}
 		return serviceGroupList;
