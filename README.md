@@ -6,7 +6,7 @@ jenkins improve distributed deploy
 flyJenkins 프로젝트란? 
 
 이미 많이 사용하고 있는 open-source continuous integration server 인 jenkins 를 확장하여 
-개발자들이 shell 에 접속하지 않고도 리얼 서버에 분산 배포 할수 있는 continuous integration server를 
+개발자들이 shell 에 접속하지 않고도 리얼 서버에 분산 배포 할수 있는 continuous deployment architecture를 
 작성 하는것이 목표 입니다.
 
 라이센스
