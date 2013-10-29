@@ -1,8 +1,27 @@
 flyJenkins
 ==========
 
-jenkins improve distributed deploy
 
+what is flyJenkins?
+
+flyjenkins was extending jenkins
+
+it was add continuous deployment architecture to jenkins  
+
+feature:
+- distributed deploy 
+- network space
+- production list
+- identify service 
+- sevice meta
+
+release version :   
+pilot version 
+
+
+
+
+ 
 flyJenkins 프로젝트란? 
 
 이미 많이 사용하고 있는 open-source continuous integration server 인 jenkins 를 확장하여 
