@@ -9,23 +9,11 @@ import com.agun.flyJenkins.process.FlyFactory;
 import com.agun.flyJenkins.process.FlyProcess;
 import com.agun.flyJenkins.ui.FlyUI;
 
-import hudson.Extension;
-import hudson.model.RootAction;
 
-@Extension
-public class FlyRootAction implements RootAction {
-
-	private FlyMemStore flyMemStore = new FlyMemStore();
-	
-	public FlyMemStore getFlyMemStore() {
-		return flyMemStore;
-	}
-
-	public void setFlyMemStore(FlyMemStore flyMemStore) {
-		this.flyMemStore = flyMemStore;
-	}
+public class FlyRootAction {
 
 	public FlyRootAction(){
+		System.out.println("====> old flyRootAction");
 		FlyBootstrap.start();
 	}
 	
