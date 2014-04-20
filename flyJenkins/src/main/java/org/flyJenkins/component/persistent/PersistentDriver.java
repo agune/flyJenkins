@@ -1,10 +1,19 @@
+/**
+ * Persistent Driver interface
+ * @author agun
+ */
+
 package org.flyJenkins.component.persistent;
 
+import java.sql.Connection;
+import java.sql.Statement;
 import java.util.List;
+
+import com.sun.tools.corba.se.idl.InvalidArgument;
 
 public interface PersistentDriver {
 	public void initDevice();
-	public <T1> void query(T1 t1);
-	public <T1> void query(List<T1> t1List);
-	public <T2> List<T2> getPageList(int page , int limit);
+	public void initSchema();
+	public Connection getConn();
+	public Statement getStatement();
 }
