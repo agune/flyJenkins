@@ -1,64 +1,69 @@
-/**
- * production model from building.
- * @author agun
- */
-package org.flyJenkins.model;
+package org.flyJenkins.rest.model;
 
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
-public class Production {
 
+public class Production{
+
+	private int productionID;
+	
 	// job id of building
-	private int jobId;
+	private int jobID;
 	private String jobName;
 	private int buildNumber;
 	
-	
-	
+	// 
 	private String output;
 	// building time
 	private Date createDate;
 	
-	private List<Production> list;
+	public int getJobID() {
+		return jobID;
+	}
+	public void setJobID(int jobID) {
+		this.jobID = jobID;
+	}
 	
-	public int getJobId() {
-		return jobId;
-	}
-	public void setJobId(int jobId) {
-		this.jobId = jobId;
-	}
 	public String getJobName() {
 		return jobName;
 	}
 	public void setJobName(String jobName) {
 		this.jobName = jobName;
 	}
+	
 	public int getBuildNumber() {
 		return buildNumber;
 	}
 	public void setBuildNumber(int buildNumber) {
 		this.buildNumber = buildNumber;
 	}
+	
 	public String getOutput() {
 		return output;
 	}
 	public void setOutput(String output) {
 		this.output = output;
 	}
-	public Date getCreateDate() {
-		return createDate;
+
+	public String getCreateDate() {
+		if(this.createDate ==  null)
+			return null;
+		
+		DateFormat sdFormat = new SimpleDateFormat("yyyyMMdd");
+		return sdFormat.format(this.createDate);
 	}
 	public void setCreateDate(Date createDate) {
 		this.createDate = createDate;
 	}
 	
-	public List<Production> getList() {
-		return list;
+	public int getProductionID() {
+		return productionID;
 	}
-	public void setList(List<Production> list) {
-		this.list = list;
+
+	public void setProductionID(int productionID) {
+		this.productionID = productionID;
 	}
-	// 
-	
 }
