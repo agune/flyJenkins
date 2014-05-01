@@ -46,7 +46,7 @@ public class PersistentTemplateTest {
 			assertTrue("output이 다름", productionList.get(0).getOutput().equals("/home/tomcat/root.war"));
 			assertTrue("jobName이 다름", productionList.get(0).getJobName().equals("테스트프로젝트"));
 									
-		} catch (InvalidArgument e) {
+		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

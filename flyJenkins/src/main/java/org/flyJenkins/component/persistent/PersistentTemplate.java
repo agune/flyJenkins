@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.sun.tools.corba.se.idl.InvalidArgument;
 import org.flyJenkins.component.persistent.hsql.HSQLDriver;
 
 /**
@@ -87,7 +86,7 @@ public class PersistentTemplate{
 		}
 	}
 
-	public <T1> void query(T1 t1) throws InvalidArgument {
+	public <T1> void query(T1 t1) throws IllegalArgumentException {
 		String key = t1.getClass().getSimpleName();
 		if(queryMap.containsKey(key) == false)
 			return;
