@@ -10,6 +10,22 @@
   <artifactId>flyJenkins</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>hpi</packaging>
+  
+  <build>
+  	<plugins>
+        <!-- we want JDK 1.6 source and binary compatiblility -->
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+                <source>1.6</source>
+                <target>1.6</target>
+            </configuration>
+        </plugin>
+    </plugins>
+  </build>
+
+  
 
   <!-- get every artifact through repo.jenkins-ci.org, which proxies all the artifacts that we need -->
   <repositories>
@@ -48,4 +64,5 @@
     -->
     <maven-hpi-plugin.version>1.95</maven-hpi-plugin.version>
   </properties>
+  
 </project>

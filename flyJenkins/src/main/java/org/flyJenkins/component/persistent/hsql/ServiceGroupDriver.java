@@ -1,8 +1,3 @@
-/**
- * production query driver class
- * @author agun
- */
-
 package org.flyJenkins.component.persistent.hsql;
 
 import java.sql.ResultSet;
@@ -14,34 +9,29 @@ import java.util.List;
 
 import org.flyJenkins.component.persistent.PersistentDriver;
 import org.flyJenkins.component.persistent.QueryDriver;
-import org.flyJenkins.model.Production;
+import org.flyJenkins.model.ServiceGroup;
 
+public class ServiceGroupDriver implements QueryDriver {
 
-/**
- * TODO refactoring
- * @author agun
- *
- */
-
-public class ProductionDriver implements QueryDriver {
-	
-	Statement st = null;
 	PersistentDriver persistentDriver = null;
+
 	
+	@Override
+	public void setPersistentDriver(PersistentDriver persistentDriver) {
+		this.persistentDriver = persistentDriver;
+	}
+
+	@Override
 	public <T1> void query(T1 t1) throws IllegalArgumentException {
 		Statement st = persistentDriver.getStatement();
 		
-		if(!(t1 instanceof Production)){
-			throw new IllegalArgumentException("object type is not Production model");
+		if(!(t1 instanceof ServiceGroup)){
+			throw new IllegalArgumentException("object type is not ServiceGroup model");
 		}
 		
-		Production production = (Production)t1;
-		
-		String expression = "INSERT INTO productions(job_id, job_name, build, output) VALUES(";
-		expression = expression + production.getJobID() + ",";
-		expression = expression + "'" + production.getJobName() + "', ";
-		expression = expression + production.getBuildNumber() + ",";
-		expression = expression + "'" + production.getOutput() + "'";
+		ServiceGroup serviceGroup = (ServiceGroup)t1;
+		String expression = "INSERT INTO serviceGroups(group_name) VALUES(";
+		expression = expression + "'" + serviceGroup.getName() + "'";
 		expression = expression + ")";
 		System.out.println("===> query : " + expression);
 		int i =0;
@@ -57,28 +47,30 @@ public class ProductionDriver implements QueryDriver {
 		if (i == -1) {
 			System.out.println("db error : " + expression);
 		}
-
 	}
 
+	@Override
 	public <T1> void query(List<T1> t1List) {
-	// TODO function : store List
-	
+
 	}
-	/**
-	 * obtain model list
-	 */
+
+	@Override
 	public <T2> List<T2> getPageList(int page, int limit) {
 		Statement st = persistentDriver.getStatement();
 		
 		// calc offset by page value
 		int offset = limit * (page -1);
 		
-		List<Production> productionList = new ArrayList<Production>();
+		List<ServiceGroup> serviceGroupList = new ArrayList<ServiceGroup>();
 		try {
 			ResultSet rs = null;
 			ResultSetMetaData meta = null;
 			String expression = "select limit "+ offset + " " + limit;
-			expression = expression  + " id, job_id, job_name, build, output, create_at from productions"; 
+			expression = expression  + " id, group_name, create_at from serviceGroups"; 
+			
+			System.out.println("serviceGroup ====> " +  expression);
+			
+			
 			rs = st.executeQuery(expression);
 			meta = rs.getMetaData();
 			int colmax = meta.getColumnCount();
@@ -86,74 +78,55 @@ public class ProductionDriver implements QueryDriver {
 			int i = 0;
 			
 			for (; rs.next(); ) {
-	            Production production = new Production();
+	            ServiceGroup serviceGroup = new ServiceGroup();
 	            
 				for (i = 0; i < colmax; ++i) {
 	                o = rs.getObject(i + 1);    
 	                if(i == 0)
-	                	production.setProductionID(rs.getInt(i + 1));
+	                	serviceGroup.setGroupID(rs.getInt(i + 1));
 	                else if(i == 1)
-	                	production.setJobID(rs.getInt(i + 1));
+	                	serviceGroup.setName(rs.getObject(i + 1).toString());
 	                else if(i == 2)
-	                 	production.setJobName(rs.getObject(i + 1).toString());
-	                else if(i == 3)
-	                	production.setBuildNumber(rs.getInt(i + 1));
-	                else if(i == 4)
-	                	production.setOutput(rs.getObject(i + 1).toString());
-	                else if(i == 5)
-	                	production.setCreateDate(rs.getDate(i + 1));
-	             	   
+	                	serviceGroup.setCreateDate(rs.getDate(i + 1));
 	            }
-				productionList.add(production); 
+				serviceGroupList.add(serviceGroup); 
 	        }
 			st.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return (List<T2>) productionList;
-	}
-
-	public void setPersistentDriver(PersistentDriver persistentDriver) {
-		this.persistentDriver = persistentDriver;
+		return (List<T2>) serviceGroupList;
 	}
 
 	@Override
 	public <T3> T3 read(T3 t3) {
-		if(!(t3 instanceof Production))
+		
+		if(!(t3 instanceof ServiceGroup))
 			return null;
 		
-		Production query = (Production) t3;
+		ServiceGroup query = (ServiceGroup) t3;
 		Statement st = persistentDriver.getStatement();
 		try {
 			ResultSet rs = null;
 			ResultSetMetaData meta = null;
-			String expression = "SELECT id, job_id, job_name, build, output, create_at from productions where id = " + query.getProductionID(); 
+			String expression = "SELECT id, group_name, create_at from serviceGroups where id = " + query.getGroupID(); 
 			rs = st.executeQuery(expression);
 			meta = rs.getMetaData();
 			int colmax = meta.getColumnCount();
-			Object o = null;
 			int i = 0;
-			Production production = new Production();
+			ServiceGroup serviceGroup = new ServiceGroup();
 			if (rs.next()) {
 				for (i = 0; i < colmax; ++i) {
-	                o = rs.getObject(i + 1);    
 	                if(i == 0)
-	                	production.setProductionID(rs.getInt(i + 1));
+	                	serviceGroup.setGroupID(rs.getInt(i + 1));
 	                else if(i == 1)
-	                	production.setJobID(rs.getInt(i + 1));
+	                	serviceGroup.setName(rs.getObject(i + 1).toString());
 	                else if(i == 2)
-	                 	production.setJobName(rs.getObject(i + 1).toString());
-	                else if(i == 3)
-	                	production.setBuildNumber(rs.getInt(i + 1));
-	                else if(i == 4)
-	                	production.setOutput(rs.getObject(i + 1).toString());
-	                else if(i == 5)
-	                	production.setCreateDate(rs.getDate(i + 1));
-	             	   
+	                	serviceGroup.setCreateDate(rs.getDate(i + 1));
 	            }
 	        }
 			st.close();
-			return (T3)production;
+			return (T3)serviceGroup;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -163,10 +136,10 @@ public class ProductionDriver implements QueryDriver {
 	@Override
 	public <T4> int getTotalPage(T4 t4, int limit) {
 		
-		if(!(t4 instanceof Production))
+		if(!(t4 instanceof ServiceGroup))
 			return 0;
 		
-		Production query = (Production) t4;
+		ServiceGroup query = (ServiceGroup) t4;
 		
 		
 		Statement st = persistentDriver.getStatement();
@@ -175,7 +148,7 @@ public class ProductionDriver implements QueryDriver {
 		try {
 			ResultSet rs = null;
 			ResultSetMetaData meta = null;
-			String expression = "SELECT count(*) from productions "; 
+			String expression = "SELECT count(*) from serviceGroups "; 
 			rs = st.executeQuery(expression);
 			meta = rs.getMetaData();
 			if (rs.next()) {
@@ -191,6 +164,8 @@ public class ProductionDriver implements QueryDriver {
 			e.printStackTrace();
 		}
 		return 0;
+		
+		
 	}
 
 }

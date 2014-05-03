@@ -16,13 +16,8 @@ public class Production {
 	private String jobName;
 	private int buildNumber;
 	
-	
 	private String output;
-	// building time
 	private Date createDate;
-	
-	//String
-	private String createDateString;
 	
 	public int getJobID() {
 		return jobID;

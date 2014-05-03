@@ -33,6 +33,8 @@ public class PersistentTemplate{
 	private PersistentTemplate(String driverClassName){
 		queryMap = new HashMap<String, QueryDriver>();
 		queryMap.put("Production", null);	
+		queryMap.put("ServiceGroup", null);	
+		queryMap.put("ServiceMeta", null);	
 	}
 	
 	public static PersistentTemplate getInstance(String driverClassName){
