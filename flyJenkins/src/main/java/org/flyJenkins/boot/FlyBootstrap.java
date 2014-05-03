@@ -4,6 +4,9 @@
  */
 package org.flyJenkins.boot;
 
+import org.flyJenkins.component.persistent.PersistentDriver;
+import org.flyJenkins.component.persistent.PersistentTemplate;
+
 public class FlyBootstrap {
 	
 	public static void start(){

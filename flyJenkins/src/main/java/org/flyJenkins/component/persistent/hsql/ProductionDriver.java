@@ -38,7 +38,7 @@ public class ProductionDriver implements QueryDriver {
 		Production production = (Production)t1;
 		
 		String expression = "INSERT INTO productions(job_id, job_name, build, output) VALUES(";
-		expression = expression + production.getJobId() + ",";
+		expression = expression + production.getJobID() + ",";
 		expression = expression + "'" + production.getJobName() + "', ";
 		expression = expression + production.getBuildNumber() + ",";
 		expression = expression + "'" + production.getOutput() + "'";
@@ -78,7 +78,7 @@ public class ProductionDriver implements QueryDriver {
 			ResultSet rs = null;
 			ResultSetMetaData meta = null;
 			String expression = "select limit "+ offset + " " + limit;
-			expression = expression  + " id, job_id, job_name, build, output from productions"; 
+			expression = expression  + " id, job_id, job_name, build, output, create_at from productions"; 
 			rs = st.executeQuery(expression);
 			meta = rs.getMetaData();
 			int colmax = meta.getColumnCount();
@@ -90,14 +90,19 @@ public class ProductionDriver implements QueryDriver {
 	            
 				for (i = 0; i < colmax; ++i) {
 	                o = rs.getObject(i + 1);    
-	                if(i == 1)
-	                	production.setJobId(rs.getInt(i + 1));
+	                if(i == 0)
+	                	production.setProductionID(rs.getInt(i + 1));
+	                else if(i == 1)
+	                	production.setJobID(rs.getInt(i + 1));
 	                else if(i == 2)
 	                 	production.setJobName(rs.getObject(i + 1).toString());
 	                else if(i == 3)
 	                	production.setBuildNumber(rs.getInt(i + 1));
 	                else if(i == 4)
 	                	production.setOutput(rs.getObject(i + 1).toString());
+	                else if(i == 5)
+	                	production.setCreateDate(rs.getDate(i + 1));
+	             	   
 	            }
 				productionList.add(production); 
 	        }
@@ -110,6 +115,83 @@ public class ProductionDriver implements QueryDriver {
 
 	public void setPersistentDriver(PersistentDriver persistentDriver) {
 		this.persistentDriver = persistentDriver;
+	}
+
+	@Override
+	public <T3> T3 read(T3 t3) {
+		if(!(t3 instanceof Production))
+			return null;
+		
+		Production query = (Production) t3;
+		Statement st = persistentDriver.getStatement();
+		try {
+			ResultSet rs = null;
+			ResultSetMetaData meta = null;
+			String expression = "SELECT id, job_id, job_name, build, output, create_at from productions where id = " + query.getProductionID(); 
+			rs = st.executeQuery(expression);
+			meta = rs.getMetaData();
+			int colmax = meta.getColumnCount();
+			Object o = null;
+			int i = 0;
+			Production production = new Production();
+			if (rs.next()) {
+				for (i = 0; i < colmax; ++i) {
+	                o = rs.getObject(i + 1);    
+	                if(i == 0)
+	                	production.setProductionID(rs.getInt(i + 1));
+	                else if(i == 1)
+	                	production.setJobID(rs.getInt(i + 1));
+	                else if(i == 2)
+	                 	production.setJobName(rs.getObject(i + 1).toString());
+	                else if(i == 3)
+	                	production.setBuildNumber(rs.getInt(i + 1));
+	                else if(i == 4)
+	                	production.setOutput(rs.getObject(i + 1).toString());
+	                else if(i == 5)
+	                	production.setCreateDate(rs.getDate(i + 1));
+	             	   
+	            }
+	        }
+			st.close();
+			return (T3)production;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	public <T4> int getTotalPage(T4 t4, int limit) {
+		// TODO Auto-generated method stub
+		
+		if(!(t4 instanceof Production))
+			return 0;
+		
+		Production query = (Production) t4;
+		
+		
+		Statement st = persistentDriver.getStatement();
+		
+		int totalPage = 0;
+		try {
+			ResultSet rs = null;
+			ResultSetMetaData meta = null;
+			String expression = "SELECT count(*) from productions "; 
+			rs = st.executeQuery(expression);
+			meta = rs.getMetaData();
+			if (rs.next()) {
+			    int cnt = rs.getInt(1);
+			    if(cnt > 0){
+			    	totalPage = cnt / limit; 
+			    	if((cnt % limit) > 0) totalPage++;
+			    }
+		    }
+			st.close();
+			return totalPage;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
 	}
 
 }

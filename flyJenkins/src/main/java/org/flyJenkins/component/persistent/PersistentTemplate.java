@@ -116,4 +116,18 @@ public class PersistentTemplate{
 		return queryDriver.getPageList(page, limit);
 	}
 	
+	public <T3> T3 getRead(T3 t3, Class cl){
+		String key = cl.getSimpleName();
+		if(queryMap.containsKey(key) == false)
+			return null;
+		QueryDriver queryDriver = queryMap.get(key);
+		return queryDriver.read(t3);
+	}
+	public <T4> int getTotalPage(T4 t4, int limit, Class cl){
+		String key = cl.getSimpleName();
+		if(queryMap.containsKey(key) == false)
+			return 0;
+		QueryDriver queryDriver = queryMap.get(key);
+		return queryDriver.getTotalPage(t4, limit);		
+	}
 }
