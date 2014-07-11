@@ -14,12 +14,10 @@ import org.kohsuke.stapler.StaplerResponse;
 
 public class RestService {
 	
+	
 	/***
 	 * implement start service
 	 */
-	
-	
-	
 	public void execService(final StaplerRequest req, StaplerResponse rsp){		
 		PrintWriter pw = null;
 		JSONObject jsonObject = new JSONObject();
@@ -41,8 +39,19 @@ public class RestService {
 		ServiceMeta serviceMeta = new ServiceMeta();
 		serviceMeta.setServiceID(serviceID);		
 		serviceMeta = persistentTemplate.getRead(serviceMeta, ServiceMeta.class);
+		
 		jsonObject.put("item", serviceMeta);
-		pw.write(jsonObject.toString());
+		
+		try {
+		    String callbackName = req.getParameter("callback");
+			if(callbackName == null)
+				jsonObject.write(pw);
+			else
+				pw.write(callbackName + "(" +jsonObject.toString() + ")" );
+				
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	
 	}
 	
@@ -69,7 +78,47 @@ public class RestService {
 		
 	}
 
-	
+	public void execDelService(final StaplerRequest req, StaplerResponse rsp){
+		JSONObject jsonObject = new JSONObject();	
+		PrintWriter pw = null;
+		
+		try {
+			pw = rsp.getWriter();
+			if(req.getParameter("serviceID") == null){
+				jsonObject.put("status", "error");
+				jsonObject.put("message", "serviceID is null");
+				jsonObject.write(pw);
+				return;
+			}
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		
+		PersistentTemplate persistentTemplate = PersistentTemplate.getInstance("org.flyJenkins.component.persistent.hsql.HSQLDriver");
+		ServiceMeta serviceMeta = new ServiceMeta();
+		serviceMeta.setServiceID(Integer.parseInt(req.getParameter("serviceID")));
+		persistentTemplate.del(serviceMeta, ServiceMeta.class);
+		
+		if(req.getParameter("returnURL") != null){
+  		  try {
+  			rsp.sendRedirect2(req.getParameter("returnURL"));
+  		  } catch (IOException e) {
+  			e.printStackTrace();
+  		  }
+  		  return;
+  		}
+					
+		try {
+			jsonObject.put("status", "ok");		
+			String callbackName = req.getParameter("callback");
+			if(callbackName != null)
+			  pw.write(callbackName + "(" +jsonObject.toString() + ")" );
+			else
+			  jsonObject.write(pw);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	public void execSaveService(final StaplerRequest req, StaplerResponse rsp){		
 	    JSONObject jsonObject = new JSONObject();
@@ -107,7 +156,8 @@ public class RestService {
 			pw.write(jsonObject.toString());
 			return;
 		}
-
+		
+		System.out.println("test URL =======> : " + req.getParameter("testURL"));
 		//group_id, destination, service_type, command, weight, test_url
 		
 		ServiceMeta serviceMeta = new ServiceMeta();
@@ -119,10 +169,26 @@ public class RestService {
 		serviceMeta.setTestUrl(req.getParameter("testURL"));
 		serviceMeta.setHost(req.getParameter("host"));
 		
+		if(req.getParameter("serviceID") != null && req.getParameter("serviceID").equals("0") == false)
+			serviceMeta.setServiceID(Integer.parseInt(req.getParameter("serviceID")));
+		
 	    PersistentTemplate persistentTemplate = PersistentTemplate.getInstance("org.flyJenkins.component.persistent.hsql.HSQLDriver");
         persistentTemplate.query(serviceMeta);
-    	jsonObject.put("status", "ok");
-		pw.write(jsonObject.toString());
+    	
+        if(req.getParameter("returnURL") != null){
+  		  try {
+  			rsp.sendRedirect2(req.getParameter("returnURL"));
+  		  } catch (IOException e) {
+  			e.printStackTrace();
+  		  }
+  		  return;
+  		}
+        
+        try {
+			jsonObject.write(pw);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
 	}
 
@@ -154,12 +220,21 @@ public class RestService {
 		serviceGroup.setGroupID(serviceGroupID);		
 		serviceGroup = persistentTemplate.getRead(serviceGroup, ServiceGroup.class);
 		jsonObject.put("item", serviceGroup);
-		pw.write(jsonObject.toString());
+		
+		try {
+		    String callbackName = req.getParameter("callback");
+			if(callbackName != null)
+			  pw.write(callbackName + "(" +jsonObject.toString() + ")" );
+			else
+			  jsonObject.write(pw);			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	
 	}
 	
 	public void execSaveServiceGroup(final StaplerRequest req, StaplerResponse rsp){		
-	    JSONObject jsonObject = new JSONObject();
+		JSONObject jsonObject = new JSONObject();
 		PrintWriter pw = null;
 		try {
 			pw = rsp.getWriter();
@@ -176,16 +251,78 @@ public class RestService {
 		
 		ServiceGroup serviceGroup = new ServiceGroup();
 		serviceGroup.setName(req.getParameter("groupName"));
+		if(req.getParameter("groupID") != null && req.getParameter("groupID").equals("0") == false)
+			serviceGroup.setGroupID(Integer.parseInt(req.getParameter("groupID")));
 		
 	    PersistentTemplate persistentTemplate = PersistentTemplate.getInstance("org.flyJenkins.component.persistent.hsql.HSQLDriver");
         persistentTemplate.query(serviceGroup);
-    	jsonObject.put("status", "ok");
-		pw.write(jsonObject.toString());
+    	
+        if(req.getParameter("returnURL") != null){
+        	try {
+        		rsp.sendRedirect2(req.getParameter("returnURL"));
+        	} catch (IOException e) {
+        		e.printStackTrace();
+    		}
+        	return;
+    	}
+        
+        jsonObject.put("status", "ok");
+        try {
+		    String callbackName = req.getParameter("callback");
+			System.out.println("callbackName ======>" + callbackName);
+		    
+		    if(callbackName != null)
+			  pw.write(callbackName + "(" +jsonObject.toString() + ")" );
+			else
+			  jsonObject.write(pw);			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}			
+	}
+	
+	public void execDelGroup(final StaplerRequest req, StaplerResponse rsp){
+		JSONObject jsonObject = new JSONObject();	
+		PrintWriter pw = null;
 		
+		try {
+			pw = rsp.getWriter();
+			if(req.getParameter("groupID") == null){
+				jsonObject.put("status", "error");
+				jsonObject.put("message", "group id is null");
+				jsonObject.write(pw);
+				return;
+			}
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		
+		PersistentTemplate persistentTemplate = PersistentTemplate.getInstance("org.flyJenkins.component.persistent.hsql.HSQLDriver");
+		ServiceGroup serviceGroup =  new ServiceGroup();
+		serviceGroup.setGroupID(Integer.parseInt(req.getParameter("groupID")));
+		persistentTemplate.del(serviceGroup, ServiceGroup.class);
+		
+		if(req.getParameter("returnURL") != null){
+  		  try {
+  			rsp.sendRedirect2(req.getParameter("returnURL"));
+  		  } catch (IOException e) {
+  			e.printStackTrace();
+  		  }
+  		  return;
+  		}
+					
+		try {
+			jsonObject.put("status", "ok");		
+			String callbackName = req.getParameter("callback");
+			if(callbackName != null)
+			  pw.write(callbackName + "(" +jsonObject.toString() + ")" );
+			else
+			  jsonObject.write(pw);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void execServiceGroupList(final StaplerRequest req, StaplerResponse rsp){		
-		
 		System.out.println("page : " + req.getParameter("page"));
 		System.out.println("limit : " + req.getParameter("limit"));
 		
@@ -199,8 +336,13 @@ public class RestService {
 		jsonObject.put("totalPage", totalPage);
 		jsonObject.put("itemList", serviceGroupList);
 		try {
+		    String callbackName = req.getParameter("callback");
 			PrintWriter pw = rsp.getWriter();
-			pw.write(jsonObject.toString());
+			if(callbackName != null)
+			  pw.write(callbackName + "(" +jsonObject.toString() + ")" );
+			else
+			  jsonObject.write(pw);
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

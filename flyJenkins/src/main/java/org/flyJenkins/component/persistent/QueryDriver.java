@@ -14,4 +14,5 @@ public interface QueryDriver {
 	public <T2> List<T2> getPageList(int page , int limit);
 	public <T3> T3 read(T3 t3);
 	public <T4> int getTotalPage(T4 t4, int limit);
+	public <T5> void del(T5 t5);
 }

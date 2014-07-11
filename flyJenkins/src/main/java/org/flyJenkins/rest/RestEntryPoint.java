@@ -59,7 +59,10 @@ public class RestEntryPoint extends Plugin{
 		restService.execSaveService(req, rsp);
 	}
 	
-	
+	public void doDelService(final StaplerRequest req, StaplerResponse rsp){
+		restService.execDelService(req, rsp);
+	}
+		
 	/**
 	 * implement service group start 
 	 */
@@ -69,6 +72,10 @@ public class RestEntryPoint extends Plugin{
 	
 	public void doSaveServiceGroup(final StaplerRequest req, StaplerResponse rsp){		
 		restService.execSaveServiceGroup(req, rsp);
+	}
+	
+	public void doDelServiceGroup(final StaplerRequest req, StaplerResponse rsp){
+		restService.execDelGroup(req, rsp);
 	}
 	
 	public void doServiceGroupList(final StaplerRequest req, StaplerResponse rsp){		

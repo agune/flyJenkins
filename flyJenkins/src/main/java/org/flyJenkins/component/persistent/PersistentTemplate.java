@@ -38,6 +38,9 @@ public class PersistentTemplate{
 	}
 	
 	public static PersistentTemplate getInstance(String driverClassName){
+		if(driverClassName == null)
+			return instance;
+		
 		if(instance == null)
 			instance = new PersistentTemplate(driverClassName);
 		instance.setDriverClassName(driverClassName);
@@ -125,11 +128,27 @@ public class PersistentTemplate{
 		QueryDriver queryDriver = queryMap.get(key);
 		return queryDriver.read(t3);
 	}
+	
+	
 	public <T4> int getTotalPage(T4 t4, int limit, Class cl){
 		String key = cl.getSimpleName();
 		if(queryMap.containsKey(key) == false)
 			return 0;
 		QueryDriver queryDriver = queryMap.get(key);
 		return queryDriver.getTotalPage(t4, limit);		
+	}
+	
+	public <T5> void del(T5 t5, Class cl){
+		String key = cl.getSimpleName();
+		if(queryMap.containsKey(key) == false)
+			return;
+		QueryDriver queryDriver = queryMap.get(key);
+		queryDriver.del(t5);			
+	}
+	
+	public QueryDriver getQueryDriver(String name){
+		if(queryMap.containsKey(name) == false)
+			return null;
+		return queryMap.get(name);
 	}
 }
